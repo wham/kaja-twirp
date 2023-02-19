@@ -11,7 +11,7 @@
 			<div class="Layout-main">
 				<div class="d-flex flex-column">
 					<div class="Subhead">
-						<h3 class="Subhead-heading py-3">{{ .method.Name }}</h2>
+						<h1 class="Subhead-heading pt-2 h3">{{ .method.Name }}</h1>
 					</div>
 					<form method="post" action="#response" style="width: 768px">
 						{{ range .method.Input.Fields }}
@@ -74,7 +74,7 @@
 					{{ end }}
 				</div>
 			</div>
-			<div class="Layout-sidebar m-2">
+			<div class="Layout-sidebar m-1">
 				{{ range .files }}
 					{{ range .Services }}
 						<aside class="color-bg-subtle border p-3 mb-2" style="max-width: 360px">
