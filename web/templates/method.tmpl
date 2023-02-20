@@ -52,12 +52,12 @@
 					</div>
 				</form>
 				<div style="height: 300px">
-					<div class="tabnav">
-						<nav class="tabnav-tabs" aria-label="Foo bar">
-							<a class="tabnav-tab" href="#response" aria-current="page">Response</a>
-							<a class="tabnav-tab" href="#request">Request</a>
-						</nav>
-					</div>
+					<nav class="UnderlineNav">
+						<div class="UnderlineNav-body" role="tablist">
+							<a class="UnderlineNav-item" href="#response" aria-current="page">Response</a>
+							<a class="UnderlineNav-item" href="#request">Request</a>
+						</div>
+					</nav>
 					<div>
 						<div id="response">
 							{{if .out}} <pre>{{ .out }}</pre> {{end}}
