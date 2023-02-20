@@ -7,12 +7,10 @@
 		<link href="/assets/primer.css" rel="stylesheet" />
 	</head>
 	<body data-color-mode="auto" data-light-theme="light" data-dark-theme="dark_dimmed">
-		<div class="d-flex">
-			<div class="flex-order-2 m-1 d-flex flex-column">
-				<div class="Subhead">
-					<h1 class="Subhead-heading pt-2 h3">{{ .method.Name }}</h1>
-				</div>
-				<form method="post" action="#response" style="width: 768px">
+		<div class="d-flex" style="height: 100vh">
+			<div class="flex-order-2 flex-1 m-1 d-flex flex-column">
+				<h1 class="flex-grow-0 pt-2 h3">{{ .method.Name }}</h1>
+				<form class="flex-1" method="post" action="#response" style="width: 768px">
 					{{ range .method.Input.Fields }}
 						<div class="container-md clearfix">
 							{{ if eq .Type "textarea" }}
@@ -53,7 +51,7 @@
 						</div>
 					</div>
 				</form>
-				<div>
+				<div style="height: 300px">
 					<div class="tabnav">
 						<nav class="tabnav-tabs" aria-label="Foo bar">
 							<a class="tabnav-tab" href="#response" aria-current="page">Response</a>
