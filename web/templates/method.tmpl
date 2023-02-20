@@ -8,8 +8,8 @@
 	</head>
 	<body data-color-mode="auto" data-light-theme="light" data-dark-theme="dark_dimmed">
 		<div class="d-flex" style="height: 100vh">
-			<div class="flex-order-2 flex-1 m-1 d-flex flex-column">
-				<h1 class="flex-grow-0 pt-2 h3">{{ .method.Name }}</h1>
+			<div class="flex-order-2 flex-1 d-flex flex-column">
+				<div class="flex-grow-0 pt-2"><span class="Label Label--large">{{ .method.Name }}</span></div>
 				<form class="flex-1" method="post" action="#response" style="width: 768px">
 					{{ range .method.Input.Fields }}
 						<div class="container-md clearfix">
