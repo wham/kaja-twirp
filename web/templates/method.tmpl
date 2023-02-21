@@ -10,7 +10,7 @@
 		<div class="d-flex" style="height: 100vh">
 			<div class="flex-order-2 flex-1 d-flex flex-column">
 				<div class="flex-grow-0 pt-2"><span class="Label Label--large">{{ .method.Name }}</span></div>
-				<form class="flex-1" action="#response" method="post" style="width: 768px">
+				<form class="flex-1" action="#response" method="post" style="width: 768px; overflow: scroll">
 					{{ range .method.Input.Fields }}
 						<div class="container-md clearfix">
 							{{ if eq .Type "textarea" }}
