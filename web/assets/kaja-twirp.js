@@ -50,7 +50,18 @@ function addAutoResize() {
             event.target.style.height = "auto";
             event.target.style.height = event.target.scrollHeight + offset + "px";
         });
-        element.style.height = element.scrollHeight + offset + "px";
+        element.addEventListener("focus", function (event) {
+            event.target.style.height = "auto";
+            event.target.style.height = event.target.scrollHeight + offset + "px";
+            event.target.style.position = "absolute";
+            event.target.style.zIndex = "100";          
+        });
+        element.addEventListener("blur", function (event) {
+            event.target.style.height = "39px"; 
+            event.target.style.position = "static";  
+            event.target.style.zIndex = "auto";    
+        });
+        element.style.height = "39px";
         element.removeAttribute("data-autoresize");
     });
 }

@@ -23,7 +23,7 @@
 							</div>
 							<div class="flex-1">
 								{{ if eq .Type "textarea" }}	
-									<div class="form-group-body">
+									<div class="form-group-body" style="position: relative; min-height: 39px">
 										<textarea class="form-control" id="{{ .Name }}" name="{{ .Name }}" data-autoresize rows="1" style="resize: none; box-sizing: border-box; height: auto; min-height: 0; width: 100%">{{ index $.form .Name }}</textarea>
 									</div>
 								{{ else if eq .Type "select" }}
