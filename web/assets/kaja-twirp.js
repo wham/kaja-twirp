@@ -51,19 +51,48 @@ function addAutoResize() {
             event.target.style.height = event.target.scrollHeight + offset + "px";
         });
         element.addEventListener("focus", function (event) {
+            event.target.style.display = "";
+            cover.style.display = "none";
+
             event.target.style.height = "auto";
             event.target.style.height = event.target.scrollHeight + offset + "px";
             event.target.style.position = "absolute";
-            event.target.style.zIndex = "100";          
+            event.target.style.zIndex = "100";
         });
         element.addEventListener("blur", function (event) {
             event.target.style.height = "39px"; 
             event.target.style.position = "static";  
-            event.target.style.zIndex = "auto";    
+            event.target.style.zIndex = "auto";
+            
+            event.target.style.display = "none";
+            cover.style.display = "";
+            cover.innerText = event.target.value.replace(/\n/g, " ");
         });
         element.style.height = "39px";
         element.removeAttribute("data-autoresize");
-        // element.value = element.value.replace(/\n/g, "↵");
+
+        var cover = document.createElement("div");
+        cover.style.position = "absolute";
+        cover.style.zIndex = "10";
+        cover.style.top = "0";
+        cover.style.left = "0";
+        cover.style.height = "39px";
+        cover.style.width = "100%";
+        cover.style.cursor = "text";
+        cover.className = "border rounded-2";
+        cover.style.padding = "8px 12px";
+        cover.style.overflow = "hidden";
+        cover.style.whiteSpace = "nowrap";
+        cover.style.textOverflow = "ellipsis";
+        cover.innerText = element.value.replace(/\n/g, " ");
+        element.parentElement.appendChild(cover);
+
+        element.style.display = "none";
+
+        cover.addEventListener("click", function (event) {
+            element.style.display = "";
+            element.focus();
+        });
     });
 }
 
