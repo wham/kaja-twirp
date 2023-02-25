@@ -63,6 +63,7 @@ function addAutoResize() {
         });
         element.style.height = "39px";
         element.removeAttribute("data-autoresize");
+        // element.value = element.value.replace(/\n/g, "↵");
     });
 }
 
