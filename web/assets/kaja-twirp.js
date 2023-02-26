@@ -43,30 +43,25 @@ onDomLoaded(updateTabs);
 window.addEventListener("hashchange", updateTabs);
 
 function addAutoResize() {
-    document.querySelectorAll("[data-autoresize]").forEach(function (element) {
+    document.querySelectorAll("[data-autoresize]").forEach(function(element) {
         element.style.boxSizing = "border-box";
         var offset = element.offsetHeight - element.clientHeight;
-        element.addEventListener("input", function (event) {
+        element.addEventListener("input", function(event) {
             event.target.style.height = "auto";
             event.target.style.height = event.target.scrollHeight + offset + "px";
         });
-        element.addEventListener("focus", function (event) {
-            // event.target.style.display = "";
+        element.addEventListener("focus", function(event) {
             cover.style.display = "none";
             event.target.style.opacity = "";
-            //cover.style.visibility = "hidden";
-
             event.target.style.height = "auto";
             event.target.style.height = event.target.scrollHeight + offset + "px";
             event.target.style.position = "absolute";
             event.target.style.zIndex = "100";
         });
-        element.addEventListener("blur", function (event) {
+        element.addEventListener("blur", function(event) {
             event.target.style.height = "39px"; 
             event.target.style.position = "static";  
-            event.target.style.zIndex = "auto";
-            
-            // event.target.style.display = "none";
+            event.target.style.zIndex = "auto";            
             event.target.style.opacity = "0";
             cover.style.display = "";
             cover.innerText = event.target.value.replace(/\n/g, " ");
@@ -89,14 +84,9 @@ function addAutoResize() {
         cover.style.textOverflow = "ellipsis";
         cover.innerText = element.value.replace(/\n/g, " ");
         element.parentElement.appendChild(cover);
-
-        // element.style.display = "none";
-        // element.style.visibility = "hidden";
         element.style.opacity = "0";
 
-        cover.addEventListener("click", function (event) {
-            //element.style.display = "";
-            //element.style.opacity = "";
+        cover.addEventListener("click", function(event) {
             let offset = getCaretOffset(event);
             element.focus();
             element.selectionStart = offset;
