@@ -51,8 +51,10 @@ function addAutoResize() {
             event.target.style.height = event.target.scrollHeight + offset + "px";
         });
         element.addEventListener("focus", function (event) {
-            event.target.style.display = "";
+            // event.target.style.display = "";
             cover.style.display = "none";
+            event.target.style.opacity = "";
+            //cover.style.visibility = "hidden";
 
             event.target.style.height = "auto";
             event.target.style.height = event.target.scrollHeight + offset + "px";
@@ -64,7 +66,8 @@ function addAutoResize() {
             event.target.style.position = "static";  
             event.target.style.zIndex = "auto";
             
-            event.target.style.display = "none";
+            // event.target.style.display = "none";
+            event.target.style.opacity = "0";
             cover.style.display = "";
             cover.innerText = event.target.value.replace(/\n/g, " ");
         });
@@ -87,10 +90,13 @@ function addAutoResize() {
         cover.innerText = element.value.replace(/\n/g, " ");
         element.parentElement.appendChild(cover);
 
-        element.style.display = "none";
+        // element.style.display = "none";
+        // element.style.visibility = "hidden";
+        element.style.opacity = "0";
 
         cover.addEventListener("click", function (event) {
-            element.style.display = "";
+            //element.style.display = "";
+            //element.style.opacity = "";
             element.focus();
         });
     });
