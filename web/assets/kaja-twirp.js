@@ -97,32 +97,28 @@ function addAutoResize() {
         cover.addEventListener("click", function (event) {
             //element.style.display = "";
             //element.style.opacity = "";
-            let text = insertBreakAtPoint(event);
+            let offset = getCaretOffset(event);
             element.focus();
-            element.selectionStart = text.length;
-            element.selectionEnd = text.length;
+            element.selectionStart = offset;
+            element.selectionEnd = offset;
         });
     });
 }
 
-function insertBreakAtPoint(e) {
-
-    var range;
-    var textNode;
-    var offset;
+function getCaretOffset(e) {
+    let range;
+    let offset = 0;
     
     if (document.caretPositionFromPoint) {    // standard
         range = document.caretPositionFromPoint(e.pageX, e.pageY);
-        textNode = range.offsetNode;
         offset = range.offset;
     
     } else if (document.caretRangeFromPoint) {    // WebKit
         range = document.caretRangeFromPoint(e.pageX, e.pageY);
-        textNode = range.startContainer;
         offset = range.startOffset;
     }
 
-    return textNode.textContent.substring(0, offset);
+    return offset;
 }
 
 onDomLoaded(addAutoResize);
