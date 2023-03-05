@@ -16,5 +16,5 @@ func TestFormatTime(t *testing.T) {
 func TestGetDefaultValue(t *testing.T) {
 	message := TestMessage1{}
 
-	assert.Equal(t, "hi", GetDefaultValue(message.ProtoReflect().Descriptor().Fields().ByName("name")))
+	assert.Equal(t, "", GetDefaultValue(message.ProtoReflect().Descriptor().Fields().ByName("name")))
 }
