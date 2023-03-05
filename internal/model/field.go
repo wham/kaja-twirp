@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"time"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -10,7 +11,13 @@ func FormatTime(Time time.Time) string {
 	return Time.Format("2006-01-02") + "T00:00:00Z"
 }
 
-func GetDefaultValue(in protoreflect.FieldDescriptor) any {
+func GetDefaultValue(in protoreflect.FieldDescriptor) string {
+	v := getDefaultValue(in)
+	j, _ := json.MarshalIndent(v, "", "  ")
+	return string(j)
+}
+
+func getDefaultValue(in protoreflect.FieldDescriptor) any {
 	if in.Cardinality() == protoreflect.Repeated && !in.IsMap() {
 		return []any{
 			getSingleValue(in),
@@ -32,13 +39,13 @@ func getSingleValue(in protoreflect.FieldDescriptor) any {
 
 			if isStringKind(k.Kind()) {
 				return map[string]any{
-					"key": GetDefaultValue(v),
+					"key": getDefaultValue(v),
 				}
 			}
 
 			if isNumericKind(k.Kind()) {
 				return map[int]any{
-					0: GetDefaultValue(v),
+					0: getDefaultValue(v),
 				}
 			}
 		} else {
@@ -47,7 +54,7 @@ func getSingleValue(in protoreflect.FieldDescriptor) any {
 	
 			for i := 0; i < message.Fields().Len(); i++ {
 				f := message.Fields().Get(i)
-				j[string(f.Name())] = GetDefaultValue(f)
+				j[string(f.Name())] = getDefaultValue(f)
 			}
 	
 			return j

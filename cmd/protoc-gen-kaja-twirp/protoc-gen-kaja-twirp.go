@@ -139,9 +139,7 @@ func field(in protoreflect.FieldDescriptor) model.Field {
 		Kind: in.Kind().String(),
 	}
 
-	o := model.GetDefaultValue(in)
-	m, _ := json.MarshalIndent(o, "", "  ")
-	out.Value = string(m)
+	out.Value = model.GetDefaultValue(in)
 
 	if in.Kind() == protoreflect.EnumKind {
 		out.Type = "select"
@@ -176,8 +174,4 @@ func field(in protoreflect.FieldDescriptor) model.Field {
 	}
 
 	return out
-}
-
-func GetDefaultValue(in protoreflect.FieldDescriptor) {
-	panic("unimplemented")
 }
