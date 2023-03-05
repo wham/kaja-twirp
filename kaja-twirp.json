@@ -80,7 +80,7 @@
          "Kind": "message",
          "Type": "text",
          "Serialize": "text",
-         "Value": "\"google.protobuf.Timestamp\"",
+         "Value": "google.protobuf.Timestamp",
          "Enums": null
         }
        ]
@@ -106,7 +106,7 @@
          "Kind": "string",
          "Type": "text",
          "Serialize": "text",
-         "Value": "\"\"",
+         "Value": "",
          "Enums": null
         },
         {

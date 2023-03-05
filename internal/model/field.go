@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"reflect"
 	"time"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -15,6 +16,12 @@ func FormatTime(Time time.Time) string {
 // The main goal is provide helpful scaffolding for more complex message types.
 func GetDefaultValue(field protoreflect.FieldDescriptor) string {
 	v := getDefaultValue(field)
+
+	// String value indicates scalar field, return as is
+	if reflect.TypeOf(v).String() == "string" {
+		return v.(string)
+	}
+
 	j, _ := json.MarshalIndent(v, "", "  ")
 	return string(j)
 }

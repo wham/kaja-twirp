@@ -18,9 +18,9 @@ func TestGetDefaultValue(t *testing.T) {
 	fields := message.ProtoReflect().Descriptor().Fields()
 	var expected string
 
-	assert.Equal(t, "\"\"", GetDefaultValue(fields.ByName("string")))
+	assert.Equal(t, "", GetDefaultValue(fields.ByName("string")))
 	assert.Equal(t, "0", GetDefaultValue(fields.ByName("int32")))
-	assert.Equal(t, "\"\"", GetDefaultValue(fields.ByName("bool")))
+	assert.Equal(t, "", GetDefaultValue(fields.ByName("bool")))
 
 	expected = `[
   ""
@@ -37,5 +37,5 @@ func TestGetDefaultValue(t *testing.T) {
 }`
 	assert.Equal(t, expected, GetDefaultValue(fields.ByName("nested_message")))
 
-	assert.Equal(t, "\"google.protobuf.Timestamp\"", GetDefaultValue(fields.ByName("timestamp")))
+	assert.Equal(t, "google.protobuf.Timestamp", GetDefaultValue(fields.ByName("timestamp")))
 }

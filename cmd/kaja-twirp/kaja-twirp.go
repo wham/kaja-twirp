@@ -44,11 +44,7 @@ func main() {
 		for _, field := range method.Input.Fields {
 			form[field.Name] = field.Value
 
-			if form[field.Name] == "\"\"" {
-				form[field.Name] = ""
-			}
-
-			if form[field.Name] == "\"google.protobuf.Timestamp\"" {
+			if form[field.Name] == "google.protobuf.Timestamp" {
 				form[field.Name] = model.FormatTime(time.Now())
 			}
 		}
