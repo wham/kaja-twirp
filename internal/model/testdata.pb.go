@@ -20,7 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type F1 struct {
+type TestMessage1 struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -28,8 +28,8 @@ type F1 struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
-func (x *F1) Reset() {
-	*x = F1{}
+func (x *TestMessage1) Reset() {
+	*x = TestMessage1{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_internal_model_testdata_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -37,13 +37,13 @@ func (x *F1) Reset() {
 	}
 }
 
-func (x *F1) String() string {
+func (x *TestMessage1) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*F1) ProtoMessage() {}
+func (*TestMessage1) ProtoMessage() {}
 
-func (x *F1) ProtoReflect() protoreflect.Message {
+func (x *TestMessage1) ProtoReflect() protoreflect.Message {
 	mi := &file_internal_model_testdata_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,12 +55,12 @@ func (x *F1) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use F1.ProtoReflect.Descriptor instead.
-func (*F1) Descriptor() ([]byte, []int) {
+// Deprecated: Use TestMessage1.ProtoReflect.Descriptor instead.
+func (*TestMessage1) Descriptor() ([]byte, []int) {
 	return file_internal_model_testdata_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *F1) GetName() string {
+func (x *TestMessage1) GetName() string {
 	if x != nil {
 		return x.Name
 	}
@@ -72,10 +72,10 @@ var File_internal_model_testdata_proto protoreflect.FileDescriptor
 var file_internal_model_testdata_proto_rawDesc = []byte{
 	0x0a, 0x1d, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
 	0x2f, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
-	0x18, 0x0a, 0x02, 0x46, 0x31, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x42, 0x10, 0x5a, 0x0e, 0x69, 0x6e, 0x74,
-	0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x22, 0x0a, 0x0c, 0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x31, 0x12,
+	0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e,
+	0x61, 0x6d, 0x65, 0x42, 0x10, 0x5a, 0x0e, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f,
+	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -92,7 +92,7 @@ func file_internal_model_testdata_proto_rawDescGZIP() []byte {
 
 var file_internal_model_testdata_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_internal_model_testdata_proto_goTypes = []interface{}{
-	(*F1)(nil), // 0: F1
+	(*TestMessage1)(nil), // 0: TestMessage1
 }
 var file_internal_model_testdata_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -109,7 +109,7 @@ func file_internal_model_testdata_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_internal_model_testdata_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*F1); i {
+			switch v := v.(*TestMessage1); i {
 			case 0:
 				return &v.state
 			case 1:

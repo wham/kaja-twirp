@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 func TestFormatTime(t *testing.T) {
@@ -15,5 +14,7 @@ func TestFormatTime(t *testing.T) {
 }
 
 func TestGetDefaultValue(t *testing.T) {
-	field := protoreflect.FieldDescriptor{}
+	message := TestMessage1{}
+
+	assert.Equal(t, "hi", GetDefaultValue(message.ProtoReflect().Descriptor().Fields().ByName("name")))
 }
