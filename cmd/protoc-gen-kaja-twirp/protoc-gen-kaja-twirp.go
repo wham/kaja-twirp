@@ -139,7 +139,7 @@ func field(in protoreflect.FieldDescriptor) model.Field {
 		Kind: in.Kind().String(),
 	}
 
-	out.Value = model.GetDefaultValue(in)
+	out.DefaultValue = model.GetDefaultValue(in)
 
 	if in.Kind() == protoreflect.EnumKind {
 		out.Type = "select"
