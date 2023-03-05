@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/timestamp.proto";
 option go_package = "internal/model";
 
 message TestMessage1 {
@@ -16,4 +17,5 @@ message TestMessage1 {
     bool bool = 3;
     repeated string repeated_string = 4;
     NestedMessage1 nested_message = 5;
+    google.protobuf.Timestamp timestamp = 6;
 }

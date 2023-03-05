@@ -11,31 +11,34 @@ func FormatTime(Time time.Time) string {
 	return Time.Format("2006-01-02") + "T00:00:00Z"
 }
 
-func GetDefaultValue(in protoreflect.FieldDescriptor) string {
-	v := getDefaultValue(in)
+// GetDefaultValue returns string that is used as a default value in the input field
+// The main goal is provide helpful scaffolding for more complex message types.
+func GetDefaultValue(field protoreflect.FieldDescriptor) string {
+	v := getDefaultValue(field)
 	j, _ := json.MarshalIndent(v, "", "  ")
 	return string(j)
 }
 
-func getDefaultValue(in protoreflect.FieldDescriptor) any {
-	if in.Cardinality() == protoreflect.Repeated && !in.IsMap() {
+func getDefaultValue(field protoreflect.FieldDescriptor) any {
+	if field.Cardinality() == protoreflect.Repeated && !field.IsMap() {
 		return []any{
-			getSingleValue(in),
+			getSingleValue(field),
 		}
 	}
 
-	return getSingleValue(in)
+	return getSingleValue(field)
 }
 
-func getSingleValue(in protoreflect.FieldDescriptor) any {
-	if in.Kind() == protoreflect.EnumKind || isNumericKind(in.Kind()) {
+func getSingleValue(field protoreflect.FieldDescriptor) any {
+	if field.Kind() == protoreflect.EnumKind || isNumericKind(field.Kind()) {
 		return 0
-	} else if in.Kind() == protoreflect.MessageKind {
-		if in.Message().FullName() == "google.protobuf.Timestamp" {
+	} else if field.Kind() == protoreflect.MessageKind {
+		if field.Message().FullName() == "google.protobuf.Timestamp" {
+			// This is replaced with a current date on every page load
 			return  "google.protobuf.Timestamp"
-		} else if in.IsMap() {
-			k := in.MapKey()
-			v := in.MapValue()
+		} else if field.IsMap() {
+			k := field.MapKey()
+			v := field.MapValue()
 
 			if isStringKind(k.Kind()) {
 				return map[string]any{
@@ -49,15 +52,15 @@ func getSingleValue(in protoreflect.FieldDescriptor) any {
 				}
 			}
 		} else {
-			message := in.Message()
-			j := map[string]any{}
+			message := field.Message()
+			m := map[string]any{}
 	
 			for i := 0; i < message.Fields().Len(); i++ {
 				f := message.Fields().Get(i)
-				j[string(f.Name())] = getDefaultValue(f)
+				m[string(f.Name())] = getDefaultValue(f)
 			}
 	
-			return j
+			return m
 		}
 	}
 

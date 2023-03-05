@@ -36,4 +36,6 @@ func TestGetDefaultValue(t *testing.T) {
   "name": ""
 }`
 	assert.Equal(t, expected, GetDefaultValue(fields.ByName("nested_message")))
+
+	assert.Equal(t, "\"google.protobuf.Timestamp\"", GetDefaultValue(fields.ByName("timestamp")))
 }
