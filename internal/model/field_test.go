@@ -71,21 +71,27 @@ func TestGetDefaultValue(t *testing.T) {
 	assert.Equal(t, "", GetDefaultValue(fields.ByName("bool")))
 
 	expected := `[
-  ""
+  "repeated_string_1",
+  "repeated_string_2"
 ]`
 	assert.Equal(t, expected, GetDefaultValue(fields.ByName("repeated_string")))
 
 	expected = `[
-  0
+  1,
+  2
 ]`
 	assert.Equal(t, expected, GetDefaultValue(fields.ByName("repeated_int32")))
 
 	expected = `[
+  0,
   0
 ]`
 	assert.Equal(t, expected, GetDefaultValue(fields.ByName("repeated_enum")))
 
 	expected = `[
+  {
+    "name": ""
+  },
   {
     "name": ""
   }
@@ -95,7 +101,8 @@ func TestGetDefaultValue(t *testing.T) {
 	expected = `{
   "another_nested_message": {
     "ids": [
-      0
+      1,
+      2
     ]
   },
   "name": ""
