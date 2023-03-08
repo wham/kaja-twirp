@@ -67,6 +67,33 @@
          "Parse": "array",
          "DefaultValue": "[\n  \"\"\n]",
          "Enums": null
+        },
+        {
+         "Name": "int32",
+         "Kind": "int32",
+         "Input": "textarea",
+         "Parse": "array",
+         "DefaultValue": "[\n  0\n]",
+         "Enums": null
+        },
+        {
+         "Name": "enum",
+         "Kind": "enum",
+         "Input": "textarea",
+         "Parse": "array",
+         "DefaultValue": "[\n  0\n]",
+         "Enums": {
+          "0": "KEY_0",
+          "1": "KEY_1"
+         }
+        },
+        {
+         "Name": "message",
+         "Kind": "message",
+         "Input": "textarea",
+         "Parse": "array",
+         "DefaultValue": "[\n  {\n    \"name\": \"\"\n  }\n]",
+         "Enums": null
         }
        ]
       }
