@@ -1,4 +1,4 @@
-package twirp
+package client
 
 import (
 	"testing"
