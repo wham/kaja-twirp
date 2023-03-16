@@ -2,7 +2,7 @@ syntax = "proto3";
 package quirks.v1;
 import "google/protobuf/timestamp.proto";
 
-option go_package = "internal/demo-app";
+doption go_package = "internal/demo-app";
 
 service Quirks {
     rpc GetAuthentication(Void) returns(Message);

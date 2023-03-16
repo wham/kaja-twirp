@@ -22,6 +22,7 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("web/templates/*")
 	router.Static("/assets", "web/assets")
+	router.Use(model.ModelLoader())
 	router.GET("/", func(c *gin.Context) {
 		model := model.LoadModel()
 		_, service, method := model.GetFirstMethod()
