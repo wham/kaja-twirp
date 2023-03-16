@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 
@@ -12,12 +13,23 @@ func ModelLoader() gin.HandlerFunc {
 		text, _ := os.ReadFile("error.txt")
 
 		if len(text) > 0 {
-			c.HTML(http.StatusOK, "error.tmpl", gin.H{
+			c.HTML(http.StatusInternalServerError, "error.tmpl", gin.H{
 				"text": string(text),
 			})
 			c.Abort()
 		}
 
+		c.Set("model", loadModel())
 		c.Next()
+	}
+}
+
+func loadModel() Model {
+	var files []File
+	content, _ := os.ReadFile("kaja-twirp.json")
+	json.Unmarshal(content, &files)
+
+	return Model{
+		Files: files,
 	}
 }

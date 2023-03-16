@@ -24,8 +24,8 @@ func main() {
 	router.Static("/assets", "web/assets")
 	router.Use(model.ModelLoader())
 	router.GET("/", func(c *gin.Context) {
-		model := model.LoadModel()
-		_, service, method := model.GetFirstMethod()
+		m := c.MustGet("model").(model.Model)
+		_, service, method := m.GetFirstMethod()
 
 		c.Redirect(302, "/services/" + service.Name + "/" + method.Name)
 	})
@@ -33,7 +33,7 @@ func main() {
 		serviceName := c.Param("service")
 		methodName := c.Param("method")
 
-		m := model.LoadModel()
+		m := c.MustGet("model").(model.Model)
 
 		_, service, method := m.GetMethod(serviceName, methodName)
 
@@ -58,7 +58,7 @@ func main() {
 		serviceName := c.Param("service")
 		methodName := c.Param("method")
 
-		m := model.LoadModel()
+		m := c.MustGet("model").(model.Model)
 		// Use Overload() so the .env file can be dynamically updated
 		godotenv.Overload()
 
