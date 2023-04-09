@@ -29,6 +29,10 @@ func main() {
 
 		c.Redirect(302, "/services/" + service.Name + "/" + method.Name)
 	})
+	router.GET("/api/model", func(c *gin.Context) {
+		m := c.MustGet("model").(model.Model)
+		c.JSON(200, m)
+	})
 	router.GET("/services/:service/:method", func(c *gin.Context) {
 		serviceName := c.Param("service")
 		methodName := c.Param("method")
