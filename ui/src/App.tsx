@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { Sidebar } from './Sidebar';
+import Editor from '@monaco-editor/react';
 
 function App() {
-useEffect(() => {
-  fetch("/api/model")
-    .then((response) => {
-      console.log(response)
-    })
-})
+  useEffect(() => {
+    fetch("/api/model")
+      .then((response) => {
+        console.log(response)
+      })
+  })
 
   return (
     <div className="App">
@@ -26,6 +28,8 @@ useEffect(() => {
           Learn React
         </a>
       </header>
+      <Sidebar/>
+      <Editor height="90vh" defaultLanguage="javascript" defaultValue="// some comment" />
     </div>
   );
 }
