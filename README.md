@@ -61,6 +61,8 @@ Run `script/server` to regenerate model testdata.proto.
 
 ## TS
 
+https://github.com/timostamm/protobuf-ts
+
 ```
 npx protoc \
   --ts_out ./src \   
