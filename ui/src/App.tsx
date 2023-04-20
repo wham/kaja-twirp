@@ -41,7 +41,7 @@ function App() {
 
 async function callApi() {
   let transport = new TwirpFetchTransport({
-    baseUrl: "http://localhost:41521"
+    baseUrl: "http://localhost:3000/proxy"
   });
 
   let client = new SearchServiceClient(transport)
