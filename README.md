@@ -63,7 +63,7 @@ Run `script/server` to regenerate model testdata.proto.
 
 ```
 npx protoc \
-  --ts_out . \       
+  --ts_out ./src \   
   --ts_opt long_type_string \
   --proto_path ../proto \
   ../proto/quirks.proto
