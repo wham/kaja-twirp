@@ -8,6 +8,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -124,6 +126,7 @@ func main() {
 			"form": form,
 		})
 	})
+	router.POST("/proxy/:service/:method", proxy)
 	router.Run(":41520")
 }
 
@@ -337,3 +340,24 @@ type twerrJSON struct {
 	Msg  string            `json:"msg"`
 	Meta map[string]string `json:"meta,omitempty"`
 }
+
+func proxy(c *gin.Context) {
+	remote, err := url.Parse(client.GetBaseURL())
+	if err != nil {
+		panic(err)
+	}
+
+	proxy := httputil.NewSingleHostReverseProxy(remote)
+	//Define the director func
+	//This is a good place to log, for example
+	proxy.Director = func(req *http.Request) {
+		req.Header = c.Request.Header
+		req.Host = remote.Host
+		req.URL.Scheme = remote.Scheme
+		req.URL.Host = remote.Host
+		req.URL.Path = c.Param("service") + "/" + c.Param("method")
+	}
+
+	proxy.ServeHTTP(c.Writer, c.Request)
+}
+
