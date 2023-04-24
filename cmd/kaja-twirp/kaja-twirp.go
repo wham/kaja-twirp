@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
 	"strconv"
 	"time"
 
@@ -126,7 +125,7 @@ func main() {
 			"form": form,
 		})
 	})
-	router.POST("/proxy/:service/:method", proxy)
+	router.POST("/twirp/:service/:method", proxy)
 	router.Run(":41520")
 }
 
@@ -342,22 +341,37 @@ type twerrJSON struct {
 }
 
 func proxy(c *gin.Context) {
+	/*
 	remote, err := url.Parse(client.GetBaseURL())
 	if err != nil {
 		panic(err)
 	}
+	*/
 
-	proxy := httputil.NewSingleHostReverseProxy(remote)
+	director := func(req *http.Request) {
+		req.Header = c.Request.Header
+		//req.Host = remote.Host
+		req.Host = "localhost:41521"
+		req.URL.Host = "localhost:41521"
+		req.URL.Scheme = "http"
+		//req.URL.Path = c.Param("service") + "/" + c.Param("method")
+		req.URL.Path = "/twirp/SearchService/Search"
+		req.URL.RawPath = "/twirp/SearchService/Search"
+	}
+	proxy := &httputil.ReverseProxy{Director: director}
+
+	//proxy := httputil.NewSingleHostReverseProxy(remote)
 	//Define the director func
 	//This is a good place to log, for example
+	/*
 	proxy.Director = func(req *http.Request) {
 		req.Header = c.Request.Header
 		req.Host = remote.Host
 		req.URL.Scheme = remote.Scheme
 		req.URL.Host = remote.Host
-		req.URL.Path = c.Param("service") + "/" + c.Param("method")
-	}
+		//req.URL.Path = c.Param("service") + "/" + c.Param("method")
+		req.URL.Path = "/twirp/SearchService/Search"
+	}*/
 
 	proxy.ServeHTTP(c.Writer, c.Request)
 }
-
