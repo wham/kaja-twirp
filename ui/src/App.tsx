@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import { Sidebar } from './Sidebar';
 import Editor from '@monaco-editor/react';
@@ -6,6 +6,7 @@ import { QuirksClient } from './quirks.client';
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport';
 import { SearchService } from './search-service';
 import { SearchServiceClient } from './search-service.client';
+import { Model } from './Model';
 
 const xSearchService = {
   search: async function() {
@@ -28,12 +29,17 @@ const xSearchService = {
 function App() {
   const editorRef = React.useRef(null);
 
+  const [model, setModel] = useState<Model>({Files: []});
+
   useEffect(() => {
     fetch("/api/model")
       .then((response) => {
-        console.log(response)
+        return response.json();  
       })
-  })
+      .then((data) => {
+        setModel(data);
+      });
+  }, [])
 
   function handleEditorDidMount(editor: any, monaco: any) {
     editorRef.current = editor;
@@ -52,7 +58,7 @@ function App() {
 
   return (
     <div>
-      <Sidebar/>
+      <Sidebar model={model}/>
       <button onClick={ callApi }>Call</button>
       <Editor height="90vh" defaultLanguage="javascript" defaultValue="xSearchService.search();" onMount={handleEditorDidMount} />
     </div>

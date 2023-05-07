@@ -1,14 +1,20 @@
-export function Sidebar() {
+import { Model } from "./Model"
+
+type SidebarProps = {
+    model: Model
+}
+
+export function Sidebar({model}: SidebarProps) {
     return (
         <div>
-            <ul>
-                <li>Method1</li>
-                <li>Method2</li>
-            </ul>
-            <ul>
-                <li>MethodA</li>
-                <li>MethodB</li>
-            </ul>
+            {model.Files.map((file) => {
+                return file.Services.map((service) => {
+                    return service.Methods.map((method) => {
+                        return <div>{method.Name}</div>
+                    })
+                })
+            })
+            }
         </div>
     )
 }
