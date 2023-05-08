@@ -9,9 +9,12 @@ export function Sidebar({model}: SidebarProps) {
         <div>
             {model.Files.map((file) => {
                 return file.Services.map((service) => {
-                    return service.Methods.map((method) => {
-                        return <div>{method.Name}</div>
-                    })
+                    return <>
+                        <div>{service.Name}</div>
+                        {service.Methods.map((method) => {
+                            return <div> - {method.Name}</div>
+                        })}
+                    </>
                 })
             })
             }
