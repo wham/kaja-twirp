@@ -7,6 +7,7 @@ import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport';
 import { SearchService } from './search-service';
 import { SearchServiceClient } from './search-service.client';
 import { Model } from './Model';
+import { ThemeProvider } from '@primer/react';
 
 const xSearchService = {
   search: async function() {
@@ -57,11 +58,13 @@ function App() {
   }
 
   return (
-    <div>
-      <Sidebar model={model}/>
-      <button onClick={ callApi }>Call</button>
-      <Editor height="90vh" defaultLanguage="javascript" defaultValue="xSearchService.search();" onMount={handleEditorDidMount} />
-    </div>
+    <ThemeProvider colorMode="night">
+      <div>
+        <Sidebar model={model}/>
+        <button onClick={ callApi }>Call</button>
+        <Editor height="90vh" defaultLanguage="javascript" defaultValue="xSearchService.search();" onMount={handleEditorDidMount} />
+      </div>
+    </ThemeProvider>
   );
 }
 
