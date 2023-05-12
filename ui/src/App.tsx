@@ -61,7 +61,7 @@ function App() {
     <ThemeProvider colorMode="night">
       <Box sx={{display: "flex", height: "100vh"}}>
         <Sidebar model={model}/>
-        <Box>
+        <Box sx={{flexGrow: 1}}>
           <button onClick={ callApi }>Call</button>
           <Editor height="90vh" defaultLanguage="javascript" defaultValue="xSearchService.search();" onMount={handleEditorDidMount} />
         </Box>
