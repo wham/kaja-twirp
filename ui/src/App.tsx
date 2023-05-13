@@ -59,7 +59,7 @@ function App() {
 
   return (
     <ThemeProvider colorMode="night">
-      <Box sx={{display: "flex", height: "100vh"}}>
+      <Box sx={{display: "flex", height: "100vh", bg: "canvas.default"}}>
         <Sidebar model={model}/>
         <Box sx={{flexGrow: 1}}>
           <button onClick={ callApi }>Call</button>
