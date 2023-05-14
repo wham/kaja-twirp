@@ -1,9 +1,10 @@
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import React, { useState } from "react";
 import { SearchServiceClient } from "./search-service.client";
-import { Editor } from "@monaco-editor/react";
+import { Editor, Monaco } from "@monaco-editor/react";
 import { Box, Button, TabNav } from "@primer/react";
 import Console from "./Console";
+import { editor } from "monaco-editor";
 
 export type TabContent = {
   title: string;
@@ -38,8 +39,13 @@ let GOUT = (output: string) => {};
 
 export function Content({ tabs, selectedTabIndex, onTabSelect }: ContentProps) {
   const [output, setOutput] = useState("");
-  const editorRef = React.useRef(null);
-  function handleEditorDidMount(editor: any, monaco: any) {
+  const editorRef = React.useRef<editor.IStandaloneCodeEditor | null>(null);
+
+  // (editor: editor.IStandaloneCodeEditor, monaco: Monaco)
+  function handleEditorDidMount(
+    editor: editor.IStandaloneCodeEditor,
+    monaco: Monaco
+  ) {
     editorRef.current = editor;
     editor.focus();
   }

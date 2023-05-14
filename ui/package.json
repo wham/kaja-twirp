@@ -44,5 +44,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:41520"
+  "proxy": "http://localhost:41520",
+  "devDependencies": {
+    "monaco-editor": "^0.38.0"
+  }
 }
