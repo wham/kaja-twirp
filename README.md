@@ -44,10 +44,16 @@ docker run -v /tmp/kaja-twirp.env:/app/.env ...
 
 # Development
 
+Install golang.
+
 ```
 sudo apt-get update && sudo apt-get install -y protobuf-compiler
 brew install protobuf
+brew install protoc-gen-go
+export PATH=${PATH}:`go env GOPATH`/bin
+go install github.com/twitchtv/twirp/protoc-gen-twirp@latest
 script/server
+(cd ui && npm i && npm start)
 ```
 
 ## Testing
