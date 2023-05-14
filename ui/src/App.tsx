@@ -25,7 +25,7 @@ function App() {
           <Sidebar model={model} />
         </Box>
         <Box sx={{ flexGrow: 1 }}>
-          <Content />
+          <Content tabs={[]} />
         </Box>
       </Box>
     </ThemeProvider>
