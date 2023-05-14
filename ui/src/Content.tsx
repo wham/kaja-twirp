@@ -5,6 +5,12 @@ import { Editor } from "@monaco-editor/react";
 import { Box, Button, TabNav } from "@primer/react";
 import Console from "./Console";
 
+type TabContent = {};
+
+type ContentProps = {
+  tabs: Array<TabContent>;
+};
+
 const xSearchService = {
   search: async function () {
     let transport = new TwirpFetchTransport({
@@ -25,7 +31,7 @@ const xSearchService = {
 
 let GOUT = (output: string) => {};
 
-export function Content() {
+export function Content({ tabs }: ContentProps) {
   const [output, setOutput] = useState("");
   const editorRef = React.useRef(null);
   function handleEditorDidMount(editor: any, monaco: any) {
@@ -49,16 +55,22 @@ export function Content() {
 
   return (
     <Box>
-      <TabNav aria-label="Main">
-        <TabNav.Link href="#home" selected>
-          Home
-        </TabNav.Link>
-        <TabNav.Link href="#documentation">Documentation</TabNav.Link>
-        <TabNav.Link href="#support">Support</TabNav.Link>
-        <Button sx={{ mt: 2 }} onClick={callApi}>
-          Call
-        </Button>
-      </TabNav>
+      <Box sx={{ display: "flex" }}>
+        <Box sx={{ flex: 1 }}>
+          <TabNav aria-label="Main">
+            <TabNav.Link href="#home" selected>
+              Home
+            </TabNav.Link>
+            <TabNav.Link href="#documentation">Documentation</TabNav.Link>
+            <TabNav.Link href="#support">Support</TabNav.Link>
+          </TabNav>
+        </Box>
+        <Box sx={{ padding: "2px" }}>
+          <Button variant="primary" size="medium" onClick={callApi}>
+            Call
+          </Button>
+        </Box>
+      </Box>
       <Editor
         height="60vh"
         defaultLanguage="javascript"

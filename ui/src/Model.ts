@@ -1,16 +1,16 @@
 export type Model = {
-    Files: Array<File>;
-}
+  Files: Array<File>;
+};
 
 export type File = {
-    Services: Array<Service>;
-}
+  Services: Array<Service>;
+};
 
 export type Service = {
-    Name: string;
-    Methods: Array<Method>;
-}
+  Name: string;
+  Methods: Array<Method>;
+};
 
 export type Method = {
-    Name: string;
-}
+  Name: string;
+};
