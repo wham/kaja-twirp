@@ -84,13 +84,23 @@ export function Content({ tabs, selectedTabIndex, onTabSelect }: ContentProps) {
           </Button>
         </Box>
       </Box>
-      <Editor
-        height="60vh"
-        defaultLanguage="javascript"
-        defaultValue="xSearchService.search();"
-        onMount={handleEditorDidMount}
-        theme="vs-dark"
-      />
+      <Box>
+        {tabs.map((tab, index) => {
+          return (
+            <Box
+              sx={{ display: index === selectedTabIndex ? "block" : "none" }}
+            >
+              <Editor
+                height="60vh"
+                defaultLanguage="javascript"
+                defaultValue={tab.code}
+                onMount={handleEditorDidMount}
+                theme="vs-dark"
+              />
+            </Box>
+          );
+        })}
+      </Box>
       <Box sx={{ height: "40vh", color: "fg.default" }}>
         <Console output={output} />
       </Box>
