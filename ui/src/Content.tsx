@@ -5,10 +5,15 @@ import { Editor } from "@monaco-editor/react";
 import { Box, Button, TabNav } from "@primer/react";
 import Console from "./Console";
 
-type TabContent = {};
+export type TabContent = {
+  title: string;
+  code: string;
+};
 
 type ContentProps = {
   tabs: Array<TabContent>;
+  selectedTabIndex: number;
+  onTabSelect: (index: number) => void;
 };
 
 const xSearchService = {
@@ -31,7 +36,7 @@ const xSearchService = {
 
 let GOUT = (output: string) => {};
 
-export function Content({ tabs }: ContentProps) {
+export function Content({ tabs, selectedTabIndex, onTabSelect }: ContentProps) {
   const [output, setOutput] = useState("");
   const editorRef = React.useRef(null);
   function handleEditorDidMount(editor: any, monaco: any) {
@@ -58,11 +63,19 @@ export function Content({ tabs }: ContentProps) {
       <Box sx={{ display: "flex" }}>
         <Box sx={{ flex: 1 }}>
           <TabNav aria-label="Main">
-            <TabNav.Link href="#home" selected>
-              Home
-            </TabNav.Link>
-            <TabNav.Link href="#documentation">Documentation</TabNav.Link>
-            <TabNav.Link href="#support">Support</TabNav.Link>
+            {tabs.map((tab, index) => {
+              return (
+                <TabNav.Link
+                  href="#todo"
+                  selected={index === selectedTabIndex}
+                  onClick={() => {
+                    onTabSelect(index);
+                  }}
+                >
+                  {tab.title}
+                </TabNav.Link>
+              );
+            })}
           </TabNav>
         </Box>
         <Box sx={{ padding: "2px" }}>
