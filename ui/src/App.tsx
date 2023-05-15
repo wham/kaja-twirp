@@ -6,9 +6,10 @@ import { Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
 
 function App() {
-  var tabIdGenerator = 0;
+  console.log("App");
   const [model, setModel] = useState<Model>({ Files: [] });
   const [tabs, setTabs] = useState<Array<TabContent>>([]);
+  const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
   const [selectedTabId, setSelectedTabId] = useState<number>(0);
 
   useEffect(() => {
@@ -22,7 +23,7 @@ function App() {
   }, []);
 
   let addTab = (service: Service, method: Method) => {
-    ++tabIdGenerator;
+    setTabIdGenerator(tabIdGenerator + 1);
     setTabs([
       ...tabs,
       {
