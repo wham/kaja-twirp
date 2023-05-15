@@ -73,7 +73,7 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
             {tabs.map((tab) => {
               return (
                 <TabNav.Link
-                  href="#todo"
+                  key={tab.id}
                   selected={tab.id === selectedTabId}
                   onClick={() => {
                     onTabSelect(tab.id);
@@ -94,7 +94,10 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
       <Box>
         {tabs.map((tab) => {
           return (
-            <Box sx={{ display: tab.id === selectedTabId ? "block" : "none" }}>
+            <Box
+              sx={{ display: tab.id === selectedTabId ? "block" : "none" }}
+              key={tab.id}
+            >
               <Editor
                 height="60vh"
                 defaultLanguage="javascript"
