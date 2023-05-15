@@ -18,8 +18,8 @@ type ContentProps = {
   onTabSelect: (id: number) => void;
 };
 
-const xSearchService = {
-  search: async function () {
+const SearchService = {
+  Search: async function () {
     let transport = new TwirpFetchTransport({
       baseUrl: "http://localhost:3000/twirp",
     });
@@ -40,14 +40,16 @@ let GOUT = (output: string) => {};
 
 export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
   const [output, setOutput] = useState("");
-  const editorRef = React.useRef<editor.IStandaloneCodeEditor | null>(null);
+  const editorRefs = React.useRef<{
+    [index: number]: editor.IStandaloneCodeEditor;
+  }>({});
 
   // (editor: editor.IStandaloneCodeEditor, monaco: Monaco)
   function handleEditorDidMount(
-    editor: editor.IStandaloneCodeEditor,
-    monaco: Monaco
+    tabId: number,
+    editor: editor.IStandaloneCodeEditor
   ) {
-    editorRef.current = editor;
+    editorRefs.current[tabId] = editor;
     editor.focus();
   }
 
@@ -58,8 +60,8 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
   async function callApi() {
     //let response = await xSearchService.search()
 
-    if (editorRef.current) {
-      eval((editorRef.current as any).getValue());
+    if (editorRefs.current[selectedTabId]) {
+      eval(editorRefs.current[selectedTabId].getValue());
     }
     //alert(JSON.stringify(response));
     //alert(JSON.stringify(await xSearchService.search()))
@@ -102,7 +104,9 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
                 height="60vh"
                 defaultLanguage="javascript"
                 defaultValue={tab.code}
-                onMount={handleEditorDidMount}
+                onMount={(editor: editor.IStandaloneCodeEditor) => {
+                  handleEditorDidMount(tab.id, editor);
+                }}
                 theme="vs-dark"
               />
             </Box>
