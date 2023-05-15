@@ -6,9 +6,10 @@ import { Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
 
 function App() {
+  var tabIdGenerator = 0;
   const [model, setModel] = useState<Model>({ Files: [] });
   const [tabs, setTabs] = useState<Array<TabContent>>([]);
-  const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0);
+  const [selectedTabId, setSelectedTabId] = useState<number>(0);
 
   useEffect(() => {
     fetch("/api/model")
@@ -21,11 +22,16 @@ function App() {
   }, []);
 
   let addTab = (service: Service, method: Method) => {
+    ++tabIdGenerator;
     setTabs([
       ...tabs,
-      { title: method.Name, code: service.Name + "." + method.Name + "();" },
+      {
+        id: tabIdGenerator,
+        title: method.Name,
+        code: service.Name + "." + method.Name + "();",
+      },
     ]);
-    setSelectedTabIndex(tabs.length);
+    setSelectedTabId(tabIdGenerator);
   };
 
   return (
@@ -37,8 +43,8 @@ function App() {
         <Box sx={{ flexGrow: 1 }}>
           <Content
             tabs={tabs}
-            selectedTabIndex={selectedTabIndex}
-            onTabSelect={setSelectedTabIndex}
+            selectedTabId={selectedTabId}
+            onTabSelect={setSelectedTabId}
           />
         </Box>
       </Box>

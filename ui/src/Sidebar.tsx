@@ -13,7 +13,7 @@ export function Sidebar({ model, onSelect }: SidebarProps) {
         {model.Files.map((file) => {
           return file.Services.map((service) => {
             return (
-              <TreeView.Item id={service.Name}>
+              <TreeView.Item id={service.Name} key={service.Name}>
                 <TreeView.LeadingVisual>
                   <TreeView.DirectoryIcon />
                 </TreeView.LeadingVisual>
@@ -23,6 +23,7 @@ export function Sidebar({ model, onSelect }: SidebarProps) {
                     return (
                       <TreeView.Item
                         id={method.Name}
+                        key={method.Name}
                         onSelect={() => onSelect(service, method)}
                       >
                         {method.Name}

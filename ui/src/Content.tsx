@@ -7,14 +7,15 @@ import Console from "./Console";
 import { editor } from "monaco-editor";
 
 export type TabContent = {
+  id: number;
   title: string;
   code: string;
 };
 
 type ContentProps = {
   tabs: Array<TabContent>;
-  selectedTabIndex: number;
-  onTabSelect: (index: number) => void;
+  selectedTabId: number;
+  onTabSelect: (id: number) => void;
 };
 
 const xSearchService = {
@@ -37,7 +38,7 @@ const xSearchService = {
 
 let GOUT = (output: string) => {};
 
-export function Content({ tabs, selectedTabIndex, onTabSelect }: ContentProps) {
+export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
   const [output, setOutput] = useState("");
   const editorRef = React.useRef<editor.IStandaloneCodeEditor | null>(null);
 
@@ -69,13 +70,13 @@ export function Content({ tabs, selectedTabIndex, onTabSelect }: ContentProps) {
       <Box sx={{ display: "flex" }}>
         <Box sx={{ flex: 1 }}>
           <TabNav aria-label="Main">
-            {tabs.map((tab, index) => {
+            {tabs.map((tab) => {
               return (
                 <TabNav.Link
                   href="#todo"
-                  selected={index === selectedTabIndex}
+                  selected={tab.id === selectedTabId}
                   onClick={() => {
-                    onTabSelect(index);
+                    onTabSelect(tab.id);
                   }}
                 >
                   {tab.title}
@@ -91,11 +92,9 @@ export function Content({ tabs, selectedTabIndex, onTabSelect }: ContentProps) {
         </Box>
       </Box>
       <Box>
-        {tabs.map((tab, index) => {
+        {tabs.map((tab) => {
           return (
-            <Box
-              sx={{ display: index === selectedTabIndex ? "block" : "none" }}
-            >
+            <Box sx={{ display: tab.id === selectedTabId ? "block" : "none" }}>
               <Editor
                 height="60vh"
                 defaultLanguage="javascript"
