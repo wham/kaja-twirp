@@ -18,6 +18,8 @@ type ContentProps = {
   onTabSelect: (id: number) => void;
 };
 
+
+// https://github.com/lukasbach/monaco-editor-auto-typings/
 const SearchService = {
   Search: async function () {
     let transport = new TwirpFetchTransport({
