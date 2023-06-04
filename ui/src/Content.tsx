@@ -102,7 +102,7 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
             >
               <Editor
                 height="60vh"
-                defaultLanguage="javascript"
+                defaultLanguage="typescript"
                 defaultValue={tab.code}
                 onMount={(editor: editor.IStandaloneCodeEditor) => {
                   handleEditorDidMount(tab.id, editor);
