@@ -18,7 +18,6 @@ type ContentProps = {
   onTabSelect: (id: number) => void;
 };
 
-
 // https://github.com/lukasbach/monaco-editor-auto-typings/
 const SearchService = {
   Search: async function () {
@@ -38,6 +37,24 @@ const SearchService = {
   },
 };
 
+let ssContent = `const SearchService = {
+  Search: async function (name: string) {
+    let transport = new TwirpFetchTransport({
+      baseUrl: "http://localhost:3000/twirp",
+    });
+
+    let client = new SearchServiceClient(transport);
+
+    let { response } = await client.search({
+      query: "",
+      pageNumber: 0,
+      resultPerPage: 0,
+    });
+
+    GOUT(JSON.stringify(response));
+  },
+};`
+
 let GOUT = (output: string) => {};
 
 export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
@@ -49,10 +66,13 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
   // (editor: editor.IStandaloneCodeEditor, monaco: Monaco)
   function handleEditorDidMount(
     tabId: number,
-    editor: editor.IStandaloneCodeEditor
+    editor: editor.IStandaloneCodeEditor,
+    monaco: Monaco
   ) {
     editorRefs.current[tabId] = editor;
     editor.focus();
+
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(ssContent)
   }
 
   GOUT = (output: string) => {
@@ -106,8 +126,8 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
                 height="60vh"
                 defaultLanguage="typescript"
                 defaultValue={tab.code}
-                onMount={(editor: editor.IStandaloneCodeEditor) => {
-                  handleEditorDidMount(tab.id, editor);
+                onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+                  handleEditorDidMount(tab.id, editor, monaco);
                 }}
                 theme="vs-dark"
               />
