@@ -68,6 +68,8 @@ Run `script/server` to regenerate model testdata.proto.
 ## TS
 
 https://github.com/timostamm/protobuf-ts
+https://github.com/lukasbach/monaco-editor-auto-typings/
+https://www.npmjs.com/package/@monaco-editor/react
 
 ```
 npx protoc \
