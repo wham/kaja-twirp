@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@protobuf-ts/plugin-framework": "^2.9.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
   }
 }
