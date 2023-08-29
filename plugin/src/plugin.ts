@@ -10,8 +10,8 @@ export class Plugin extends PluginBase {
     generate(request: CodeGeneratorRequest): GeneratedFile[] | Promise<GeneratedFile[]> {
         //console.log('Hello from plugin!');
         return [{
-            getFilename: () => 'hello.txt',
-            getContent: () => 'Hello from plugin!'
+            getFilename: () => 'kaja-twirp.ts',
+            getContent: () => 'export const kaja = "Hello from plugin!";'
         }];
     }
 }
