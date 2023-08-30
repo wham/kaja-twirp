@@ -1,4 +1,5 @@
-import { CodeGeneratorRequest, GeneratedFile, PluginBase } from "@protobuf-ts/plugin-framework";
+import * as ts from "typescript";
+import { CodeGeneratorRequest, GeneratedFile, PluginBase, TypescriptFile } from "@protobuf-ts/plugin-framework";
 
 export class Plugin extends PluginBase {
 
@@ -8,10 +9,24 @@ export class Plugin extends PluginBase {
     }
     
     generate(request: CodeGeneratorRequest): GeneratedFile[] | Promise<GeneratedFile[]> {
+        let file = new TypescriptFile("kaja-twirp.ts");
+
+        const statement = ts.createVariableStatement(
+            [],
+            ts.createVariableDeclarationList(
+                [ts.createVariableDeclaration(
+                    ts.createIdentifier("testVar"),
+                    ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+                    ts.createStringLiteral("test")
+                )],
+                ts.NodeFlags.Const
+            )
+        );
+
+        file.addStatement(statement);
+        
         //console.log('Hello from plugin!');
-        return [{
-            getFilename: () => 'kaja-twirp.ts',
-            getContent: () => 'export const kaja = "Hello from plugin!";'
-        }];
+        // https://github.dev/timostamm/protobuf-ts
+        return [file];
     }
 }

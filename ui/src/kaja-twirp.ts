@@ -1,1 +1,1 @@
-export const kaja = "Hello from plugin!";
+const testVar: string = "test";
