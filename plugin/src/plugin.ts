@@ -16,14 +16,39 @@ export class Plugin extends PluginBase {
                 if (!service.name) {
                     continue;
                 }
+
+                const methodFuncs = [];
+
+                for (let method of service.method) {
+                    if (!method.name) {
+                        continue;
+                    }
+
+                    const functionDeclaration = ts.createFunctionExpression(
+                        undefined,
+                        undefined,
+                        ts.createIdentifier('add'),
+                        undefined,
+                        [ts.createParameter(undefined, undefined, undefined, 'a', undefined, ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)), ts.createParameter(undefined, undefined, undefined, 'b', undefined, ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword))],
+                        ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+                        ts.createBlock([
+                          ts.createReturn(ts.createBinary(ts.createIdentifier('a'), ts.SyntaxKind.PlusToken, ts.createIdentifier('b')))
+                        ])
+                      );
+                    
+                    methodFuncs.push(ts.createPropertyAssignment(method.name, functionDeclaration));
+
+                }
+
+                const objectLiteral = ts.createObjectLiteral(methodFuncs);
                 
                 const statement = ts.createVariableStatement(
                     [],
                     ts.createVariableDeclarationList(
                         [ts.createVariableDeclaration(
                             ts.createIdentifier(service.name),
-                            ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-                            ts.createStringLiteral("test")
+                            ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+                            objectLiteral
                         )],
                         ts.NodeFlags.Const
                     )
