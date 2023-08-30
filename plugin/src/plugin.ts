@@ -11,19 +11,27 @@ export class Plugin extends PluginBase {
     generate(request: CodeGeneratorRequest): GeneratedFile[] | Promise<GeneratedFile[]> {
         let file = new TypescriptFile("kaja-twirp.ts");
 
-        const statement = ts.createVariableStatement(
-            [],
-            ts.createVariableDeclarationList(
-                [ts.createVariableDeclaration(
-                    ts.createIdentifier("testVar"),
-                    ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-                    ts.createStringLiteral("test")
-                )],
-                ts.NodeFlags.Const
-            )
-        );
-
-        file.addStatement(statement);
+        for (let protoFile of request.protoFile) {
+            for (let service of protoFile.service) {
+                if (!service.name) {
+                    continue;
+                }
+                
+                const statement = ts.createVariableStatement(
+                    [],
+                    ts.createVariableDeclarationList(
+                        [ts.createVariableDeclaration(
+                            ts.createIdentifier(service.name),
+                            ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+                            ts.createStringLiteral("test")
+                        )],
+                        ts.NodeFlags.Const
+                    )
+                );
+        
+                file.addStatement(statement);
+            }
+        }
         
         //console.log('Hello from plugin!');
         // https://github.dev/timostamm/protobuf-ts
