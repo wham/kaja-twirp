@@ -13,6 +13,6 @@
     "@protobuf-ts/plugin-framework": "^2.9.1"
   },
   "devDependencies": {
-    "typescript": "^5.2.2"
+    "typescript": "^3.9"
   }
 }
