@@ -4,24 +4,14 @@ import { Sidebar } from "./Sidebar";
 import { Method, Model, Service } from "./Model";
 import { Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
-import { SearchService } from "./kaja-twirp";
+import { model as xxx } from "./kaja-twirp";
 
 function App() {
   console.log("App");
-  const [model, setModel] = useState<Model>({ Files: [] });
+  const [model] = useState<Model>(xxx);
   const [tabs, setTabs] = useState<Array<TabContent>>([]);
   const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
   const [selectedTabId, setSelectedTabId] = useState<number>(0);
-
-  useEffect(() => {
-    fetch("/api/model")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setModel(data);
-      });
-  }, []);
 
   let addTab = (service: Service, method: Method) => {
     setTabIdGenerator(tabIdGenerator + 1);
@@ -29,8 +19,8 @@ function App() {
       ...tabs,
       {
         id: tabIdGenerator,
-        title: method.Name,
-        code: service.Name + "." + method.Name + "();\n" + SearchService,
+        title: method.name,
+        code: method.code,
       },
     ]);
     setSelectedTabId(tabIdGenerator);

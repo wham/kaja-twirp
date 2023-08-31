@@ -7,23 +7,11 @@ import {
 } from "@protobuf-ts/plugin-framework";
 
 export class Plugin extends PluginBase {
-  constructor() {
-    //console.log('Hello from plugin constructor!');
-    super();
-  }
-
   // https://github.dev/timostamm/protobuf-ts
   generate(
     request: CodeGeneratorRequest
   ): GeneratedFile[] | Promise<GeneratedFile[]> {
     let file = new TypescriptFile("kaja-twirp.ts");
-    const file2 = ts.createSourceFile(
-      "source.ts",
-      "",
-      ts.ScriptTarget.ESNext,
-      false,
-      ts.ScriptKind.TS
-    );
     const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
     const statement = ts.createVariableStatement(
@@ -32,26 +20,29 @@ export class Plugin extends PluginBase {
         [
           ts.createVariableDeclaration(
             ts.createIdentifier("model"),
-            ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-            ts.createStringLiteral(
-              printer.printNode(
-                ts.EmitHint.Unspecified,
-                this.services(request),
-                file2
-              )
-            )
+            undefined,
+            ts.createObjectLiteral([
+              ts.createPropertyAssignment(
+                "services",
+                this.services(request, file, printer)
+              ),
+            ])
           ),
         ],
         ts.NodeFlags.Const
       )
     );
 
-    //console.log('Hello from plugin!');
-    // https://github.dev/timostamm/protobuf-ts
+    file.addStatement(statement);
+
     return [file];
   }
 
-  private services(request: CodeGeneratorRequest): ts.ArrayLiteralExpression {
+  private services(
+    request: CodeGeneratorRequest,
+    file: TypescriptFile,
+    printer: ts.Printer
+  ): ts.ArrayLiteralExpression {
     const services = [];
 
     for (let protoFile of request.protoFile) {
@@ -71,7 +62,18 @@ export class Plugin extends PluginBase {
             "name",
             ts.createStringLiteral(protoMethod.name)
           );
-          const method = ts.createObjectLiteral([p]);
+          const p1 = ts.createPropertyAssignment(
+            "code",
+            ts.createStringLiteral(
+              printer.printNode(
+                ts.EmitHint.Unspecified,
+                ts.createArrayLiteral([]),
+                file.getSourceFile()
+              )
+            )
+          );
+
+          const method = ts.createObjectLiteral([p, p1]);
 
           methods.push(method);
         }
