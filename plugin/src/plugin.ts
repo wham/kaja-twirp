@@ -11,6 +11,8 @@ export class Plugin extends PluginBase {
     // https://github.dev/timostamm/protobuf-ts
     generate(request: CodeGeneratorRequest): GeneratedFile[] | Promise<GeneratedFile[]> {
         let file = new TypescriptFile("kaja-twirp.ts");
+        const file2 = ts.createSourceFile("source.ts", "", ts.ScriptTarget.ESNext, false, ts.ScriptKind.TS);
+        const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
         for (let protoFile of request.protoFile) {
             for (let service of protoFile.service) {
@@ -48,8 +50,8 @@ export class Plugin extends PluginBase {
                     ts.createVariableDeclarationList(
                         [ts.createVariableDeclaration(
                             ts.createIdentifier(service.name),
-                            ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-                            objectLiteral
+                            ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+                            ts.createStringLiteral(printer.printNode(ts.EmitHint.Unspecified, objectLiteral, file2))
                         )],
                         ts.NodeFlags.Const
                     )
