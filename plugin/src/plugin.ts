@@ -8,6 +8,7 @@ export class Plugin extends PluginBase {
         super();
     }
     
+    // https://github.dev/timostamm/protobuf-ts
     generate(request: CodeGeneratorRequest): GeneratedFile[] | Promise<GeneratedFile[]> {
         let file = new TypescriptFile("kaja-twirp.ts");
 
