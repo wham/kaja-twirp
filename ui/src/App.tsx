@@ -4,6 +4,7 @@ import { Sidebar } from "./Sidebar";
 import { Method, Model, Service } from "./Model";
 import { Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
+import { SearchService } from "./kaja-twirp";
 
 function App() {
   console.log("App");
@@ -29,7 +30,7 @@ function App() {
       {
         id: tabIdGenerator,
         title: method.Name,
-        code: service.Name + "." + method.Name + "();",
+        code: service.Name + "." + method.Name + "();\n" + SearchService,
       },
     ]);
     setSelectedTabId(tabIdGenerator);
