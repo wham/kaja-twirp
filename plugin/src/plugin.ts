@@ -46,7 +46,7 @@ export class Plugin extends PluginBase {
                 const objectLiteral = ts.createObjectLiteral(methodFuncs);
                 
                 const statement = ts.createVariableStatement(
-                    [],
+                    [ts.createToken(ts.SyntaxKind.ExportKeyword)],
                     ts.createVariableDeclarationList(
                         [ts.createVariableDeclaration(
                             ts.createIdentifier(service.name),
