@@ -97,6 +97,37 @@ export class Plugin extends PluginBase {
           ts.NodeFlags.Let
         )
       ),
+      ts.createVariableStatement(
+        undefined,
+        ts.createVariableDeclarationList(
+          [
+            ts.createVariableDeclaration(
+              "client",
+              undefined,
+              ts.createNew(ts.createIdentifier(protoService.name + "Client"), undefined, [ts.createIdentifier("transport")])
+            ),
+          ],
+          ts.NodeFlags.Let
+        )
+      ),
+      ts.createVariableStatement(
+        undefined,
+        ts.createVariableDeclarationList(
+          [
+            ts.createVariableDeclaration(
+              "{ response }",
+              undefined,
+              ts.createCall(ts.createPropertyAccess(ts.createIdentifier("client"), ts.createIdentifier(protoMethod.name!)), undefined, [])
+            ),
+          ],
+          ts.NodeFlags.None
+        )
+      ),
+      ts.createExpressionStatement(
+        ts.createCall(ts.createIdentifier("GOUT"), undefined, [
+          ts.createCall(ts.createPropertyAccess(ts.createIdentifier("JSON"), ts.createIdentifier("stringify")), undefined, [ts.createIdentifier("response")]),
+        ])
+      ),
     ];
 
     let sourceFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
