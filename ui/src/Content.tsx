@@ -96,7 +96,9 @@ export function Content({
     //let response = await xSearchService.search()
 
     if (editorRefs.current[selectedTabId]) {
-      eval(editorRefs.current[selectedTabId].getValue());
+      //eval(editorRefs.current[selectedTabId].getValue());
+      const func = new Function(editorRefs.current[selectedTabId].getValue());
+      func();
     }
     //alert(JSON.stringify(response));
     //alert(JSON.stringify(await xSearchService.search()))
