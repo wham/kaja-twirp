@@ -7,6 +7,34 @@ export class Plugin extends PluginBase {
     let file = new TypescriptFile("kaja-twirp.ts");
     const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
+    const importDeclaration = ts.createImportDeclaration(
+      undefined,
+      undefined,
+      ts.createImportClause(undefined, ts.createNamedImports([ts.createImportSpecifier(undefined, ts.createIdentifier("TwirpFetchTransport"))])),
+      ts.createStringLiteral("@protobuf-ts/twirp-transport")
+    );
+
+    file.addStatement(importDeclaration);
+
+    for (let protoFile of request.protoFile) {
+      for (let protoService of protoFile.service) {
+        if (!protoService.name) {
+          continue;
+        }
+
+        const cname = protoService.name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+
+        const importDeclaration = ts.createImportDeclaration(
+          undefined,
+          undefined,
+          ts.createImportClause(undefined, ts.createNamedImports([ts.createImportSpecifier(undefined, ts.createIdentifier(protoService.name + "Client"))])),
+          ts.createStringLiteral("./" + cname + ".client")
+        );
+
+        file.addStatement(importDeclaration);
+      }
+    }
+
     const model = ts.createVariableStatement(
       [ts.createToken(ts.SyntaxKind.ExportKeyword)],
       ts.createVariableDeclarationList(
@@ -79,9 +107,7 @@ export class Plugin extends PluginBase {
   private code(protoMethod: MethodDescriptorProto, protoService: ServiceDescriptorProto, printer: ts.Printer): string {
     const statements = [
       ts.createExpressionStatement(
-        ts.createCall(ts.createPropertyAccess(ts.createIdentifier(protoService.name!), ts.createIdentifier(protoMethod.name!)), undefined, [
-          ts.createStringLiteral("argument"),
-        ])
+        ts.createCall(ts.createPropertyAccess(ts.createIdentifier(protoService.name!), ts.createIdentifier(protoMethod.name!)), undefined, [])
       ),
     ];
 
@@ -103,14 +129,14 @@ export class Plugin extends PluginBase {
       const method = ts.createPropertyAssignment(
         protoMethod.name,
         ts.createArrowFunction(
-          undefined,
+          [ts.createModifier(ts.SyntaxKind.AsyncKeyword)],
           undefined,
           [
             /*ts.createParameter(undefined, undefined, undefined, "hello")*/
           ],
           undefined,
           ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-          ts.createCall(ts.createIdentifier("(window as any).GOUT"), undefined, [ts.createStringLiteral(protoMethod.name)])
+          this.proxyBody(protoService, protoMethod)
         )
       );
 
@@ -120,5 +146,43 @@ export class Plugin extends PluginBase {
     const service = ts.createObjectLiteral(methods);
 
     return service;
+  }
+
+  private proxyBody(protoService: ServiceDescriptorProto, protoMethod: MethodDescriptorProto): ts.Block {
+    const transport = ts.createVariableDeclaration(
+      "transport",
+      undefined,
+      ts.createNew(ts.createIdentifier("TwirpFetchTransport"), undefined, [
+        ts.createObjectLiteral([ts.createPropertyAssignment("baseUrl", ts.createStringLiteral("http://localhost:3000/twirp"))]),
+      ])
+    );
+
+    const client = ts.createVariableDeclaration(
+      "client",
+      undefined,
+      ts.createNew(ts.createIdentifier(protoService.name + "Client"), undefined, [ts.createIdentifier("transport")])
+    );
+
+    const firstLetter = protoMethod.name!.charAt(0).toLowerCase();
+    const outputString = firstLetter + protoMethod.name!.slice(1);
+
+    const response = ts.createVariableDeclaration(
+      "{ response }",
+      undefined,
+
+      ts.createAwait(
+        ts.createCall(ts.createPropertyAccess(ts.createIdentifier("client"), ts.createIdentifier(outputString)), undefined, [
+          ts.createAsExpression(ts.createObjectLiteral([]), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+        ])
+      )
+    );
+
+    return ts.createBlock([
+      ts.createVariableStatement(undefined, ts.createVariableDeclarationList([transport])),
+      ts.createVariableStatement(undefined, ts.createVariableDeclarationList([client])),
+      ts.createVariableStatement(undefined, ts.createVariableDeclarationList([response])),
+      ts.createExpressionStatement(ts.createCall(ts.createIdentifier("(window as any).GOUT"), undefined, [ts.createIdentifier("response")])),
+      ts.createReturn(ts.createIdentifier("response")),
+    ]);
   }
 }
