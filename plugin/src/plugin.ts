@@ -14,10 +14,7 @@ export class Plugin extends PluginBase {
           ts.createVariableDeclaration(
             ts.createIdentifier("model"),
             undefined,
-            ts.createObjectLiteral([
-              ts.createPropertyAssignment("services", this.services(request, file, printer)),
-              ts.createPropertyAssignment("extraLibs", this.extraLibs(request, file, printer)),
-            ])
+            ts.createObjectLiteral([ts.createPropertyAssignment("services", this.services(request, file, printer))])
           ),
         ],
         ts.NodeFlags.Const
@@ -38,31 +35,45 @@ export class Plugin extends PluginBase {
           continue;
         }
 
-        const methods = [];
-
-        for (let protoMethod of protoService.method) {
-          if (!protoMethod.name) {
-            continue;
-          }
-
-          const p = ts.createPropertyAssignment("name", ts.createStringLiteral(protoMethod.name));
-          const p1 = ts.createPropertyAssignment("code", ts.createStringLiteral(this.code(protoMethod, protoService, printer)));
-
-          const method = ts.createObjectLiteral([p, p1]);
-
-          methods.push(method);
-        }
-
-        const service = ts.createObjectLiteral([
-          ts.createPropertyAssignment("name", ts.createStringLiteral(protoService.name)),
-          ts.createPropertyAssignment("methods", ts.createArrayLiteral(methods)),
-        ]);
-
-        services.push(service);
+        services.push(this.service(protoService, file, printer));
       }
     }
 
     return ts.createArrayLiteral(services);
+  }
+
+  private service(protoService: ServiceDescriptorProto, file: TypescriptFile, printer: ts.Printer): ts.ObjectLiteralExpression {
+    const methods = [];
+
+    for (let protoMethod of protoService.method) {
+      if (!protoMethod.name) {
+        continue;
+      }
+
+      const propeties = [
+        ts.createPropertyAssignment("name", ts.createStringLiteral(protoMethod.name)),
+        ts.createPropertyAssignment("code", ts.createStringLiteral(this.code(protoMethod, protoService, printer))),
+      ];
+
+      const method = ts.createObjectLiteral(propeties);
+
+      methods.push(method);
+    }
+
+    const proxy = this.proxy(protoService);
+    const extraLib = ts.createVariableStatement(
+      undefined,
+      ts.createVariableDeclarationList([ts.createVariableDeclaration(ts.createIdentifier(protoService.name!), undefined, proxy)], ts.NodeFlags.Const)
+    );
+    let sourceFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+    sourceFile = ts.updateSourceFileNode(sourceFile, [extraLib]);
+
+    return ts.createObjectLiteral([
+      ts.createPropertyAssignment("name", ts.createStringLiteral(protoService.name!)),
+      ts.createPropertyAssignment("methods", ts.createArrayLiteral(methods)),
+      ts.createPropertyAssignment("proxy", proxy),
+      ts.createPropertyAssignment("extraLib", ts.createStringLiteral(printer.printFile(sourceFile))),
+    ]);
   }
 
   private code(protoMethod: MethodDescriptorProto, protoService: ServiceDescriptorProto, printer: ts.Printer): string {
@@ -81,53 +92,31 @@ export class Plugin extends PluginBase {
     return printer.printFile(sourceFile);
   }
 
-  private extraLibs(request: CodeGeneratorRequest, file: TypescriptFile, printer: ts.Printer): ts.ArrayLiteralExpression {
-    const extraLibs = [];
+  private proxy(protoService: ServiceDescriptorProto): ts.ObjectLiteralExpression {
+    const methods = [];
 
-    for (let protoFile of request.protoFile) {
-      for (let protoService of protoFile.service) {
-        if (!protoService.name) {
-          continue;
-        }
-
-        const methods = [];
-
-        for (let protoMethod of protoService.method) {
-          if (!protoMethod.name) {
-            continue;
-          }
-
-          const method = ts.createPropertyAssignment(
-            protoMethod.name,
-            ts.createArrowFunction(
-              undefined,
-              undefined,
-              [ts.createParameter(undefined, undefined, undefined, "hello")],
-              undefined,
-              ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-              ts.createNumericLiteral("2")
-            )
-          );
-
-          methods.push(method);
-        }
-
-        const service = ts.createVariableStatement(
-          undefined,
-          ts.createVariableDeclarationList(
-            [ts.createVariableDeclaration(ts.createIdentifier(protoService.name), undefined, ts.createObjectLiteral(methods))],
-            ts.NodeFlags.Const
-          )
-        );
-
-        let sourceFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-
-        sourceFile = ts.updateSourceFileNode(sourceFile, [service]);
-
-        extraLibs.push(ts.createStringLiteral(printer.printFile(sourceFile)));
+    for (let protoMethod of protoService.method) {
+      if (!protoMethod.name) {
+        continue;
       }
+
+      const method = ts.createPropertyAssignment(
+        protoMethod.name,
+        ts.createArrowFunction(
+          undefined,
+          undefined,
+          [ts.createParameter(undefined, undefined, undefined, "hello")],
+          undefined,
+          ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+          ts.createNumericLiteral("2")
+        )
+      );
+
+      methods.push(method);
     }
 
-    return ts.createArrayLiteral(extraLibs);
+    const service = ts.createObjectLiteral(methods);
+
+    return service;
   }
 }
