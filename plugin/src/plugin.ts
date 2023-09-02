@@ -105,10 +105,12 @@ export class Plugin extends PluginBase {
         ts.createArrowFunction(
           undefined,
           undefined,
-          [ts.createParameter(undefined, undefined, undefined, "hello")],
+          [
+            /*ts.createParameter(undefined, undefined, undefined, "hello")*/
+          ],
           undefined,
           ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-          ts.createNumericLiteral("2")
+          ts.createCall(ts.createIdentifier("(window as any).GOUT"), undefined, [ts.createStringLiteral(protoMethod.name)])
         )
       );
 

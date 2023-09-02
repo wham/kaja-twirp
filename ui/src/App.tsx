@@ -13,6 +13,10 @@ function App() {
   const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
   const [selectedTabId, setSelectedTabId] = useState<number>(0);
 
+  model.services.forEach((service) => {
+    window[service.name as any] = service.proxy;
+  });
+
   let addTab = (service: Service, method: Method) => {
     setTabIdGenerator(tabIdGenerator + 1);
     setTabs([

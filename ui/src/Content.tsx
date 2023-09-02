@@ -81,14 +81,16 @@ export function Content({
     editorRefs.current[tabId] = editor;
     editor.focus();
 
-    model.extraLibs.forEach((lib) => {
-      monaco.languages.typescript.typescriptDefaults.addExtraLib(lib);
+    model.services.forEach((service) => {
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(
+        service.extraLib
+      );
     });
 
     monaco.languages.typescript.typescriptDefaults.addExtraLib(ssContent);
   }
 
-  GOUT = (output: string) => {
+  (window as any).GOUT = (output: string) => {
     setOutput(output);
   };
 
