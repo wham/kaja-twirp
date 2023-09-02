@@ -66,69 +66,10 @@ export class Plugin extends PluginBase {
   }
 
   private code(protoMethod: MethodDescriptorProto, protoService: ServiceDescriptorProto, printer: ts.Printer): string {
-    let ssContent = `const SearchService = {
-      Search: async function (name: string) {
-        let transport = new TwirpFetchTransport({
-          baseUrl: "http://localhost:3000/twirp",
-        });
-    
-        let client = new SearchServiceClient(transport);
-    
-        let { response } = await client.search({
-          query: "",
-          pageNumber: 0,
-          resultPerPage: 0,
-        });
-    
-        GOUT(JSON.stringify(response));
-      },
-    };`;
-
     const statements = [
-      ts.createVariableStatement(
-        undefined,
-        ts.createVariableDeclarationList(
-          [
-            ts.createVariableDeclaration(
-              "transport",
-              undefined,
-              ts.createNew(ts.createIdentifier("TwirpFetchTransport"), undefined, [
-                ts.createObjectLiteral([ts.createPropertyAssignment("baseUrl", ts.createStringLiteral("http://localhost:3000/twirp"))]),
-              ])
-            ),
-          ],
-          ts.NodeFlags.Let
-        )
-      ),
-      ts.createVariableStatement(
-        undefined,
-        ts.createVariableDeclarationList(
-          [
-            ts.createVariableDeclaration(
-              "client",
-              undefined,
-              ts.createNew(ts.createIdentifier(protoService.name + "Client"), undefined, [ts.createIdentifier("transport")])
-            ),
-          ],
-          ts.NodeFlags.Let
-        )
-      ),
-      ts.createVariableStatement(
-        undefined,
-        ts.createVariableDeclarationList(
-          [
-            ts.createVariableDeclaration(
-              "{ response }",
-              undefined,
-              ts.createCall(ts.createPropertyAccess(ts.createIdentifier("client"), ts.createIdentifier(protoMethod.name!)), undefined, [])
-            ),
-          ],
-          ts.NodeFlags.None
-        )
-      ),
       ts.createExpressionStatement(
-        ts.createCall(ts.createIdentifier("GOUT"), undefined, [
-          ts.createCall(ts.createPropertyAccess(ts.createIdentifier("JSON"), ts.createIdentifier("stringify")), undefined, [ts.createIdentifier("response")]),
+        ts.createCall(ts.createPropertyAccess(ts.createIdentifier(protoService.name!), ts.createIdentifier(protoMethod.name!)), undefined, [
+          ts.createStringLiteral("argument"),
         ])
       ),
     ];
@@ -172,7 +113,7 @@ export class Plugin extends PluginBase {
         }
 
         const service = ts.createVariableStatement(
-          [ts.createToken(ts.SyntaxKind.ExportKeyword)],
+          undefined,
           ts.createVariableDeclarationList(
             [ts.createVariableDeclaration(ts.createIdentifier(protoService.name), undefined, ts.createObjectLiteral(methods))],
             ts.NodeFlags.Const
