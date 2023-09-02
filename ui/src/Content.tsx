@@ -91,7 +91,7 @@ export function Content({
   }
 
   (window as any).GOUT = (output: string) => {
-    setOutput(output);
+    setOutput(JSON.stringify(output));
   };
 
   async function callApi() {
