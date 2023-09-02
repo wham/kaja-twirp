@@ -1,5 +1,6 @@
 export type Model = {
   services: Array<Service>;
+  extraLibs: Array<string>;
 };
 
 export type Service = {

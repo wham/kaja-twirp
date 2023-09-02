@@ -37,6 +37,7 @@ function App() {
             tabs={tabs}
             selectedTabId={selectedTabId}
             onTabSelect={setSelectedTabId}
+            model={model}
           />
         </Box>
       </Box>
