@@ -5,6 +5,7 @@ import { Editor, Monaco } from "@monaco-editor/react";
 import { Box, Button, TabNav } from "@primer/react";
 import Console from "./Console";
 import { editor } from "monaco-editor";
+import { Model } from "./Model";
 
 export type TabContent = {
   id: number;
@@ -16,6 +17,7 @@ type ContentProps = {
   tabs: Array<TabContent>;
   selectedTabId: number;
   onTabSelect: (id: number) => void;
+  model: Model;
 };
 
 // https://github.com/lukasbach/monaco-editor-auto-typings/
@@ -53,11 +55,17 @@ let ssContent = `const SearchService = {
 
     GOUT(JSON.stringify(response));
   },
-};`
+};
+const TwirpFetchTransport = {};`;
 
 let GOUT = (output: string) => {};
 
-export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
+export function Content({
+  tabs,
+  selectedTabId,
+  onTabSelect,
+  model,
+}: ContentProps) {
   const [output, setOutput] = useState("");
   const editorRefs = React.useRef<{
     [index: number]: editor.IStandaloneCodeEditor;
@@ -67,12 +75,17 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
   function handleEditorDidMount(
     tabId: number,
     editor: editor.IStandaloneCodeEditor,
-    monaco: Monaco
+    monaco: Monaco,
+    model: Model
   ) {
     editorRefs.current[tabId] = editor;
     editor.focus();
 
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(ssContent)
+    model.extraLibs.forEach((lib) => {
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(lib);
+    });
+
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(ssContent);
   }
 
   GOUT = (output: string) => {
@@ -126,8 +139,11 @@ export function Content({ tabs, selectedTabId, onTabSelect }: ContentProps) {
                 height="60vh"
                 defaultLanguage="typescript"
                 defaultValue={tab.code}
-                onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-                  handleEditorDidMount(tab.id, editor, monaco);
+                onMount={(
+                  editor: editor.IStandaloneCodeEditor,
+                  monaco: Monaco
+                ) => {
+                  handleEditorDidMount(tab.id, editor, monaco, model);
                 }}
                 theme="vs-dark"
               />
