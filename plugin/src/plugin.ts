@@ -1,9 +1,19 @@
 import * as ts from "typescript";
-import { CodeGeneratorRequest, GeneratedFile, MethodDescriptorProto, PluginBase, ServiceDescriptorProto, TypescriptFile } from "@protobuf-ts/plugin-framework";
+import {
+  CodeGeneratorRequest,
+  DescriptorRegistry,
+  GeneratedFile,
+  MethodDescriptorProto,
+  PluginBase,
+  ServiceDescriptorProto,
+  TypescriptFile,
+} from "@protobuf-ts/plugin-framework";
 
 export class Plugin extends PluginBase {
   // https://github.dev/timostamm/protobuf-ts
   generate(request: CodeGeneratorRequest): GeneratedFile[] | Promise<GeneratedFile[]> {
+    const registry = DescriptorRegistry.createFrom(request);
+
     let file = new TypescriptFile("kaja-twirp.ts");
     const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
@@ -16,23 +26,21 @@ export class Plugin extends PluginBase {
 
     file.addStatement(importDeclaration);
 
-    for (let protoFile of request.protoFile) {
-      for (let protoService of protoFile.service) {
-        if (!protoService.name) {
-          continue;
+    for (let fileDescriptor of registry.allFiles()) {
+      registry.visitTypes(fileDescriptor, (descriptor) => {
+        if (ServiceDescriptorProto.is(descriptor) && descriptor.name) {
+          const cname = descriptor.name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+
+          const importDeclaration = ts.createImportDeclaration(
+            undefined,
+            undefined,
+            ts.createImportClause(undefined, ts.createNamedImports([ts.createImportSpecifier(undefined, ts.createIdentifier(descriptor.name + "Client"))])),
+            ts.createStringLiteral("./" + cname + ".client")
+          );
+
+          file.addStatement(importDeclaration);
         }
-
-        const cname = protoService.name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-
-        const importDeclaration = ts.createImportDeclaration(
-          undefined,
-          undefined,
-          ts.createImportClause(undefined, ts.createNamedImports([ts.createImportSpecifier(undefined, ts.createIdentifier(protoService.name + "Client"))])),
-          ts.createStringLiteral("./" + cname + ".client")
-        );
-
-        file.addStatement(importDeclaration);
-      }
+      });
     }
 
     const model = ts.createVariableStatement(
