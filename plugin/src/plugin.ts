@@ -21,6 +21,11 @@ export class Plugin extends PluginBase {
   // https://github.dev/timostamm/protobuf-ts
   generate(request: CodeGeneratorRequest): GeneratedFile[] | Promise<GeneratedFile[]> {
     const registry = DescriptorRegistry.createFrom(request);
+    const symbols = new SymbolTable(),
+      imports = new TypeScriptImports(symbols),
+      comments = new CommentGenerator(registry),
+      options = makeInternalOptions(),
+      interpreter = new Interpreter(registry, options);
 
     let file = new TypescriptFile("kaja-twirp.ts");
     const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -59,7 +64,7 @@ export class Plugin extends PluginBase {
             ts.createIdentifier("model"),
             undefined,
             ts.createObjectLiteral([
-              ts.createPropertyAssignment("services", this.services(request, file, printer)),
+              ts.createPropertyAssignment("services", this.services(request, file, printer, interpreter, registry)),
               ts.createPropertyAssignment("extraLibs", this.extraLibs(registry, printer)),
             ])
           ),
@@ -73,7 +78,13 @@ export class Plugin extends PluginBase {
     return [file];
   }
 
-  private services(request: CodeGeneratorRequest, file: TypescriptFile, printer: ts.Printer): ts.ArrayLiteralExpression {
+  private services(
+    request: CodeGeneratorRequest,
+    file: TypescriptFile,
+    printer: ts.Printer,
+    interpreter: Interpreter,
+    registry: DescriptorRegistry
+  ): ts.ArrayLiteralExpression {
     const services = [];
 
     for (let protoFile of request.protoFile) {
@@ -82,14 +93,20 @@ export class Plugin extends PluginBase {
           continue;
         }
 
-        services.push(this.service(protoService, file, printer));
+        services.push(this.service(protoService, file, printer, interpreter, registry));
       }
     }
 
     return ts.createArrayLiteral(services);
   }
 
-  private service(protoService: ServiceDescriptorProto, file: TypescriptFile, printer: ts.Printer): ts.ObjectLiteralExpression {
+  private service(
+    protoService: ServiceDescriptorProto,
+    file: TypescriptFile,
+    printer: ts.Printer,
+    interpreter: Interpreter,
+    registry: DescriptorRegistry
+  ): ts.ObjectLiteralExpression {
     const methods = [];
 
     for (let protoMethod of protoService.method) {
@@ -107,7 +124,7 @@ export class Plugin extends PluginBase {
       methods.push(method);
     }
 
-    const proxy = this.proxy(protoService);
+    const proxy = this.proxy(protoService, interpreter, registry);
     const extraLib = ts.createVariableStatement(
       undefined,
       ts.createVariableDeclarationList([ts.createVariableDeclaration(ts.createIdentifier(protoService.name!), undefined, proxy)], ts.NodeFlags.Const)
@@ -137,7 +154,7 @@ export class Plugin extends PluginBase {
     return printer.printFile(sourceFile);
   }
 
-  private proxy(protoService: ServiceDescriptorProto): ts.ObjectLiteralExpression {
+  private proxy(protoService: ServiceDescriptorProto, interpreter: Interpreter, registry: DescriptorRegistry): ts.ObjectLiteralExpression {
     const methods = [];
 
     for (let protoMethod of protoService.method) {
@@ -145,13 +162,23 @@ export class Plugin extends PluginBase {
         continue;
       }
 
+      let mt = interpreter.getMessageType(protoMethod.inputType!);
+      // registry.resolveTypeName
+
       const method = ts.createPropertyAssignment(
         protoMethod.name,
         ts.createArrowFunction(
           [ts.createModifier(ts.SyntaxKind.AsyncKeyword)],
           undefined,
           [
-            /*ts.createParameter(undefined, undefined, undefined, "hello")*/
+            ts.createParameter(
+              undefined,
+              undefined,
+              undefined,
+              "input",
+              undefined,
+              ts.createTypeReferenceNode(ts.createIdentifier(registry.resolveTypeName(mt.typeName).name!), undefined)
+            ),
           ],
           undefined,
           ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
