@@ -171,14 +171,14 @@ export class Plugin extends PluginBase {
           [ts.createModifier(ts.SyntaxKind.AsyncKeyword)],
           undefined,
           [
-            ts.createParameter(
+            /*ts.createParameter(
               undefined,
               undefined,
               undefined,
               "input",
-              undefined,
+              undefined
               ts.createTypeReferenceNode(ts.createIdentifier(registry.resolveTypeName(mt.typeName).name!), undefined)
-            ),
+            ),*/
           ],
           undefined,
           ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
