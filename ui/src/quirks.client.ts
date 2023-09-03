@@ -8,7 +8,7 @@ import type { TypesRequest } from "./quirks";
 import type { RepeatedRequest } from "./quirks";
 import type { MapRequest } from "./quirks";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
-import type { Message } from "./quirks";
+import type { Message } from "./lib/message";
 import type { Void } from "./quirks";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
@@ -17,7 +17,7 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  */
 export interface IQuirksClient {
     /**
-     * @generated from protobuf rpc: GetAuthentication(quirks.v1.Void) returns (quirks.v1.Message);
+     * @generated from protobuf rpc: GetAuthentication(quirks.v1.Void) returns (lib.Message);
      */
     getAuthentication(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;
     /**
@@ -25,11 +25,11 @@ export interface IQuirksClient {
      */
     map(input: MapRequest, options?: RpcOptions): UnaryCall<MapRequest, MapRequest>;
     /**
-     * @generated from protobuf rpc: MethodWithAReallyLongNameGmthggupcbmnphflnnvu(quirks.v1.Void) returns (quirks.v1.Message);
+     * @generated from protobuf rpc: MethodWithAReallyLongNameGmthggupcbmnphflnnvu(quirks.v1.Void) returns (lib.Message);
      */
     methodWithAReallyLongNameGmthggupcbmnphflnnvu(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;
     /**
-     * @generated from protobuf rpc: Panic(quirks.v1.Void) returns (quirks.v1.Message);
+     * @generated from protobuf rpc: Panic(quirks.v1.Void) returns (lib.Message);
      */
     panic(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;
     /**
@@ -51,7 +51,7 @@ export class QuirksClient implements IQuirksClient, ServiceInfo {
     constructor(private readonly _transport: RpcTransport) {
     }
     /**
-     * @generated from protobuf rpc: GetAuthentication(quirks.v1.Void) returns (quirks.v1.Message);
+     * @generated from protobuf rpc: GetAuthentication(quirks.v1.Void) returns (lib.Message);
      */
     getAuthentication(input: Void, options?: RpcOptions): UnaryCall<Void, Message> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
@@ -65,14 +65,14 @@ export class QuirksClient implements IQuirksClient, ServiceInfo {
         return stackIntercept<MapRequest, MapRequest>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: MethodWithAReallyLongNameGmthggupcbmnphflnnvu(quirks.v1.Void) returns (quirks.v1.Message);
+     * @generated from protobuf rpc: MethodWithAReallyLongNameGmthggupcbmnphflnnvu(quirks.v1.Void) returns (lib.Message);
      */
     methodWithAReallyLongNameGmthggupcbmnphflnnvu(input: Void, options?: RpcOptions): UnaryCall<Void, Message> {
         const method = this.methods[2], opt = this._transport.mergeOptions(options);
         return stackIntercept<Void, Message>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: Panic(quirks.v1.Void) returns (quirks.v1.Message);
+     * @generated from protobuf rpc: Panic(quirks.v1.Void) returns (lib.Message);
      */
     panic(input: Void, options?: RpcOptions): UnaryCall<Void, Message> {
         const method = this.methods[3], opt = this._transport.mergeOptions(options);

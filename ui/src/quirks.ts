@@ -13,6 +13,7 @@ import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { Timestamp } from "./google/protobuf/timestamp";
+import { Message } from "./lib/message";
 /**
  * @generated from protobuf message quirks.v1.MapRequest
  */
@@ -52,15 +53,6 @@ export interface MapRequest_RepeatedString {
     value: string[];
 }
 /**
- * @generated from protobuf message quirks.v1.Message
- */
-export interface Message {
-    /**
-     * @generated from protobuf field: string name = 1;
-     */
-    name: string;
-}
-/**
  * @generated from protobuf message quirks.v1.RepeatedRequest
  */
 export interface RepeatedRequest {
@@ -77,7 +69,7 @@ export interface RepeatedRequest {
      */
     enum: RepeatedRequest_Enum[];
     /**
-     * @generated from protobuf field: repeated quirks.v1.Message message = 4;
+     * @generated from protobuf field: repeated lib.Message message = 4;
      */
     message: Message[];
 }
@@ -296,53 +288,6 @@ class MapRequest_RepeatedString$Type extends MessageType<MapRequest_RepeatedStri
  */
 export const MapRequest_RepeatedString = new MapRequest_RepeatedString$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class Message$Type extends MessageType<Message> {
-    constructor() {
-        super("quirks.v1.Message", [
-            { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<Message>): Message {
-        const message = { name: "" };
-        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
-        if (value !== undefined)
-            reflectionMergePartial<Message>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Message): Message {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string name */ 1:
-                    message.name = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: Message, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.name !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.name);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message quirks.v1.Message
- */
-export const Message = new Message$Type();
-// @generated message type with reflection information, may provide speed optimized methods
 class RepeatedRequest$Type extends MessageType<RepeatedRequest> {
     constructor() {
         super("quirks.v1.RepeatedRequest", [
@@ -381,7 +326,7 @@ class RepeatedRequest$Type extends MessageType<RepeatedRequest> {
                     else
                         message.enum.push(reader.int32());
                     break;
-                case /* repeated quirks.v1.Message message */ 4:
+                case /* repeated lib.Message message */ 4:
                     message.message.push(Message.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
@@ -413,7 +358,7 @@ class RepeatedRequest$Type extends MessageType<RepeatedRequest> {
                 writer.int32(message.enum[i]);
             writer.join();
         }
-        /* repeated quirks.v1.Message message = 4; */
+        /* repeated lib.Message message = 4; */
         for (let i = 0; i < message.message.length; i++)
             Message.internalBinaryWrite(message.message[i], writer.tag(4, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
