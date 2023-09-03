@@ -6,8 +6,16 @@ import {
   MethodDescriptorProto,
   PluginBase,
   ServiceDescriptorProto,
+  SymbolTable,
+  TypeScriptImports,
   TypescriptFile,
 } from "@protobuf-ts/plugin-framework";
+
+import { ServiceClientGeneratorGeneric } from "@protobuf-ts/plugin/build/code-gen/service-client-generator-generic";
+import { CommentGenerator } from "@protobuf-ts/plugin/build/code-gen/comment-generator";
+import { createLocalTypeName } from "@protobuf-ts/plugin/build/code-gen/local-type-name";
+import { Interpreter } from "@protobuf-ts/plugin/build/interpreter";
+import { makeInternalOptions } from "@protobuf-ts/plugin/build/our-options";
 
 export class Plugin extends PluginBase {
   // https://github.dev/timostamm/protobuf-ts
@@ -50,7 +58,10 @@ export class Plugin extends PluginBase {
           ts.createVariableDeclaration(
             ts.createIdentifier("model"),
             undefined,
-            ts.createObjectLiteral([ts.createPropertyAssignment("services", this.services(request, file, printer))])
+            ts.createObjectLiteral([
+              ts.createPropertyAssignment("services", this.services(request, file, printer)),
+              ts.createPropertyAssignment("extraLibs", this.extraLibs(registry, printer)),
+            ])
           ),
         ],
         ts.NodeFlags.Const
@@ -192,5 +203,50 @@ export class Plugin extends PluginBase {
       ts.createExpressionStatement(ts.createCall(ts.createIdentifier("(window as any).GOUT"), undefined, [ts.createIdentifier("response")])),
       ts.createReturn(ts.createIdentifier("response")),
     ]);
+  }
+
+  private extraLibs(registry: DescriptorRegistry, printer: ts.Printer): ts.ArrayLiteralExpression {
+    const symbols = new SymbolTable(),
+      imports = new TypeScriptImports(symbols),
+      comments = new CommentGenerator(registry),
+      options = makeInternalOptions(),
+      interpreter = new Interpreter(registry, options);
+
+    const genClientGeneric = new ServiceClientGeneratorGeneric(symbols, registry, imports, comments, interpreter, options);
+    const extraLibs = [];
+
+    for (let fileDescriptor of registry.allFiles()) {
+      const file = new TypescriptFile(fileDescriptor.name + ".proto.ts");
+      const statements: ts.InterfaceDeclaration[] = [];
+
+      registry.visitTypes(fileDescriptor, (descriptor) => {
+        // we are not interested in synthetic types like map entry messages
+        if (registry.isSyntheticElement(descriptor)) return;
+
+        // register all symbols, regardless whether they are going to be used - we want stable behaviour
+        symbols.register(createLocalTypeName(descriptor, registry), descriptor, file);
+        if (ServiceDescriptorProto.is(descriptor)) {
+          genClientGeneric.registerSymbols(file, descriptor);
+        }
+      });
+
+      registry.visitTypes(fileDescriptor, (descriptor) => {
+        if (ServiceDescriptorProto.is(descriptor) && descriptor.name) {
+          statements.push(genClientGeneric.generateInterface(file, descriptor));
+        }
+      });
+
+      let sourceFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+      sourceFile = ts.updateSourceFileNode(sourceFile, statements);
+
+      extraLibs.push(
+        ts.createObjectLiteral([
+          ts.createPropertyAssignment("filePath", ts.createStringLiteral(fileDescriptor.name + ".proto.ts")),
+          ts.createPropertyAssignment("content", ts.createStringLiteral(printer.printFile(sourceFile))),
+        ])
+      );
+    }
+
+    return ts.createArrayLiteral(extraLibs);
   }
 }
