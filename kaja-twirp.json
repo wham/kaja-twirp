@@ -5,6 +5,11 @@
   "Services": []
  },
  {
+  "Path": "lib/message.proto",
+  "Package": "lib",
+  "Services": []
+ },
+ {
   "Path": "quirks.proto",
   "Package": "quirks.v1",
   "Services": [
