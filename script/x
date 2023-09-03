@@ -3,5 +3,5 @@ set -e
 cd "$(dirname "$0")/.."
 
 (cd ./plugin && npm i && npm run build)
-protoc --proto_path=./proto --plugin=protoc-gen-kaja-twirp=./plugin/bin/protoc-gen-kaja-twirp --kaja-twirp_out=./ui/src -Iproto/ $(find proto -iname "*.proto")
+npx protoc --proto_path=./proto --plugin=protoc-gen-kaja-twirp=./plugin/bin/protoc-gen-kaja-twirp --kaja-twirp_out=./ui/src --ts_out ./ui/src -Iproto/ $(find proto -iname "*.proto")
 (cd ./ui && npm i && npm start)
