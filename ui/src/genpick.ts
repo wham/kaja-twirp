@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { Model, Service } from "./Model";
+import { Method, Model, Service } from "./Model";
 import { model } from "./gen/kt";
 
 export function loadModel(): Model {
@@ -18,9 +18,33 @@ export function loadModel(): Model {
     );
 
     interfaces.forEach((interfaceDeclaration) => {
+      const name = interfaceDeclaration.name.text;
+      if (!name.endsWith("Client")) {
+        return;
+      }
+
+      const methods: Method[] = [];
+
+      interfaceDeclaration.members.forEach((member) => {
+        if (!ts.isMethodSignature(member)) {
+          return;
+        }
+
+        if (!member.name) {
+          return;
+        }
+
+        const method: Method = {
+          name: member.name.getText(sourceFile),
+          code: "",
+        };
+
+        methods.push(method);
+      });
+
       services.push({
         name: interfaceDeclaration.name.text,
-        methods: [],
+        methods,
         proxy: "",
         extraLib: "",
       });
