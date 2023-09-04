@@ -4,7 +4,7 @@ import { Sidebar } from "./Sidebar";
 import { Method, Model, Service } from "./Model";
 import { Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
-import { model as xxx } from "./kaja-twirp";
+import { model as xxx } from "./gen/kaja-twirp";
 
 function App() {
   console.log("App");
