@@ -5,10 +5,11 @@ import { Method, Model, Service } from "./Model";
 import { Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
 import { model as xxx } from "./gen/kaja-twirp";
+import { loadModel } from "./genpick";
 
 function App() {
   console.log("App");
-  const [model] = useState<Model>(xxx);
+  const [model] = useState<Model>(loadModel());
   const [tabs, setTabs] = useState<Array<TabContent>>([]);
   const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
   const [selectedTabId, setSelectedTabId] = useState<number>(0);
