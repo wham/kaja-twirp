@@ -1,6 +1,6 @@
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import React, { useState } from "react";
-import { SearchServiceClient } from "./search-service.client";
+import { SearchServiceClient } from "./gen/search-service.client";
 import { Editor, Monaco } from "@monaco-editor/react";
 import { Box, Button, TabNav } from "@primer/react";
 import Console from "./Console";
