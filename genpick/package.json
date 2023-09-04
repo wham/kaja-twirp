@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "npm run build && bin/genpick ../ui/src/gen"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.5.9",
     "typescript": "^5.2.2"
   }
 }
