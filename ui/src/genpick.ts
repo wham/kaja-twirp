@@ -71,7 +71,6 @@ export function loadModel(): Model {
           )
         );
         funcs.push(func);
-        methods.push(method);
       });
 
       services.push({
