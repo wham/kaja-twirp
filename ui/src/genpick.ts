@@ -18,9 +18,15 @@ export function loadModel(): Model {
     );
 
     interfaces.forEach((interfaceDeclaration) => {
-      const name = interfaceDeclaration.name.text;
+      let name = interfaceDeclaration.name.text;
       if (!name.endsWith("Client")) {
         return;
+      }
+
+      name = name.substring(0, name.length - 6);
+
+      if (name.startsWith("I")) {
+        name = name.substring(1);
       }
 
       const methods: Method[] = [];
@@ -36,7 +42,7 @@ export function loadModel(): Model {
 
         const method: Method = {
           name: member.name.getText(sourceFile),
-          code: "",
+          code: methodCode(member.name.getText(sourceFile), name),
         };
 
         methods.push(method);
@@ -55,4 +61,32 @@ export function loadModel(): Model {
     services,
     extraLibs: [],
   };
+}
+
+function methodCode(method: string, service: string): string {
+  const statements = [
+    ts.factory.createExpressionStatement(
+      ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier(service),
+          ts.factory.createIdentifier(method)
+        ),
+        undefined,
+        []
+      )
+    ),
+  ];
+
+  let sourceFile = ts.createSourceFile(
+    "new-file.ts",
+    "",
+    ts.ScriptTarget.Latest,
+    /*setParentNodes*/ false,
+    ts.ScriptKind.TS
+  );
+
+  sourceFile = ts.factory.updateSourceFile(sourceFile, statements);
+  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+
+  return printer.printFile(sourceFile);
 }
