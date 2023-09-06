@@ -1,9 +1,10 @@
-import ts from "typescript";
-import { Method, Model, Service } from "./Model";
+import ts, { ExternalModuleReference } from "typescript";
+import { ExtraLib, Method, Model, Service } from "./Model";
 import { model } from "./gen/kt";
 
 export function loadModel(): Model {
   const services: Service[] = [];
+  const extraLibs: ExtraLib[] = [];
 
   model.gens.forEach((gen) => {
     const sourceFile = ts.createSourceFile(
@@ -30,6 +31,7 @@ export function loadModel(): Model {
       }
 
       const methods: Method[] = [];
+      const funcs: ts.PropertyAssignment[] = [];
 
       interfaceDeclaration.members.forEach((member) => {
         if (!ts.isMethodSignature(member)) {
@@ -46,6 +48,30 @@ export function loadModel(): Model {
         };
 
         methods.push(method);
+
+        const func = ts.factory.createPropertyAssignment(
+          member.name.getText(sourceFile),
+          ts.factory.createArrowFunction(
+            [ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword)],
+            undefined,
+            [
+              /*ts.createParameter(
+                undefined,
+                undefined,
+                undefined,
+                "input",
+                undefined
+                ts.createTypeReferenceNode(ts.createIdentifier(registry.resolveTypeName(mt.typeName).name!), undefined)
+              ),*/
+            ],
+            undefined,
+            ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+            ts.factory.createBlock([])
+            /*this.proxyBody(protoService, protoMethod)*/
+          )
+        );
+        funcs.push(func);
+        methods.push(method);
       });
 
       services.push({
@@ -54,12 +80,43 @@ export function loadModel(): Model {
         proxy: "",
         extraLib: "",
       });
+
+      const proxy = ts.factory.createVariableStatement(
+        undefined,
+        ts.factory.createVariableDeclarationList(
+          [
+            ts.factory.createVariableDeclaration(
+              ts.factory.createIdentifier(name),
+              undefined,
+              undefined,
+              ts.factory.createObjectLiteralExpression(funcs)
+            ),
+          ],
+          ts.NodeFlags.Const
+        )
+      );
+
+      let tFile = ts.createSourceFile(
+        "new-file.ts",
+        "",
+        ts.ScriptTarget.Latest,
+        /*setParentNodes*/ false,
+        ts.ScriptKind.TS
+      );
+
+      tFile = ts.factory.updateSourceFile(tFile, [proxy]);
+      const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+
+      extraLibs.push({
+        filePath: name + ".ts",
+        content: printer.printFile(tFile),
+      });
     });
   });
 
   return {
     services,
-    extraLibs: [],
+    extraLibs,
   };
 }
 
