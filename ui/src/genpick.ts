@@ -1,6 +1,8 @@
 import ts, { ExternalModuleReference } from "typescript";
 import { ExtraLib, Method, Model, Service } from "./Model";
 import { model } from "./gen/kt";
+import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
+import { QuirksClient } from "./gen/quirks.client";
 
 export function loadModel(): Model {
   const services: Service[] = [];
@@ -32,6 +34,7 @@ export function loadModel(): Model {
 
       const methods: Method[] = [];
       const funcs: ts.PropertyAssignment[] = [];
+      const trigger = { [name]: async () => {} };
 
       interfaceDeclaration.members.forEach((member) => {
         if (!ts.isMethodSignature(member)) {
@@ -71,12 +74,35 @@ export function loadModel(): Model {
           )
         );
         funcs.push(func);
+
+        trigger[member.name.getText(sourceFile)] = async () => {
+          let transport = new TwirpFetchTransport({
+            baseUrl: "http://localhost:3000/twirp",
+          });
+
+          /*let client = new (Function.prototype.bind.apply(
+            eval(name + "Client"),
+            [null, ...[transport]]
+          ))();*/
+
+          let client = new QuirksClient(transport);
+
+          let { response } = await (client as any)[
+            member.name.getText(sourceFile)
+          ]({
+            query: "",
+            pageNumber: 0,
+            resultPerPage: 0,
+          });
+
+          (window as any)["GOUT"](JSON.stringify(response));
+        };
       });
 
       services.push({
-        name: interfaceDeclaration.name.text,
+        name,
         methods,
-        proxy: "",
+        proxy: trigger,
         extraLib: "",
       });
 
