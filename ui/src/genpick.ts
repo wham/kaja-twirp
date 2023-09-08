@@ -52,20 +52,31 @@ export function loadModel(): Model {
 
         methods.push(method);
 
+        let input: string;
+
+        member.parameters.forEach((parameter) => {
+          if (parameter.name.getText(sourceFile) == "input" && parameter.type) {
+            input = parameter.type.getText(sourceFile);
+          }
+        });
+
         const func = ts.factory.createPropertyAssignment(
           member.name.getText(sourceFile),
           ts.factory.createArrowFunction(
             [ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword)],
             undefined,
             [
-              /*ts.createParameter(
+              ts.factory.createParameterDeclaration(
                 undefined,
                 undefined,
                 undefined,
                 "input",
-                undefined
-                ts.createTypeReferenceNode(ts.createIdentifier(registry.resolveTypeName(mt.typeName).name!), undefined)
-              ),*/
+                undefined,
+                ts.factory.createTypeReferenceNode(
+                  ts.factory.createIdentifier(input!),
+                  undefined
+                )
+              ),
             ],
             undefined,
             ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
