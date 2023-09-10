@@ -114,7 +114,7 @@ export function loadModel(): Model {
       });
 
       const proxy = ts.factory.createVariableStatement(
-        undefined,
+        [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
         ts.factory.createVariableDeclarationList(
           [
             ts.factory.createVariableDeclaration(
@@ -136,7 +136,7 @@ export function loadModel(): Model {
         ts.ScriptKind.TS
       );
 
-      tFile = ts.factory.updateSourceFile(tFile, [proxy]);
+      tFile = ts.factory.updateSourceFile(tFile, [proxy, ...interfaces]);
       const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
       extraLibs.push({
