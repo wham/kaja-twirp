@@ -34,7 +34,7 @@ export function loadModel(): Model {
 
       const methods: Method[] = [];
       const funcs: ts.PropertyAssignment[] = [];
-      const trigger = { [name]: async () => {} };
+      const trigger = { [name]: async (input: any) => {} };
 
       interfaceDeclaration.members.forEach((member) => {
         if (!ts.isMethodSignature(member)) {
@@ -86,7 +86,7 @@ export function loadModel(): Model {
         );
         funcs.push(func);
 
-        trigger[member.name.getText(sourceFile)] = async () => {
+        trigger[member.name.getText(sourceFile)] = async (input: any) => {
           let transport = new TwirpFetchTransport({
             baseUrl: "http://localhost:3000/twirp",
           });
@@ -100,11 +100,7 @@ export function loadModel(): Model {
 
           let { response } = await (client as any)[
             member.name.getText(sourceFile)
-          ]({
-            query: "",
-            pageNumber: 0,
-            resultPerPage: 0,
-          });
+          ](input);
 
           (window as any)["GOUT"](JSON.stringify(response));
         };
