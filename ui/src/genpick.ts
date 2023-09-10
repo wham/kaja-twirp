@@ -20,9 +20,20 @@ export function loadModel(): Model {
         ts.isInterfaceDeclaration(statement)
     );
 
+    const ifcs: ts.InterfaceDeclaration[] = [];
+
     interfaces.forEach((interfaceDeclaration) => {
       let name = interfaceDeclaration.name.text;
       if (!name.endsWith("Client")) {
+        let i = ts.factory.createInterfaceDeclaration(
+          undefined,
+          undefined,
+          interfaceDeclaration.name,
+          interfaceDeclaration.typeParameters,
+          interfaceDeclaration.heritageClauses,
+          interfaceDeclaration.members
+        );
+        ifcs.push(i);
         return;
       }
 
@@ -136,7 +147,7 @@ export function loadModel(): Model {
         ts.ScriptKind.TS
       );
 
-      tFile = ts.factory.updateSourceFile(tFile, [proxy, ...interfaces]);
+      tFile = ts.factory.updateSourceFile(tFile, [proxy, ...ifcs]);
       const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
       extraLibs.push({
