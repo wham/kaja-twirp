@@ -125,7 +125,7 @@ export function loadModel(): Model {
       });
 
       const proxy = ts.factory.createVariableStatement(
-        [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
+        undefined,
         ts.factory.createVariableDeclarationList(
           [
             ts.factory.createVariableDeclaration(
@@ -147,7 +147,7 @@ export function loadModel(): Model {
         ts.ScriptKind.TS
       );
 
-      tFile = ts.factory.updateSourceFile(tFile, [proxy, ...ifcs]);
+      tFile = ts.factory.updateSourceFile(tFile, [proxy]);
       const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
       extraLibs.push({
@@ -155,6 +155,24 @@ export function loadModel(): Model {
         content: printer.printFile(tFile),
       });
     });
+
+    let tFile = ts.createSourceFile(
+      "new-file.ts",
+      "",
+      ts.ScriptTarget.Latest,
+      /*setParentNodes*/ false,
+      ts.ScriptKind.TS
+    );
+
+    tFile = ts.factory.updateSourceFile(tFile, ifcs);
+    const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+
+    if (ifcs.length > 0) {
+      extraLibs.push({
+        filePath: gen.path + ".ts",
+        content: printer.printFile(tFile),
+      });
+    }
   });
 
   return {
@@ -172,7 +190,7 @@ function methodCode(method: string, service: string): string {
           ts.factory.createIdentifier(method)
         ),
         undefined,
-        []
+        [ts.factory.createObjectLiteralExpression([])]
       )
     ),
   ];
