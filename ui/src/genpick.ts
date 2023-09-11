@@ -3,6 +3,7 @@ import { ExtraLib, Method, Model, Service } from "./Model";
 import { model } from "./gen/kt";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { QuirksClient } from "./gen/quirks.client";
+import { defaultParam } from "./defaultparam";
 
 export function loadModel(): Model {
   const services: Service[] = [];
@@ -56,20 +57,22 @@ export function loadModel(): Model {
           return;
         }
 
-        const method: Method = {
-          name: member.name.getText(sourceFile),
-          code: methodCode(member.name.getText(sourceFile), name),
-        };
-
-        methods.push(method);
-
+        let ip: ts.ParameterDeclaration;
         let input: string;
 
         member.parameters.forEach((parameter) => {
           if (parameter.name.getText(sourceFile) == "input" && parameter.type) {
+            ip = parameter;
             input = parameter.type.getText(sourceFile);
           }
         });
+
+        const method: Method = {
+          name: member.name.getText(sourceFile),
+          code: methodCode(member.name.getText(sourceFile), name, ip!),
+        };
+
+        methods.push(method);
 
         const func = ts.factory.createPropertyAssignment(
           member.name.getText(sourceFile),
@@ -181,7 +184,11 @@ export function loadModel(): Model {
   };
 }
 
-function methodCode(method: string, service: string): string {
+function methodCode(
+  method: string,
+  service: string,
+  ip: ts.ParameterDeclaration
+): string {
   const statements = [
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
@@ -190,7 +197,7 @@ function methodCode(method: string, service: string): string {
           ts.factory.createIdentifier(method)
         ),
         undefined,
-        [ts.factory.createObjectLiteralExpression([])]
+        [defaultParam(ip)]
       )
     ),
   ];
