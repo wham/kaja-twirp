@@ -10,6 +10,7 @@ import { loadModel } from "./genpick";
 function App() {
   console.log("App");
   const [model] = useState<Model>(loadModel());
+  console.log(model);
   const [tabs, setTabs] = useState<Array<TabContent>>([]);
   const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
   const [selectedTabId, setSelectedTabId] = useState<number>(0);
