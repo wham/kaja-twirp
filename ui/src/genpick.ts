@@ -189,19 +189,6 @@ function methodCode(
   service: string,
   ip: ts.ParameterDeclaration
 ): string {
-  const statements = [
-    ts.factory.createExpressionStatement(
-      ts.factory.createCallExpression(
-        ts.factory.createPropertyAccessExpression(
-          ts.factory.createIdentifier(service),
-          ts.factory.createIdentifier(method)
-        ),
-        undefined,
-        [defaultParam(ip)]
-      )
-    ),
-  ];
-
   let sourceFile = ts.createSourceFile(
     "new-file.ts",
     "",
@@ -210,6 +197,18 @@ function methodCode(
     ts.ScriptKind.TS
   );
 
+  const statements = [
+    ts.factory.createExpressionStatement(
+      ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier(service),
+          ts.factory.createIdentifier(method)
+        ),
+        undefined,
+        [defaultParam(ip, sourceFile)]
+      )
+    ),
+  ];
   sourceFile = ts.factory.updateSourceFile(sourceFile, statements);
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
