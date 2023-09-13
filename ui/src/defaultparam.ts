@@ -8,7 +8,7 @@ export function defaultParam(
 
   const type = ip.type;
 
-  if (!type) {
+  if (!type || !ts.isInterfaceDeclaration(type)) {
     return ts.factory.createObjectLiteralExpression([]);
   }
 
@@ -20,5 +20,11 @@ export function defaultParam(
     console.log(name, child.getText(sourceFile), child.kind);
   });
 
+  return ts.factory.createObjectLiteralExpression([]);
+}
+
+export function interfaceDefaultImplementation(
+  interfaceDeclaration: ts.InterfaceDeclaration
+): ts.ObjectLiteralExpression {
   return ts.factory.createObjectLiteralExpression([]);
 }

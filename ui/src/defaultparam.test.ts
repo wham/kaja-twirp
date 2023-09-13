@@ -1,4 +1,6 @@
+import exp from "constants";
 import ts from "typescript";
+import { defaultParam, interfaceDefaultImplementation } from "./defaultParam";
 
 const sourceFileContent = `export interface Result {
   /**
@@ -19,16 +21,37 @@ const sourceFileContent = `export interface Result {
   isAd: boolean;
 }`;
 
-test("defaultParam", () => {
+const expectedResult = `return {};
+`;
+
+test("interfaceDefaultImplementation", () => {
   const sourceFile = ts.createSourceFile(
     "test.ts",
     sourceFileContent,
     ts.ScriptTarget.Latest
   );
 
-  const interfaces = sourceFile.statements.filter((statement) => {
-    return ts.isInterfaceDeclaration(statement);
+  const interfaces: ts.InterfaceDeclaration[] = [];
+
+  sourceFile.statements.forEach((statement) => {
+    if (ts.isInterfaceDeclaration(statement)) {
+      interfaces.push(statement);
+    }
   });
 
-  expect(1).toBe(interfaces);
+  expect(interfaces.length).toBe(1);
+
+  const interfaceDeclaration = interfaces[0];
+
+  let outputFile = ts.createSourceFile("output.ts", "", ts.ScriptTarget.Latest);
+  const o = interfaceDefaultImplementation(interfaceDeclaration);
+
+  outputFile = ts.factory.updateSourceFile(outputFile, [
+    ts.factory.createReturnStatement(o),
+  ]);
+
+  const printer = ts.createPrinter();
+  const actualResult = printer.printFile(outputFile);
+
+  expect(actualResult).toBe(expectedResult);
 });
