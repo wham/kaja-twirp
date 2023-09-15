@@ -1,6 +1,6 @@
 import exp from "constants";
 import ts from "typescript";
-import { defaultParam, interfaceDefaultImplementation } from "./defaultParam";
+import { defaultParam, interfaceDefaultImplementation } from "./defaultParams";
 
 const sourceFileContent = `export interface Result {
   /**
