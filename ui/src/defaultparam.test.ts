@@ -21,7 +21,7 @@ const sourceFileContent = `export interface Result {
   isAd: boolean;
 }`;
 
-const expectedResult = `return {};
+const expectedResult = `return { url: null, title: null, snippets: null, isAd: null };
 `;
 
 test("interfaceDefaultImplementation", () => {

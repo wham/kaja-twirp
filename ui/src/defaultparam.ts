@@ -40,5 +40,5 @@ export function interfaceDefaultImplementation(
     }
   });
 
-  return ts.factory.createObjectLiteralExpression([]);
+  return ts.factory.createObjectLiteralExpression(properties);
 }
