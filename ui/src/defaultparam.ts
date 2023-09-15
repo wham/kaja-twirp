@@ -24,7 +24,21 @@ export function defaultParam(
 }
 
 export function interfaceDefaultImplementation(
-  interfaceDeclaration: ts.InterfaceDeclaration
+  interfaceDeclaration: ts.InterfaceDeclaration,
+  sourceFile: ts.SourceFile
 ): ts.ObjectLiteralExpression {
+  const properties: ts.PropertyAssignment[] = [];
+
+  interfaceDeclaration.members.forEach((member) => {
+    if (member.kind === ts.SyntaxKind.PropertySignature && member.name) {
+      properties.push(
+        ts.factory.createPropertyAssignment(
+          member.name.getText(sourceFile),
+          ts.factory.createNull()
+        )
+      );
+    }
+  });
+
   return ts.factory.createObjectLiteralExpression([]);
 }
