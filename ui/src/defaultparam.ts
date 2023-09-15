@@ -30,15 +30,27 @@ export function interfaceDefaultImplementation(
   const properties: ts.PropertyAssignment[] = [];
 
   interfaceDeclaration.members.forEach((member) => {
-    if (member.kind === ts.SyntaxKind.PropertySignature && member.name) {
+    if (ts.isPropertySignature(member) && member.name && member.type) {
       properties.push(
         ts.factory.createPropertyAssignment(
           member.name.getText(sourceFile),
-          ts.factory.createNull()
+          defaultValue(member.type)
         )
       );
     }
   });
 
   return ts.factory.createObjectLiteralExpression(properties);
+}
+
+function defaultValue(type: ts.TypeNode): ts.Expression {
+  if (type.kind === ts.SyntaxKind.StringKeyword) {
+    return ts.factory.createStringLiteral("");
+  }
+
+  if (type.kind === ts.SyntaxKind.BooleanKeyword) {
+    return ts.factory.createTrue();
+  }
+
+  return ts.factory.createNull();
 }
