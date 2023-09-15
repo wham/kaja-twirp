@@ -8,6 +8,21 @@ import { defaultParam } from "./defaultParams";
 export function loadModel(): Model {
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
+  const allInterfaces: { [key: string]: ts.InterfaceDeclaration } = {};
+
+  model.gens.forEach((gen) => {
+    const sourceFile = ts.createSourceFile(
+      gen.path,
+      gen.content,
+      ts.ScriptTarget.Latest
+    );
+
+    sourceFile.statements.forEach((statement) => {
+      if (ts.isInterfaceDeclaration(statement)) {
+        allInterfaces[statement.name.text] = statement;
+      }
+    });
+  });
 
   model.gens.forEach((gen) => {
     const sourceFile = ts.createSourceFile(
@@ -73,7 +88,8 @@ export function loadModel(): Model {
             member.name.getText(sourceFile),
             name,
             ip!,
-            sourceFile
+            sourceFile,
+            allInterfaces
           ),
         };
 
@@ -193,7 +209,8 @@ function methodCode(
   method: string,
   service: string,
   ip: ts.ParameterDeclaration,
-  sourceFile: ts.SourceFile
+  sourceFile: ts.SourceFile,
+  allInterfaces: { [key: string]: ts.InterfaceDeclaration }
 ): string {
   let outputFile = ts.createSourceFile(
     "new-file.ts",
@@ -211,7 +228,7 @@ function methodCode(
           ts.factory.createIdentifier(method)
         ),
         undefined,
-        [defaultParam(ip, sourceFile)]
+        [defaultParam(ip, sourceFile, allInterfaces)]
       )
     ),
   ];

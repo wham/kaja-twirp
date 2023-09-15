@@ -2,17 +2,21 @@ import ts from "typescript";
 
 export function defaultParam(
   ip: ts.ParameterDeclaration,
-  sourceFile: ts.SourceFile
+  sourceFile: ts.SourceFile,
+  allInterfaces: { [key: string]: ts.InterfaceDeclaration }
 ): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
   const type = ip.type;
 
-  if (!type || !ts.isInterfaceDeclaration(type)) {
+  if (!type || !allInterfaces[type.getText(sourceFile)]) {
     return ts.factory.createObjectLiteralExpression([]);
   }
 
-  return interfaceDefaultImplementation(type, sourceFile);
+  return interfaceDefaultImplementation(
+    allInterfaces[type.getText(sourceFile)],
+    sourceFile
+  );
 }
 
 export function interfaceDefaultImplementation(
