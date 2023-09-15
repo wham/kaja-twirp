@@ -3,7 +3,7 @@ import { ExtraLib, Method, Model, Service } from "./Model";
 import { model } from "./gen/kt";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { QuirksClient } from "./gen/quirks.client";
-import { defaultParam } from "./defaultParam";
+import { defaultParam } from "./defaultParams";
 
 export function loadModel(): Model {
   const services: Service[] = [];
