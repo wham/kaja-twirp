@@ -69,7 +69,12 @@ export function loadModel(): Model {
 
         const method: Method = {
           name: member.name.getText(sourceFile),
-          code: methodCode(member.name.getText(sourceFile), name, ip!),
+          code: methodCode(
+            member.name.getText(sourceFile),
+            name,
+            ip!,
+            sourceFile
+          ),
         };
 
         methods.push(method);
@@ -187,9 +192,10 @@ export function loadModel(): Model {
 function methodCode(
   method: string,
   service: string,
-  ip: ts.ParameterDeclaration
+  ip: ts.ParameterDeclaration,
+  sourceFile: ts.SourceFile
 ): string {
-  let sourceFile = ts.createSourceFile(
+  let outputFile = ts.createSourceFile(
     "new-file.ts",
     "",
     ts.ScriptTarget.Latest,
@@ -209,8 +215,8 @@ function methodCode(
       )
     ),
   ];
-  sourceFile = ts.factory.updateSourceFile(sourceFile, statements);
+  outputFile = ts.factory.updateSourceFile(outputFile, statements);
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
-  return printer.printFile(sourceFile);
+  return printer.printFile(outputFile);
 }
