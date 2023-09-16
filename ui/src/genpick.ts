@@ -5,6 +5,7 @@ import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { QuirksClient } from "./gen/quirks.client";
 import { defaultParam } from "./defaultParams";
 import { SearchServiceClient } from "./gen/search-service.client";
+import { getClient } from "./gen/getClient";
 
 export function loadModel(): Model {
   const services: Service[] = [];
@@ -134,7 +135,7 @@ export function loadModel(): Model {
             [null, ...[transport]]
           ))();*/
 
-          let client = new SearchServiceClient(transport);
+          let client = getClient(name + "Client", transport);
 
           let { response } = await (client as any)[
             member.name.getText(sourceFile)
