@@ -8,7 +8,9 @@ import { defaultParam } from "./defaultParams";
 export function loadModel(): Model {
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
-  const allInterfaces: { [key: string]: ts.InterfaceDeclaration } = {};
+  const allInterfaces: {
+    [key: string]: [ts.InterfaceDeclaration, ts.SourceFile];
+  } = {};
 
   model.gens.forEach((gen) => {
     const sourceFile = ts.createSourceFile(
@@ -19,7 +21,7 @@ export function loadModel(): Model {
 
     sourceFile.statements.forEach((statement) => {
       if (ts.isInterfaceDeclaration(statement)) {
-        allInterfaces[statement.name.text] = statement;
+        allInterfaces[statement.name.text] = [statement, sourceFile];
       }
     });
   });
@@ -210,7 +212,7 @@ function methodCode(
   service: string,
   ip: ts.ParameterDeclaration,
   sourceFile: ts.SourceFile,
-  allInterfaces: { [key: string]: ts.InterfaceDeclaration }
+  allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] }
 ): string {
   let outputFile = ts.createSourceFile(
     "new-file.ts",
@@ -220,6 +222,8 @@ function methodCode(
     ts.ScriptKind.TS
   );
 
+  const dp = defaultParam(ip, sourceFile, allInterfaces);
+
   const statements = [
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
@@ -228,12 +232,13 @@ function methodCode(
           ts.factory.createIdentifier(method)
         ),
         undefined,
-        [defaultParam(ip, sourceFile, allInterfaces)]
+        [dp]
       )
     ),
   ];
   outputFile = ts.factory.updateSourceFile(outputFile, statements);
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+  const out = printer.printFile(outputFile);
 
-  return printer.printFile(outputFile);
+  return out;
 }

@@ -3,33 +3,32 @@ import ts from "typescript";
 export function defaultParam(
   ip: ts.ParameterDeclaration,
   sourceFile: ts.SourceFile,
-  allInterfaces: { [key: string]: ts.InterfaceDeclaration }
+  allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] }
 ): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
   const type = ip.type;
+  const typeName = type?.getText(sourceFile);
 
-  if (!type || !allInterfaces[type.getText(sourceFile)]) {
+  if (!typeName || !allInterfaces[typeName]) {
     return ts.factory.createObjectLiteralExpression([]);
   }
 
-  return interfaceDefaultImplementation(
-    allInterfaces[type.getText(sourceFile)],
-    sourceFile
-  );
+  const interfaceDeclaration = allInterfaces[typeName];
+
+  return interfaceDefaultImplementation(interfaceDeclaration);
 }
 
 export function interfaceDefaultImplementation(
-  interfaceDeclaration: ts.InterfaceDeclaration,
-  sourceFile: ts.SourceFile
+  interfaceDeclaration: [ts.InterfaceDeclaration, ts.SourceFile]
 ): ts.ObjectLiteralExpression {
   const properties: ts.PropertyAssignment[] = [];
 
-  interfaceDeclaration.members.forEach((member) => {
+  interfaceDeclaration[0].members.forEach((member) => {
     if (ts.isPropertySignature(member) && member.name && member.type) {
       properties.push(
         ts.factory.createPropertyAssignment(
-          member.name.getText(sourceFile),
+          member.name.getText(interfaceDeclaration[1]),
           defaultValue(member.type)
         )
       );

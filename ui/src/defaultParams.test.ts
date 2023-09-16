@@ -44,7 +44,7 @@ test("interfaceDefaultImplementation", () => {
   const interfaceDeclaration = interfaces[0];
 
   let outputFile = ts.createSourceFile("output.ts", "", ts.ScriptTarget.Latest);
-  const o = interfaceDefaultImplementation(interfaceDeclaration, sourceFile);
+  const o = interfaceDefaultImplementation([interfaceDeclaration, sourceFile]);
 
   outputFile = ts.factory.updateSourceFile(outputFile, [
     ts.factory.createReturnStatement(o),
