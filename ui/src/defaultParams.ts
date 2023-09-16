@@ -47,5 +47,9 @@ function defaultValue(type: ts.TypeNode): ts.Expression {
     return ts.factory.createTrue();
   }
 
+  if (type.kind === ts.SyntaxKind.NumberKeyword) {
+    return ts.factory.createNumericLiteral("0");
+  }
+
   return ts.factory.createNull();
 }
