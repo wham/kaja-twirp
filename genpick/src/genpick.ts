@@ -12,6 +12,7 @@ export function main() {
   const files = fs.readdirSync(directoryPath);
   const gens: ts.ObjectLiteralExpression[] = [];
   const imps: ts.ImportDeclaration[] = [];
+  const cases: ts.CaseClause[] = [];
 
   files.forEach((file) => {
     if (file === "kt.ts") return;
@@ -51,6 +52,14 @@ export function main() {
       );
 
       imps.push(importStatement);
+
+      cases.push(
+        ts.factory.createCaseClause(ts.factory.createStringLiteral(name), [
+          ts.factory.createReturnStatement(
+            ts.factory.createNewExpression(ts.factory.createIdentifier(name), undefined, [ts.factory.createIdentifier("transport")])
+          ),
+        ])
+      );
     });
   });
 
@@ -110,21 +119,7 @@ export function main() {
       ts.factory.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword),
     ]),
     ts.factory.createBlock([
-      ts.factory.createSwitchStatement(
-        ts.factory.createIdentifier("name"),
-        ts.factory.createCaseBlock([
-          ts.factory.createCaseClause(ts.factory.createStringLiteral("SearchServiceClient"), [
-            ts.factory.createReturnStatement(
-              ts.factory.createNewExpression(ts.factory.createIdentifier("SearchServiceClient"), undefined, [ts.factory.createIdentifier("transport")])
-            ),
-          ]),
-          ts.factory.createCaseClause(ts.factory.createStringLiteral("QuirksClient"), [
-            ts.factory.createReturnStatement(
-              ts.factory.createNewExpression(ts.factory.createIdentifier("QuirksClient"), undefined, [ts.factory.createIdentifier("transport")])
-            ),
-          ]),
-        ])
-      ),
+      ts.factory.createSwitchStatement(ts.factory.createIdentifier("name"), ts.factory.createCaseBlock(cases)),
       ts.factory.createReturnStatement(ts.factory.createIdentifier("undefined")),
     ])
   );
