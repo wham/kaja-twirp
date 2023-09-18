@@ -1,11 +1,10 @@
 import ts, { ExternalModuleReference } from "typescript";
 import { ExtraLib, Method, Model, Service } from "./Model";
-import { model } from "./gen/kt";
+import { model, getClient } from "./gen/kt";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { QuirksClient } from "./gen/quirks.client";
 import { defaultParam } from "./defaultParams";
 import { SearchServiceClient } from "./gen/search-service.client";
-import { getClient } from "./gen/getClient";
 
 export function loadModel(): Model {
   const services: Service[] = [];
