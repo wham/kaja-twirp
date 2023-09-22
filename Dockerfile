@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --from=builder /workspace/genpick/ ./genpick
 COPY --from=builder /workspace/ui/ ./ui
 COPY --from=builder /workspace/script/ ./script
-COPY --from=builder /workspace/proto/ ./proto
+# COPY --from=builder /workspace/proto/ ./proto
 
 EXPOSE 3000
 
