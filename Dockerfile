@@ -4,19 +4,19 @@ FROM node:alpine as builder
 WORKDIR /workspace
 COPY . .
 
-WORKDIR /workspace/plugin
+WORKDIR /workspace/genpick
 RUN npm ci
 RUN npm run build
 
 WORKDIR /workspace/ui
 RUN npm ci
-RUN npm run build
 
 FROM node:alpine AS runner
 WORKDIR /app
-COPY --from=builder /workspace/plugin/build/ ./plugin
-COPY --from=builder /workspace/ui/build/ ./ui
+COPY --from=builder /workspace/genpick/ ./genpick
+COPY --from=builder /workspace/ui/ ./ui
+COPY --from=builder /workspace/script/ ./script
 
 EXPOSE 3000
 
-CMD [ "npx", "serve", "-s", "/app/ui" ]
+CMD [ "./script/run" ]
