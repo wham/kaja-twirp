@@ -11,7 +11,9 @@ RUN npm run build
 WORKDIR /workspace/ui
 RUN npm ci
 
-FROM node:alpine AS runner
+FROM golang:alpine AS runner
+RUN apk add --update nodejs npm
+RUN apk update && apk add --no-cache make protobuf-dev
 WORKDIR /app
 COPY --from=builder /workspace/genpick/ ./genpick
 COPY --from=builder /workspace/ui/ ./ui
