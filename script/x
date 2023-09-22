@@ -2,6 +2,7 @@
 set -e
 cd "$(dirname "$0")/.."
 
-(cd ./plugin && npm i && npm run build)
-npx protoc --proto_path=./proto --plugin=protoc-gen-kaja-twirp=./plugin/bin/protoc-gen-kaja-twirp --kaja-twirp_out=./ui/src/gen --ts_out ./ui/src/gen --ts_opt long_type_string -Iproto/ $(find proto -iname "*.proto")
+PROTO_PATH="/Users/wham/github/billing-platform"
+npx protoc --ts_out ./ui/src/gen --ts_opt long_type_string -I/Users/wham/github/billing-platform/ $(find /Users/wham/github/billing-platform -iname "*.proto")
+(cd ./genpick && npm i && npm start)
 (cd ./ui && npm i && npm start)
