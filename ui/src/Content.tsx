@@ -1,6 +1,4 @@
-import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import React, { useState } from "react";
-import { SearchServiceClient } from "./gen/search-service.client";
 import { Editor, Monaco } from "@monaco-editor/react";
 import { Box, Button, TabNav } from "@primer/react";
 import Console from "./Console";
@@ -19,44 +17,6 @@ type ContentProps = {
   onTabSelect: (id: number) => void;
   model: Model;
 };
-
-// https://github.com/lukasbach/monaco-editor-auto-typings/
-const SearchService = {
-  Search: async function () {
-    let transport = new TwirpFetchTransport({
-      baseUrl: "http://localhost:3000/twirp",
-    });
-
-    let client = new SearchServiceClient(transport);
-
-    let { response } = await client.search({
-      query: "",
-      pageNumber: 0,
-      resultPerPage: 0,
-    });
-
-    GOUT(JSON.stringify(response));
-  },
-};
-
-let ssContent = `const SearchService = {
-  Search: async function (name: string) {
-    let transport = new TwirpFetchTransport({
-      baseUrl: "http://localhost:3000/twirp",
-    });
-
-    let client = new SearchServiceClient(transport);
-
-    let { response } = await client.search({
-      query: "",
-      pageNumber: 0,
-      resultPerPage: 0,
-    });
-
-    GOUT(JSON.stringify(response));
-  },
-};
-const TwirpFetchTransport = {};`;
 
 let GOUT = (output: string) => {};
 
@@ -93,8 +53,6 @@ export function Content({
         extraLib.filePath
       );
     });
-
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(ssContent);
   }
 
   (window as any).GOUT = (output: string) => {
