@@ -13,7 +13,7 @@ RUN npm ci
 
 WORKDIR /workspace/server
 RUN npm ci
-RUN nm run build
+RUN npm run build
 
 FROM golang:alpine AS runner
 RUN apk add --update nodejs npm
