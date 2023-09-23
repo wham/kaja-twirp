@@ -23,6 +23,7 @@ COPY --from=builder /workspace/genpick/ ./genpick
 COPY --from=builder /workspace/ui/ ./ui
 COPY --from=builder /workspace/script/ ./script
 COPY --from=builder /workspace/server/dist/ ./server
+COPY --from=builder /workspace/server/node_modules/ ./server/node_modules
 COPY --from=builder /workspace/proto/ ./proto
 
 EXPOSE 3000
