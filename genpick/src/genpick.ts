@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import path from "path";
 import * as ts from "typescript";
 
 export function main() {
@@ -9,17 +10,17 @@ export function main() {
     return;
   }
 
-  const files = fs.readdirSync(directoryPath);
+  const files = listFiles(directoryPath);
   const gens: ts.ObjectLiteralExpression[] = [];
   const imps: ts.ImportDeclaration[] = [];
   const cases: ts.CaseClause[] = [];
 
   files.forEach((file) => {
-    if (file === "kt.ts") return;
+    if (file.endsWith("kt.ts")) return;
 
     let content: string;
     try {
-      content = fs.readFileSync(directoryPath + "/" + file, "utf-8");
+      content = fs.readFileSync(file, "utf-8");
     } catch (_) {
       return;
     }
@@ -48,7 +49,7 @@ export function main() {
           undefined,
           ts.factory.createNamedImports([ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(name))])
         ),
-        ts.factory.createStringLiteral("./" + file.substring(0, file.length - 3))
+        ts.factory.createStringLiteral("./" + file.substring(0, file.length - 3).substring(directoryPath.length + 1))
       );
 
       imps.push(importStatement);
@@ -130,4 +131,20 @@ export function main() {
   //console.log(printer.printFile(sourceFile));
 
   fs.writeFileSync(directoryPath + "/kt.ts", printer.printFile(outputFile));
+}
+
+function listFiles(directoryPath: string): string[] {
+  const files: string[] = [];
+
+  fs.readdirSync(directoryPath).forEach((file) => {
+    const filePath = path.join(directoryPath, file);
+
+    if (fs.statSync(filePath).isDirectory()) {
+      files.push(...listFiles(filePath));
+    } else {
+      files.push(filePath);
+    }
+  });
+
+  return files;
 }
