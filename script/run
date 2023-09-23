@@ -8,4 +8,4 @@ mkdir -p ./ui/src/gen
 protoc --proto_path=./proto --plugin=protoc-gen-ts=/app/genpick/node_modules/@protobuf-ts/plugin/bin/protoc-gen-ts --ts_out ./ui/src/gen --ts_opt long_type_string -Iproto/ $(find proto -iname "*.proto")
 (cd ./genpick && npm start)
 (cd ./ui && npm run build)
-npx serve -s ./ui/build
+(cd ./server && node server.js)
