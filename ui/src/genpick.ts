@@ -123,8 +123,13 @@ export function loadModel(): Model {
         funcs.push(func);
 
         trigger[member.name.getText(sourceFile)] = async (input: any) => {
+          const url = new URL(window.location.href);
+          const urlWithoutPath = `${url.protocol}//${url.hostname}${
+            url.port ? ":" + url.port : ""
+          }`;
+
           let transport = new TwirpFetchTransport({
-            baseUrl: "http://localhost:3000/twirp",
+            baseUrl: urlWithoutPath + "/twirp",
           });
 
           /*let client = new (Function.prototype.bind.apply(
