@@ -1,8 +1,0 @@
-#!/usr/bin/env node
-
-const { Plugin } = require("../build/plugin");
-
-new Plugin().run().catch(_ => {
-    process.stderr.write('failed to run plugin');
-    process.exit(1);
-});
