@@ -36,4 +36,4 @@ jobs:
           context: .
           push: true
           tags: |
-            kajatools/kaja-twirp:${{ env.BRANCH }}
+            kajatools/kaja-twirp:${{ env.GITHUB_REF_NAME }}
