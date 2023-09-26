@@ -6,6 +6,6 @@ rm error.txt || true
 #protoc --proto_path=./proto --plugin=protoc-gen-kaja-twirp=/app/protoc-gen-kaja-twirp --kaja-twirp_out=. -Iproto/ $(find proto -iname "*.proto") 2> error.txt || true
 mkdir -p ./ui/src/gen
 protoc --proto_path=./proto --plugin=protoc-gen-ts=/app/genpick/node_modules/@protobuf-ts/plugin/bin/protoc-gen-ts --ts_out ./ui/src/gen --ts_opt long_type_string -Iproto/ $(find proto -iname "*.proto")
-(cd ./genpick && npm start)
+(cd ./linker && npm start)
 (cd ./ui && npm run build)
 (cd ./server && node server.js)
