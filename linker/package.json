@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node ./build/linker.js ../ui/src/gen"
+    "start": "npm run build && node ./build/linker.js ../vite-express-project/src/client/gen"
   },
   "devDependencies": {
     "@protobuf-ts/plugin": "^2.9.1",
