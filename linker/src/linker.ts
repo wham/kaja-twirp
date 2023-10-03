@@ -3,12 +3,15 @@ import path from "path";
 import * as ts from "typescript";
 
 export function main() {
+  console.log("Running linker");
   const directoryPath = process.argv[2];
 
   if (!directoryPath) {
     console.error("No directory path provided");
     return;
   }
+
+  console.log("Searching for files in " + directoryPath);
 
   const files = listFiles(directoryPath);
   const gens: ts.ObjectLiteralExpression[] = [];
@@ -130,7 +133,10 @@ export function main() {
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
   //console.log(printer.printFile(sourceFile));
 
-  fs.writeFileSync(directoryPath + "/kt.ts", printer.printFile(outputFile));
+  let filePath = directoryPath + "/kt.ts";
+  console.log("Writing to " + filePath);
+
+  fs.writeFileSync(filePath, printer.printFile(outputFile));
 }
 
 function listFiles(directoryPath: string): string[] {
@@ -147,4 +153,8 @@ function listFiles(directoryPath: string): string[] {
   });
 
   return files;
+}
+
+if (require.main === module) {
+  main();
 }
