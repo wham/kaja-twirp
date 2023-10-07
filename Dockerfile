@@ -6,6 +6,7 @@ COPY . .
 
 WORKDIR /workspace/ui
 RUN npm ci
+RUN npm run build
 
 FROM golang:alpine AS runner
 RUN apk add --update nodejs npm
