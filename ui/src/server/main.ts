@@ -24,8 +24,15 @@ app.use("/bootstrap", (req, res) => {
     }
 
     linker(outPath);
-    res.send(`stdout: ${stdout}`);
-    //console.error(`stderr: ${stderr}`);
+    exec(`npm run build`, (error, stdout, stderr) => {
+      if (error) {
+        res.send(`exec error: ${error}`);
+        return;
+      }
+
+      res.send(`stdout: ${stdout}`);
+      //console.error(`stderr: ${stderr}`);
+    });
   });
 });
 
