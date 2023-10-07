@@ -4,6 +4,7 @@ import ViteExpress from "vite-express";
 import * as dotenv from "dotenv";
 import { exec } from "child_process";
 import path from "path";
+import { linker } from "./linker";
 dotenv.config({ path: process.cwd() + "/../.env" });
 
 const app = express();
@@ -22,6 +23,7 @@ app.use("/bootstrap", (req, res) => {
       return;
     }
 
+    linker(outPath);
     res.send(`stdout: ${stdout}`);
     //console.error(`stderr: ${stderr}`);
   });
