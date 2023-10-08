@@ -1,6 +1,7 @@
 export type Model = {
   services: Array<Service>;
   extraLibs: Array<ExtraLib>;
+  files: Array<ProtocFile>;
 };
 
 export type Service = {
@@ -17,5 +18,10 @@ export type Method = {
 
 export type ExtraLib = {
   filePath: string;
+  content: string;
+};
+
+export type ProtocFile = {
+  path: string;
   content: string;
 };

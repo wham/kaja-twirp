@@ -1,7 +1,8 @@
 import ts from "typescript";
-import { ExtraLib, Method, Model, Service } from "./Model";
+import { ExtraLib, Method, Model, ProtocFile, Service } from "./Model";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { defaultParam } from "./defaultParams";
+import { linker } from "./linker";
 
 export async function loadModel(): Promise<Model> {
   const services: Service[] = [];
@@ -15,14 +16,26 @@ export async function loadModel(): Promise<Model> {
     getClient: (name: string, transport: any) => {},
   };
 
+  const files: ProtocFile[] = [];
+
+  const modules = import.meta.glob("./protoc/**/*.ts", { as: "raw", eager: false });
+  for (const path in modules) {
+    const content = await modules[path]();
+    files.push({
+      path,
+      content,
+    });
+  }
+
+  await linker(files);
+
   try {
     const modulePath = "./protoc/kt.ts";
-    const { model, getClient } = await import(modulePath);
-    kt.gens = model.gens;
+    const { getClient } = await import(modulePath);
     kt.getClient = getClient;
   } catch (e) {}
 
-  kt.gens.forEach((gen) => {
+  files.forEach((gen) => {
     const sourceFile = ts.createSourceFile(gen.path, gen.content, ts.ScriptTarget.Latest);
 
     sourceFile.statements.forEach((statement) => {
@@ -32,7 +45,7 @@ export async function loadModel(): Promise<Model> {
     });
   });
 
-  kt.gens.forEach((gen) => {
+  files.forEach((gen) => {
     const sourceFile = ts.createSourceFile(gen.path, gen.content, ts.ScriptTarget.Latest);
 
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
@@ -176,6 +189,7 @@ export async function loadModel(): Promise<Model> {
   return {
     services,
     extraLibs,
+    files,
   };
 }
 
