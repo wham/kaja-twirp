@@ -4,15 +4,27 @@ import { Sidebar } from "./Sidebar";
 import { Method, Model, Service } from "./Model";
 import { Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
-import { loadModel } from "./genpick";
+import { loadModel } from "./modelLoader";
 
 function App() {
   console.log("App");
-  const [model] = useState<Model>(loadModel());
+  const [model, setModel] = useState<Model>();
   console.log(model);
   const [tabs, setTabs] = useState<Array<TabContent>>([]);
   const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
   const [selectedTabId, setSelectedTabId] = useState<number>(0);
+
+  useEffect(() => {
+    async function load() {
+      setModel(await loadModel());
+    }
+
+    load();
+  });
+
+  if (!model) {
+    return <Box>Loading...</Box>;
+  }
 
   model.services.forEach((service) => {
     window[service.name as any] = service.proxy;
@@ -38,12 +50,7 @@ function App() {
           <Sidebar model={model} onSelect={addTab} />
         </Box>
         <Box sx={{ flexGrow: 1 }}>
-          <Content
-            tabs={tabs}
-            selectedTabId={selectedTabId}
-            onTabSelect={setSelectedTabId}
-            model={model}
-          />
+          <Content tabs={tabs} selectedTabId={selectedTabId} onTabSelect={setSelectedTabId} model={model} />
         </Box>
       </Box>
     </ThemeProvider>

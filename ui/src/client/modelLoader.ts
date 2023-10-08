@@ -1,22 +1,19 @@
 import ts from "typescript";
 import { ExtraLib, Method, Model, Service } from "./Model";
-import { model, getClient } from "./gen/kt";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { defaultParam } from "./defaultParams";
 
-export function loadModel(): Model {
+export async function loadModel(): Promise<Model> {
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
   const allInterfaces: {
     [key: string]: [ts.InterfaceDeclaration, ts.SourceFile];
   } = {};
 
+  const { model, getClient } = await import("./gen/kt.js");
+
   model.gens.forEach((gen) => {
-    const sourceFile = ts.createSourceFile(
-      gen.path,
-      gen.content,
-      ts.ScriptTarget.Latest
-    );
+    const sourceFile = ts.createSourceFile(gen.path, gen.content, ts.ScriptTarget.Latest);
 
     sourceFile.statements.forEach((statement) => {
       if (ts.isInterfaceDeclaration(statement)) {
@@ -26,16 +23,9 @@ export function loadModel(): Model {
   });
 
   model.gens.forEach((gen) => {
-    const sourceFile = ts.createSourceFile(
-      gen.path,
-      gen.content,
-      ts.ScriptTarget.Latest
-    );
+    const sourceFile = ts.createSourceFile(gen.path, gen.content, ts.ScriptTarget.Latest);
 
-    const interfaces = sourceFile.statements.filter(
-      (statement): statement is ts.InterfaceDeclaration =>
-        ts.isInterfaceDeclaration(statement)
-    );
+    const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
 
     const ifcs: ts.InterfaceDeclaration[] = [];
 
@@ -85,13 +75,7 @@ export function loadModel(): Model {
 
         const method: Method = {
           name: member.name.getText(sourceFile),
-          code: methodCode(
-            member.name.getText(sourceFile),
-            name,
-            ip!,
-            sourceFile,
-            allInterfaces
-          ),
+          code: methodCode(member.name.getText(sourceFile), name, ip!, sourceFile, allInterfaces),
         };
 
         methods.push(method);
@@ -108,10 +92,7 @@ export function loadModel(): Model {
                 undefined,
                 "input",
                 undefined,
-                ts.factory.createTypeReferenceNode(
-                  ts.factory.createIdentifier(input!),
-                  undefined
-                )
+                ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(input!), undefined)
               ),
             ],
             undefined,
@@ -124,9 +105,7 @@ export function loadModel(): Model {
 
         trigger[member.name.getText(sourceFile)] = async (input: any) => {
           const url = new URL(window.location.href);
-          const urlWithoutPath = `${url.protocol}//${url.hostname}${
-            url.port ? ":" + url.port : ""
-          }`;
+          const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}`;
 
           let transport = new TwirpFetchTransport({
             baseUrl: urlWithoutPath + "/twirp",
@@ -139,9 +118,7 @@ export function loadModel(): Model {
 
           let client = getClient(name + "Client", transport);
 
-          let { response } = await (client as any)[
-            member.name.getText(sourceFile)
-          ](input);
+          let { response } = await (client as any)[member.name.getText(sourceFile)](input);
 
           (window as any)["GOUT"](JSON.stringify(response));
         };
@@ -157,25 +134,12 @@ export function loadModel(): Model {
       const proxy = ts.factory.createVariableStatement(
         undefined,
         ts.factory.createVariableDeclarationList(
-          [
-            ts.factory.createVariableDeclaration(
-              ts.factory.createIdentifier(name),
-              undefined,
-              undefined,
-              ts.factory.createObjectLiteralExpression(funcs)
-            ),
-          ],
+          [ts.factory.createVariableDeclaration(ts.factory.createIdentifier(name), undefined, undefined, ts.factory.createObjectLiteralExpression(funcs))],
           ts.NodeFlags.Const
         )
       );
 
-      let tFile = ts.createSourceFile(
-        "new-file.ts",
-        "",
-        ts.ScriptTarget.Latest,
-        /*setParentNodes*/ false,
-        ts.ScriptKind.TS
-      );
+      let tFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
       tFile = ts.factory.updateSourceFile(tFile, [proxy]);
       const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -186,13 +150,7 @@ export function loadModel(): Model {
       });
     });
 
-    let tFile = ts.createSourceFile(
-      "new-file.ts",
-      "",
-      ts.ScriptTarget.Latest,
-      /*setParentNodes*/ false,
-      ts.ScriptKind.TS
-    );
+    let tFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
     tFile = ts.factory.updateSourceFile(tFile, ifcs);
     const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -218,23 +176,14 @@ function methodCode(
   sourceFile: ts.SourceFile,
   allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] }
 ): string {
-  let outputFile = ts.createSourceFile(
-    "new-file.ts",
-    "",
-    ts.ScriptTarget.Latest,
-    /*setParentNodes*/ false,
-    ts.ScriptKind.TS
-  );
+  let outputFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
   const dp = defaultParam(ip, sourceFile, allInterfaces);
 
   const statements = [
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
-        ts.factory.createPropertyAccessExpression(
-          ts.factory.createIdentifier(service),
-          ts.factory.createIdentifier(method)
-        ),
+        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(service), ts.factory.createIdentifier(method)),
         undefined,
         [dp]
       )
