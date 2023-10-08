@@ -1,3 +1,4 @@
 /bin
-build
+dist
 node_modules
+protoc/**/*.ts

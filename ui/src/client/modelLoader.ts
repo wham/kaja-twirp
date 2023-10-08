@@ -16,7 +16,7 @@ export async function loadModel(): Promise<Model> {
   };
 
   try {
-    const modulePath = "./gen/kt.ts";
+    const modulePath = "./protoc/kt.ts";
     const { model, getClient } = await import(modulePath);
     kt.gens = model.gens;
     kt.getClient = model.getClient;
