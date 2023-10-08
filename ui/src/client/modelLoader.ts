@@ -10,9 +10,19 @@ export async function loadModel(): Promise<Model> {
     [key: string]: [ts.InterfaceDeclaration, ts.SourceFile];
   } = {};
 
-  const { model, getClient } = await import("./gen/kt.js");
+  const kt = {
+    gens: [],
+    getClient: (name: string, transport: any) => {},
+  };
 
-  model.gens.forEach((gen) => {
+  try {
+    const modulePath = "./gen/kt.ts";
+    const { model, getClient } = await import(modulePath);
+    kt.gens = model.gens;
+    kt.getClient = model.getClient;
+  } catch (e) {}
+
+  kt.gens.forEach((gen) => {
     const sourceFile = ts.createSourceFile(gen.path, gen.content, ts.ScriptTarget.Latest);
 
     sourceFile.statements.forEach((statement) => {
@@ -22,7 +32,7 @@ export async function loadModel(): Promise<Model> {
     });
   });
 
-  model.gens.forEach((gen) => {
+  kt.gens.forEach((gen) => {
     const sourceFile = ts.createSourceFile(gen.path, gen.content, ts.ScriptTarget.Latest);
 
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
@@ -116,7 +126,7 @@ export async function loadModel(): Promise<Model> {
             [null, ...[transport]]
           ))();*/
 
-          let client = getClient(name + "Client", transport);
+          let client = kt.getClient(name + "Client", transport);
 
           let { response } = await (client as any)[member.name.getText(sourceFile)](input);
 
