@@ -13,7 +13,6 @@ export function linker(directoryPath: string) {
   console.log("Searching for files in " + directoryPath);
 
   const files = listFiles(directoryPath);
-  const gens: ts.ObjectLiteralExpression[] = [];
   const imps: ts.ImportDeclaration[] = [];
   const cases: ts.CaseClause[] = [];
 
@@ -26,13 +25,6 @@ export function linker(directoryPath: string) {
     } catch (_) {
       return;
     }
-
-    gens.push(
-      ts.factory.createObjectLiteralExpression([
-        ts.factory.createPropertyAssignment("path", ts.factory.createStringLiteral(file)),
-        ts.factory.createPropertyAssignment("content", ts.factory.createStringLiteral(content)),
-      ])
-    );
 
     const sourceFile = ts.createSourceFile(file, content, ts.ScriptTarget.Latest);
 
@@ -81,21 +73,6 @@ export function linker(directoryPath: string) {
     )
   );
 
-  const model = ts.factory.createVariableStatement(
-    [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
-    ts.factory.createVariableDeclarationList(
-      [
-        ts.factory.createVariableDeclaration(
-          ts.factory.createIdentifier("model"),
-          undefined,
-          undefined,
-          ts.factory.createObjectLiteralExpression([ts.factory.createPropertyAssignment("gens", ts.factory.createArrayLiteralExpression(gens))])
-        ),
-      ],
-      ts.NodeFlags.Const
-    )
-  );
-
   const getClientFunction = ts.factory.createFunctionDeclaration(
     [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
     undefined,
@@ -128,7 +105,7 @@ export function linker(directoryPath: string) {
   );
 
   let outputFile = ts.createSourceFile("kt.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-  outputFile = ts.factory.updateSourceFile(outputFile, [...imps, model, getClientFunction]);
+  outputFile = ts.factory.updateSourceFile(outputFile, [...imps, getClientFunction]);
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
   //console.log(printer.printFile(sourceFile));
 
