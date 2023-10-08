@@ -1,4 +1,4 @@
-**/node_modules/
-**/build/
-**/gen/
-!ui/src/client/gen/kt.ts
+/bin
+dist
+node_modules
+protoc/**/*.ts
