@@ -1,4 +1,4 @@
 /bin
+/ui/src/client/protoc
 dist
 node_modules
-protoc/**/*.ts

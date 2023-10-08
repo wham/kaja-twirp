@@ -20,7 +20,7 @@ function App() {
     }
 
     load();
-  });
+  }, []);
 
   if (!model) {
     return <Box>Loading...</Box>;
