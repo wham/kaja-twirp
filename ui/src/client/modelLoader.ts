@@ -2,7 +2,6 @@ import ts from "typescript";
 import { ExtraLib, Method, Model, ProtocFile, Service } from "./Model";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { defaultParam } from "./defaultParams";
-import { linker } from "./linker";
 import { RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 
 export async function loadModel(): Promise<Model> {
@@ -24,8 +23,6 @@ export async function loadModel(): Promise<Model> {
       content,
     });
   }
-
-  await linker(files);
 
   files.forEach((file) => {
     const sourceFile = ts.createSourceFile(file.path, file.content, ts.ScriptTarget.Latest);
