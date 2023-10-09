@@ -14,11 +14,6 @@ export async function loadModel(): Promise<Model> {
 
   const clients: { [key: string]: string } = {};
 
-  const kt = {
-    gens: [],
-    getClient: (name: string, transport: any) => {},
-  };
-
   const files: ProtocFile[] = [];
 
   const modules = import.meta.glob("./protoc/**/*.ts", { as: "raw", eager: false });
@@ -31,12 +26,6 @@ export async function loadModel(): Promise<Model> {
   }
 
   await linker(files);
-
-  try {
-    const modulePath = "./protoc/kt.ts";
-    const { getClient } = await import(modulePath);
-    kt.getClient = getClient;
-  } catch (e) {}
 
   files.forEach((file) => {
     const sourceFile = ts.createSourceFile(file.path, file.content, ts.ScriptTarget.Latest);
@@ -163,7 +152,6 @@ export async function loadModel(): Promise<Model> {
             [null, ...[transport]]
           ))();*/
 
-          //let client = kt.getClient(name + "Client", transport);
           let client = await getClient(name, transport);
 
           let { response } = await (client as any)[member.name.getText(sourceFile)](input);
