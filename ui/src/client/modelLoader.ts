@@ -3,6 +3,7 @@ import { ExtraLib, Method, Model, ProtocFile, Service } from "./Model";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { defaultParam } from "./defaultParams";
 import { linker } from "./linker";
+import { RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 
 export async function loadModel(): Promise<Model> {
   const services: Service[] = [];
@@ -10,6 +11,8 @@ export async function loadModel(): Promise<Model> {
   const allInterfaces: {
     [key: string]: [ts.InterfaceDeclaration, ts.SourceFile];
   } = {};
+
+  const clients: { [key: string]: string } = {};
 
   const kt = {
     gens: [],
@@ -35,8 +38,8 @@ export async function loadModel(): Promise<Model> {
     kt.getClient = getClient;
   } catch (e) {}
 
-  files.forEach((gen) => {
-    const sourceFile = ts.createSourceFile(gen.path, gen.content, ts.ScriptTarget.Latest);
+  files.forEach((file) => {
+    const sourceFile = ts.createSourceFile(file.path, file.content, ts.ScriptTarget.Latest);
 
     sourceFile.statements.forEach((statement) => {
       if (ts.isInterfaceDeclaration(statement)) {
@@ -45,8 +48,29 @@ export async function loadModel(): Promise<Model> {
     });
   });
 
-  files.forEach((gen) => {
-    const sourceFile = ts.createSourceFile(gen.path, gen.content, ts.ScriptTarget.Latest);
+  files.forEach((file) => {
+    const sourceFile = ts.createSourceFile(file.path, file.content, ts.ScriptTarget.Latest);
+
+    const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
+
+    interfaces.forEach((interfaceDeclaration) => {
+      let name = interfaceDeclaration.name.text;
+      if (!name.endsWith("Client")) {
+        return;
+      }
+
+      clients[name] = file.path;
+    });
+  });
+
+  const getClient = async (name: string, transport: RpcTransport): Promise<ServiceInfo | undefined> => {
+    const module = await import(clients["I" + name + "Client"]);
+    console.log("module", module);
+    return new module[name + "Client"](transport);
+  };
+
+  files.forEach((file) => {
+    const sourceFile = ts.createSourceFile(file.path, file.content, ts.ScriptTarget.Latest);
 
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
 
@@ -139,7 +163,8 @@ export async function loadModel(): Promise<Model> {
             [null, ...[transport]]
           ))();*/
 
-          let client = kt.getClient(name + "Client", transport);
+          //let client = kt.getClient(name + "Client", transport);
+          let client = await getClient(name, transport);
 
           let { response } = await (client as any)[member.name.getText(sourceFile)](input);
 
@@ -180,7 +205,7 @@ export async function loadModel(): Promise<Model> {
 
     if (ifcs.length > 0) {
       extraLibs.push({
-        filePath: gen.path + ".ts",
+        filePath: file.path + ".ts",
         content: printer.printFile(tFile),
       });
     }
