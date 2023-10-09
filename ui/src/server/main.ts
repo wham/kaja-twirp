@@ -5,7 +5,6 @@ import * as dotenv from "dotenv";
 import fs from "fs";
 import { exec } from "child_process";
 import path from "path";
-import { linker } from "./linker";
 dotenv.config({ path: process.cwd() + "/../.env" });
 
 const app = express();
@@ -32,7 +31,6 @@ app.use("/bootstrap", (req, res) => {
       return;
     }
 
-    linker(outPath);
     exec(`npm run build`, (error, stdout, stderr) => {
       if (error) {
         res.send(`exec error: ${error}`);
