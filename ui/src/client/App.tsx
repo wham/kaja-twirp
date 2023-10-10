@@ -7,17 +7,16 @@ import { Content, TabContent } from "./Content";
 import { loadModel } from "./modelLoader";
 
 function App() {
-  console.log("App");
+  console.log("Rendering App");
   const [model, setModel] = useState<Model>();
-  console.log(model);
   const [tabs, setTabs] = useState<Array<TabContent>>([]);
   const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
   const [selectedTabId, setSelectedTabId] = useState<number>(0);
 
   useEffect(() => {
-    async function load() {
+    const load = async () => {
       setModel(await loadModel());
-    }
+    };
 
     load();
   }, []);
