@@ -8,23 +8,16 @@ type SidebarProps = {
 
 export function Sidebar({ model, onSelect }: SidebarProps) {
   return (
-    <nav aria-label="Methods">
-      <TreeView aria-label="Methods">
+    <nav aria-label="Services and methods">
+      <TreeView aria-label="Services and methods">
         {model.services.map((service) => {
           return (
-            <TreeView.Item id={service.name} key={service.name} expanded={true}>
-              <TreeView.LeadingVisual>
-                <TreeView.DirectoryIcon />
-              </TreeView.LeadingVisual>
+            <TreeView.Item id={service.name}>
               {service.name}
               <TreeView.SubTree>
                 {service.methods.map((method) => {
                   return (
-                    <TreeView.Item
-                      id={method.name}
-                      key={method.name}
-                      onSelect={() => onSelect(service, method)}
-                    >
+                    <TreeView.Item id={service.name + "." + method.name} onSelect={() => onSelect(service, method)}>
                       {method.name}
                     </TreeView.Item>
                   );
