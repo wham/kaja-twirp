@@ -12,6 +12,7 @@ function App() {
   const [tabs, setTabs] = useState<Array<TabContent>>([]);
   const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
   const [selectedTabId, setSelectedTabId] = useState<number>(0);
+  const [currentMethod, setCurrentMethod] = useState<Method>();
 
   useEffect(() => {
     const load = async () => {
@@ -40,13 +41,14 @@ function App() {
       },
     ]);
     setSelectedTabId(tabIdGenerator);
+    setCurrentMethod(method);
   };
 
   return (
     <ThemeProvider colorMode="night">
       <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>
         <Box sx={{ width: 300 }}>
-          <Sidebar model={model} onSelect={addTab} />
+          <Sidebar model={model} onSelect={addTab} currentMethod={currentMethod} />
         </Box>
         <Box sx={{ flexGrow: 1 }}>
           <Content tabs={tabs} selectedTabId={selectedTabId} onTabSelect={setSelectedTabId} model={model} />
