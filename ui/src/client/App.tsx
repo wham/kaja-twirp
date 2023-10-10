@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Sidebar } from "./Sidebar";
-import { Method, Model, Service } from "./xmodel";
+import { Method, Model, Service } from "./model";
 import { Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
 import { loadModel } from "./modelLoader";

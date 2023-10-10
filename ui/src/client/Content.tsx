@@ -3,7 +3,7 @@ import { Editor, Monaco } from "@monaco-editor/react";
 import { Box, Button, TabNav } from "@primer/react";
 import Console from "./Console";
 import { editor } from "monaco-editor";
-import { Model } from "./xmodel";
+import { Model } from "./model";
 
 export type TabContent = {
   id: number;

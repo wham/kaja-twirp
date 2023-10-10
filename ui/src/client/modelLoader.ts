@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { ExtraLib, Method, Model, ProtocFile, Service } from "./xmodel";
+import { ExtraLib, Method, Model, ProtocFile, Service } from "./model";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import { defaultParam } from "./defaultParams";
 import { RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";

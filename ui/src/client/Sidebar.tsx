@@ -1,5 +1,5 @@
 import { TreeView } from "@primer/react";
-import { Method, Model, Service } from "./xmodel";
+import { Method, Model, Service } from "./model";
 
 type SidebarProps = {
   model: Model;
