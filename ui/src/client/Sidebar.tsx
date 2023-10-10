@@ -10,9 +10,9 @@ export function Sidebar({ model, onSelect }: SidebarProps) {
   return (
     <nav aria-label="Services and methods">
       <TreeView aria-label="Services and methods">
-        {model.services.map((service) => {
+        {model.services.map((service, index) => {
           return (
-            <TreeView.Item id={service.name}>
+            <TreeView.Item id={service.name} defaultExpanded={index === 0}>
               {service.name}
               <TreeView.SubTree>
                 {service.methods.map((method) => {
