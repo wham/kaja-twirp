@@ -1,12 +1,13 @@
 import { TreeView } from "@primer/react";
-import { Method, Model, Service } from "./model";
+import { Method, Model, Service, methodId } from "./model";
 
 type SidebarProps = {
   model: Model;
   onSelect: (service: Service, method: Method) => void;
+  currentMethod?: Method;
 };
 
-export function Sidebar({ model, onSelect }: SidebarProps) {
+export function Sidebar({ model, onSelect, currentMethod }: SidebarProps) {
   return (
     <nav aria-label="Services and methods">
       <TreeView aria-label="Services and methods">
@@ -17,7 +18,7 @@ export function Sidebar({ model, onSelect }: SidebarProps) {
               <TreeView.SubTree>
                 {service.methods.map((method) => {
                   return (
-                    <TreeView.Item id={service.name + "." + method.name} onSelect={() => onSelect(service, method)}>
+                    <TreeView.Item id={methodId(service, method)} onSelect={() => onSelect(service, method)} current={currentMethod === method}>
                       {method.name}
                     </TreeView.Item>
                   );

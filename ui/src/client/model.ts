@@ -25,3 +25,7 @@ export type ProtocFile = {
   path: string;
   content: string;
 };
+
+export function methodId(service: Service, method: Method): string {
+  return `${service.name}.${method.name}`;
+}
