@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import "./App.css";
 import { Sidebar } from "./Sidebar";
 import { Method, Model, Service } from "./model";
-import { Box, ThemeProvider } from "@primer/react";
+import { BaseStyles, Box, ThemeProvider } from "@primer/react";
 import { Content, TabContent } from "./Content";
 import { loadModel } from "./modelLoader";
 
@@ -46,14 +45,16 @@ function App() {
 
   return (
     <ThemeProvider colorMode="night">
-      <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>
-        <Box sx={{ width: 300 }}>
-          <Sidebar model={model} onSelect={addTab} currentMethod={currentMethod} />
+      <BaseStyles>
+        <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>
+          <Box sx={{ width: 300 }}>
+            <Sidebar model={model} onSelect={addTab} currentMethod={currentMethod} />
+          </Box>
+          <Box sx={{ flexGrow: 1 }}>
+            <Content tabs={tabs} selectedTabId={selectedTabId} onTabSelect={setSelectedTabId} model={model} />
+          </Box>
         </Box>
-        <Box sx={{ flexGrow: 1 }}>
-          <Content tabs={tabs} selectedTabId={selectedTabId} onTabSelect={setSelectedTabId} model={model} />
-        </Box>
-      </Box>
+      </BaseStyles>
     </ThemeProvider>
   );
 }
