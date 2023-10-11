@@ -3,7 +3,7 @@ import ts from "typescript";
 export function defaultParam(
   ip: ts.ParameterDeclaration,
   sourceFile: ts.SourceFile,
-  allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] }
+  allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] },
 ): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
@@ -19,19 +19,12 @@ export function defaultParam(
   return interfaceDefaultImplementation(interfaceDeclaration);
 }
 
-export function interfaceDefaultImplementation(
-  interfaceDeclaration: [ts.InterfaceDeclaration, ts.SourceFile]
-): ts.ObjectLiteralExpression {
+export function interfaceDefaultImplementation(interfaceDeclaration: [ts.InterfaceDeclaration, ts.SourceFile]): ts.ObjectLiteralExpression {
   const properties: ts.PropertyAssignment[] = [];
 
   interfaceDeclaration[0].members.forEach((member) => {
     if (ts.isPropertySignature(member) && member.name && member.type) {
-      properties.push(
-        ts.factory.createPropertyAssignment(
-          member.name.getText(interfaceDeclaration[1]),
-          defaultValue(member.type)
-        )
-      );
+      properties.push(ts.factory.createPropertyAssignment(member.name.getText(interfaceDeclaration[1]), defaultValue(member.type)));
     }
   });
 

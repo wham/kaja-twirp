@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon src/server/main.ts -w src/server",
     "start": "NODE_ENV=production ts-node src/server/main.ts",
-    "build": "vite build"
+    "build": "vite build",
+    "prettier": "prettier --write \"src/**/*.{ts,tsx}\""
   },
   "dependencies": {
     "@monaco-editor/react": "^4.5.0",
@@ -29,6 +30,7 @@
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react": "^3.0.1",
     "nodemon": "^2.0.20",
+    "prettier": "^3.0.3",
     "vite": "^4.0.4"
   }
 }

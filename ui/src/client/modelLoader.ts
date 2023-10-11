@@ -71,7 +71,7 @@ export async function loadModel(): Promise<Model> {
           interfaceDeclaration.name,
           interfaceDeclaration.typeParameters,
           interfaceDeclaration.heritageClauses,
-          interfaceDeclaration.members
+          interfaceDeclaration.members,
         );
         ifcs.push(i);
         return;
@@ -125,14 +125,14 @@ export async function loadModel(): Promise<Model> {
                 undefined,
                 "input",
                 undefined,
-                ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(input!), undefined)
+                ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(input!), undefined),
               ),
             ],
             undefined,
             ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-            ts.factory.createBlock([])
+            ts.factory.createBlock([]),
             /*this.proxyBody(protoService, protoMethod)*/
-          )
+          ),
         );
         funcs.push(func);
 
@@ -168,8 +168,8 @@ export async function loadModel(): Promise<Model> {
         undefined,
         ts.factory.createVariableDeclarationList(
           [ts.factory.createVariableDeclaration(ts.factory.createIdentifier(name), undefined, undefined, ts.factory.createObjectLiteralExpression(funcs))],
-          ts.NodeFlags.Const
-        )
+          ts.NodeFlags.Const,
+        ),
       );
 
       let tFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
@@ -208,7 +208,7 @@ function methodCode(
   service: string,
   ip: ts.ParameterDeclaration,
   sourceFile: ts.SourceFile,
-  allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] }
+  allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] },
 ): string {
   let outputFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
@@ -219,8 +219,8 @@ function methodCode(
       ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(service), ts.factory.createIdentifier(method)),
         undefined,
-        [dp]
-      )
+        [dp],
+      ),
     ),
   ];
   outputFile = ts.factory.updateSourceFile(outputFile, statements);

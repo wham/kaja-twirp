@@ -25,11 +25,7 @@ const expectedResult = `return { url: "", title: "", snippets: null, isAd: true 
 `;
 
 test("interfaceDefaultImplementation", () => {
-  const sourceFile = ts.createSourceFile(
-    "test.ts",
-    sourceFileContent,
-    ts.ScriptTarget.Latest
-  );
+  const sourceFile = ts.createSourceFile("test.ts", sourceFileContent, ts.ScriptTarget.Latest);
 
   const interfaces: ts.InterfaceDeclaration[] = [];
 
@@ -46,9 +42,7 @@ test("interfaceDefaultImplementation", () => {
   let outputFile = ts.createSourceFile("output.ts", "", ts.ScriptTarget.Latest);
   const o = interfaceDefaultImplementation([interfaceDeclaration, sourceFile]);
 
-  outputFile = ts.factory.updateSourceFile(outputFile, [
-    ts.factory.createReturnStatement(o),
-  ]);
+  outputFile = ts.factory.updateSourceFile(outputFile, [ts.factory.createReturnStatement(o)]);
 
   const printer = ts.createPrinter();
   const actualResult = printer.printFile(outputFile);
