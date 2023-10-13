@@ -46,7 +46,9 @@ export function Content({ model, service, method }: ContentProps) {
   return (
     <Box>
       <Box sx={{ display: "flex" }}>
-        <Box sx={{ flex: 1 }}>Service.Method</Box>
+        <Box sx={{ flex: 1 }}>
+          {service.name}.{method.name}
+        </Box>
         <Box sx={{ padding: "2px" }}>
           <Button variant="primary" size="medium" onClick={callApi}>
             Call
