@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Method, Model, Service } from "./model";
 import { BaseStyles, Box, ThemeProvider } from "@primer/react";
-import { Content, TabContent } from "./Content";
+import { Content } from "./Content";
 import { loadModel } from "./modelLoader";
 
 function App() {
   console.log("Rendering App");
   const [model, setModel] = useState<Model>();
-  const [tabs, setTabs] = useState<Array<TabContent>>([]);
-  const [tabIdGenerator, setTabIdGenerator] = useState<number>(0);
-  const [selectedTabId, setSelectedTabId] = useState<number>(0);
-  const [currentMethod, setCurrentMethod] = useState<Method>();
+  const [selectedService, setSelectedService] = useState<Service>();
+  const [selectedMethod, setSelectedMethod] = useState<Method>();
 
   useEffect(() => {
     const load = async () => {
@@ -25,22 +23,17 @@ function App() {
     return <Box>Loading...</Box>;
   }
 
+  if (model.services.length === 0) {
+    return <Box>No services found</Box>;
+  }
+
   model.services.forEach((service) => {
     window[service.name as any] = service.proxy;
   });
 
-  let addTab = (service: Service, method: Method) => {
-    setTabIdGenerator(tabIdGenerator + 1);
-    setTabs([
-      ...tabs,
-      {
-        id: tabIdGenerator,
-        title: method.name,
-        code: method.code,
-      },
-    ]);
-    setSelectedTabId(tabIdGenerator);
-    setCurrentMethod(method);
+  const onSelect = (service: Service, method: Method) => {
+    setSelectedService(service);
+    setSelectedMethod(method);
   };
 
   return (
@@ -48,10 +41,10 @@ function App() {
       <BaseStyles>
         <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>
           <Box sx={{ width: 300, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", paddingX: 2 }}>
-            <Sidebar model={model} onSelect={addTab} currentMethod={currentMethod} />
+            <Sidebar model={model} onSelect={onSelect} currentMethod={selectedMethod} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
-            <Content tabs={tabs} selectedTabId={selectedTabId} onTabSelect={setSelectedTabId} model={model} />
+            {selectedService && selectedMethod ? <Content model={model} service={selectedService} method={selectedMethod} /> : <Box>Empty state</Box>}
           </Box>
         </Box>
       </BaseStyles>
