@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Editor, Monaco } from "@monaco-editor/react";
 import { Box, Button } from "@primer/react";
 import Console from "./Console";
@@ -43,11 +43,17 @@ export function Content({ model, service, method }: ContentProps) {
     //alert(JSON.stringify(await xSearchService.search()))
   }
 
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.setValue(method.code);
+    }
+  });
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Box sx={{ borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "border.default" }}>
         <Editor
-          height="60vh"
+          height="50vh"
           defaultLanguage="typescript"
           defaultValue={method.code}
           onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
@@ -57,13 +63,13 @@ export function Content({ model, service, method }: ContentProps) {
         />
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Box sx={{ position: "absolute" }}>
+        <Box sx={{ marginTop: "-20px", position: "absolute" }}>
           <Button variant="primary" size="medium" onClick={callApi}>
             Call
           </Button>
         </Box>
       </Box>
-      <Box sx={{ height: "40vh", color: "fg.default" }}>
+      <Box sx={{ height: "50vh", color: "fg.default" }}>
         <Console output={output} />
       </Box>
     </Box>
