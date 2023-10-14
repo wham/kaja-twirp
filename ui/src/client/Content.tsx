@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Editor, Monaco } from "@monaco-editor/react";
-import { Box, Button } from "@primer/react";
+import { Box, Button, IconButton } from "@primer/react";
 import { editor } from "monaco-editor";
 import { Method, Model, Service } from "./model";
+import { HeartIcon, TriangleRightIcon, ZapIcon } from "@primer/octicons-react";
 
 type ContentProps = {
   model: Model;
@@ -72,9 +73,7 @@ export function Content({ model, service, method }: ContentProps) {
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         <Box sx={{ marginTop: "-20px", position: "absolute", zIndex: 100 }}>
-          <Button variant="primary" size="medium" onClick={callApi}>
-            Call
-          </Button>
+          <IconButton icon={ZapIcon} aria-label="Call" variant="primary" size="large" onClick={callApi} />
         </Box>
       </Box>
       <Box sx={{ color: "fg.default" }}>
