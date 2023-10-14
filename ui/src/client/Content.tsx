@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Editor, Monaco } from "@monaco-editor/react";
 import { Box, Button } from "@primer/react";
-import Console from "./Console";
 import { editor } from "monaco-editor";
 import { Method, Model, Service } from "./model";
 
@@ -14,12 +13,11 @@ type ContentProps = {
 let GOUT = (output: string) => {};
 
 export function Content({ model, service, method }: ContentProps) {
-  const [output, setOutput] = useState("");
-  const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
+  const codeEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
+  const consoleEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
 
-  // (editor: editor.IStandaloneCodeEditor, monaco: Monaco)
-  function handleEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, model: Model) {
-    editorRef.current = editor;
+  function handleCodeEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, model: Model) {
+    codeEditorRef.current = editor;
     editor.focus();
 
     model.extraLibs.forEach((extraLib) => {
@@ -27,16 +25,22 @@ export function Content({ model, service, method }: ContentProps) {
     });
   }
 
+  function handleConsoleEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, model: Model) {
+    consoleEditorRef.current = editor;
+  }
+
   (window as any).GOUT = (output: string) => {
-    setOutput(JSON.stringify(output));
+    if (consoleEditorRef.current) {
+      consoleEditorRef.current.setValue(output);
+    }
   };
 
   async function callApi() {
     //let response = await xSearchService.search()
 
-    if (editorRef.current) {
+    if (codeEditorRef.current) {
       //eval(editorRefs.current[selectedTabId].getValue());
-      const func = new Function(editorRef.current.getValue());
+      const func = new Function(codeEditorRef.current.getValue());
       func();
     }
     //alert(JSON.stringify(response));
@@ -44,8 +48,12 @@ export function Content({ model, service, method }: ContentProps) {
   }
 
   useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.setValue(method.code);
+    if (codeEditorRef.current) {
+      codeEditorRef.current.setValue(method.code);
+    }
+
+    if (consoleEditorRef.current) {
+      consoleEditorRef.current.setValue("");
     }
   });
 
@@ -57,20 +65,27 @@ export function Content({ model, service, method }: ContentProps) {
           defaultLanguage="typescript"
           defaultValue={method.code}
           onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-            handleEditorDidMount(editor, monaco, model);
+            handleCodeEditorDidMount(editor, monaco, model);
           }}
           theme="vs-dark"
         />
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Box sx={{ marginTop: "-20px", position: "absolute" }}>
+        <Box sx={{ marginTop: "-20px", position: "absolute", zIndex: 100 }}>
           <Button variant="primary" size="medium" onClick={callApi}>
             Call
           </Button>
         </Box>
       </Box>
-      <Box sx={{ height: "50vh", color: "fg.default" }}>
-        <Console output={output} />
+      <Box sx={{ color: "fg.default" }}>
+        <Editor
+          height="50vh"
+          defaultLanguage="typescript"
+          onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+            handleConsoleEditorDidMount(editor, monaco, model);
+          }}
+          theme="vs-dark"
+        />
       </Box>
     </Box>
   );
