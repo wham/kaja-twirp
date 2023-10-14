@@ -56,10 +56,12 @@ export function Content({ model, service, method }: ContentProps) {
           theme="vs-dark"
         />
       </Box>
-      <Box>
-        <Button variant="primary" size="medium" onClick={callApi}>
-          Call
-        </Button>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Box sx={{ position: "absolute" }}>
+          <Button variant="primary" size="medium" onClick={callApi}>
+            Call
+          </Button>
+        </Box>
       </Box>
       <Box sx={{ height: "40vh", color: "fg.default" }}>
         <Console output={output} />
