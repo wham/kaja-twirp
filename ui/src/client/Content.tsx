@@ -44,18 +44,8 @@ export function Content({ model, service, method }: ContentProps) {
   }
 
   return (
-    <Box>
-      <Box sx={{ display: "flex" }}>
-        <Box sx={{ flex: 1 }}>
-          {service.name}.{method.name}
-        </Box>
-        <Box sx={{ padding: "2px" }}>
-          <Button variant="primary" size="medium" onClick={callApi}>
-            Call
-          </Button>
-        </Box>
-      </Box>
-      <Box>
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <Box sx={{ borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "border.default" }}>
         <Editor
           height="60vh"
           defaultLanguage="typescript"
@@ -65,6 +55,11 @@ export function Content({ model, service, method }: ContentProps) {
           }}
           theme="vs-dark"
         />
+      </Box>
+      <Box>
+        <Button variant="primary" size="medium" onClick={callApi}>
+          Call
+        </Button>
       </Box>
       <Box sx={{ height: "40vh", color: "fg.default" }}>
         <Console output={output} />

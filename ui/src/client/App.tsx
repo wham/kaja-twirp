@@ -40,7 +40,7 @@ function App() {
     <ThemeProvider colorMode="night">
       <BaseStyles>
         <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>
-          <Box sx={{ width: 300, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", paddingX: 2 }}>
+          <Box sx={{ width: 300, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", paddingX: 2, flexShrink: 0 }}>
             <Sidebar model={model} onSelect={onSelect} currentMethod={selectedMethod} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
