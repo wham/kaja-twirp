@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Editor, Monaco } from "@monaco-editor/react";
-import { Box, Button, IconButton } from "@primer/react";
+import { Box, Button, IconButton, Overlay } from "@primer/react";
 import { editor } from "monaco-editor";
 import { Method, Model, Service } from "./model";
 import { HeartIcon, TriangleRightIcon, ZapIcon } from "@primer/octicons-react";
@@ -70,9 +70,7 @@ export function Content({ model, service, method }: ContentProps) {
           }}
           theme="vs-dark"
         />
-      </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Box sx={{ marginTop: "-20px", position: "absolute", zIndex: 100 }}>
+        <Box sx={{ position: "absolute", top: "10px", right: "30px" }}>
           <IconButton icon={ZapIcon} aria-label="Call" variant="primary" size="large" onClick={callApi} />
         </Box>
       </Box>
