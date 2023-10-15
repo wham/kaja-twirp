@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Editor, Monaco } from "@monaco-editor/react";
-import { Box, Button, IconButton, Overlay } from "@primer/react";
+import { Box, IconButton } from "@primer/react";
 import { editor } from "monaco-editor";
 import { Method, Model, Service } from "./model";
-import { HeartIcon, TriangleRightIcon, ZapIcon } from "@primer/octicons-react";
+import { PlayIcon } from "@primer/octicons-react";
 
 type ContentProps = {
   model: Model;
@@ -71,7 +71,7 @@ export function Content({ model, service, method }: ContentProps) {
           theme="vs-dark"
         />
         <Box sx={{ position: "absolute", top: "10px", right: "30px" }}>
-          <IconButton icon={ZapIcon} aria-label="Call" variant="primary" size="large" onClick={callApi} />
+          <IconButton icon={PlayIcon} aria-label="Call" variant="primary" size="large" onClick={callApi} />
         </Box>
       </Box>
       <Box sx={{ color: "fg.default" }}>
