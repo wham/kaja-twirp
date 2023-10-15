@@ -1,4 +1,4 @@
-import { Box, Link, TreeView } from "@primer/react";
+import { Box, Link, TreeView, Text } from "@primer/react";
 import { Method, Model, Service, methodId } from "./model";
 import { Icon, MarkGithubIcon } from "@primer/octicons-react";
 
@@ -33,10 +33,10 @@ export function Sidebar({ model, onSelect, currentMethod }: SidebarProps) {
           </TreeView>
         </nav>
       </Box>
-      <Box sx={{ backgroundColor: "accent.emphasis", position: "fixed", bottom: 0, width: 300 }}>
-        <Link href="https://github.com/wham/kaja-twirp">
+      <Box sx={{ position: "fixed", bottom: 0, width: 300, borderTopWidth: 1, borderTopStyle: "solid", borderTopColor: "border.default" }}>
+        <Link href="https://github.com/wham/kaja-twirp" sx={{ color: "btn.primary.text", paddingX: 2, paddingY: 2, fontSize: "12px" }}>
           <MarkGithubIcon />
-          kaja-twirp
+          <Text sx={{ paddingLeft: 2 }}>kaja-twirp</Text>
         </Link>
       </Box>
     </Box>
