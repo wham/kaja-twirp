@@ -34,7 +34,7 @@ export function Sidebar({ model, onSelect, currentMethod }: SidebarProps) {
         </nav>
       </Box>
       <Box sx={{ position: "fixed", bottom: 0, width: 300, borderTopWidth: 1, borderTopStyle: "solid", borderTopColor: "border.default" }}>
-        <Link href="https://github.com/wham/kaja-twirp" sx={{ color: "btn.primary.text", paddingX: 2, paddingY: 2, fontSize: "12px" }}>
+        <Link href="https://github.com/wham/kaja-twirp" sx={{ color: "btn.primary.text", paddingX: 2, paddingY: 2, fontSize: "12px" }} target="_blank">
           <MarkGithubIcon />
           <Text sx={{ paddingLeft: 2 }}>kaja-twirp</Text>
         </Link>
