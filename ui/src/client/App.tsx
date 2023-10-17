@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Sidebar } from "./Sidebar";
-import { Method, Model, Service } from "./model";
+import { Endpoint, Method, Model, Service, defaultEndpoint } from "./model";
 import { BaseStyles, Box, ThemeProvider } from "@primer/react";
 import { Content } from "./Content";
 import { loadModel } from "./modelLoader";
@@ -8,8 +8,7 @@ import { loadModel } from "./modelLoader";
 function App() {
   console.log("Rendering App");
   const [model, setModel] = useState<Model>();
-  const [selectedService, setSelectedService] = useState<Service>();
-  const [selectedMethod, setSelectedMethod] = useState<Method>();
+  const [selectedEndpoint, setSelectedEndpoint] = useState<Endpoint>();
 
   useEffect(() => {
     const load = async () => {
@@ -23,8 +22,11 @@ function App() {
     return <Box>Loading...</Box>;
   }
 
-  if (model.services.length === 0) {
-    return <Box>No services found</Box>;
+  if (!selectedEndpoint) {
+    setSelectedEndpoint(defaultEndpoint(model.services));
+    if (!selectedEndpoint) {
+      return <Box>No methods found</Box>;
+    }
   }
 
   model.services.forEach((service) => {
@@ -32,8 +34,7 @@ function App() {
   });
 
   const onSelect = (service: Service, method: Method) => {
-    setSelectedService(service);
-    setSelectedMethod(method);
+    setSelectedEndpoint({ service, method });
   };
 
   return (
@@ -41,10 +42,10 @@ function App() {
       <BaseStyles>
         <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>
           <Box sx={{ width: 300, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", flexShrink: 0 }}>
-            <Sidebar model={model} onSelect={onSelect} currentMethod={selectedMethod} />
+            <Sidebar model={model} onSelect={onSelect} currentMethod={selectedEndpoint.method} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
-            {selectedService && selectedMethod ? <Content model={model} service={selectedService} method={selectedMethod} /> : <Box>Empty state</Box>}
+            {selectedEndpoint ? <Content model={model} service={selectedEndpoint.service} method={selectedEndpoint.method} /> : <Box>Empty state</Box>}
           </Box>
         </Box>
       </BaseStyles>
