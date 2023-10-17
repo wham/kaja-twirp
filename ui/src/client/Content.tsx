@@ -28,6 +28,14 @@ export function Content({ model, service, method }: ContentProps) {
 
   function handleConsoleEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, model: Model) {
     consoleEditorRef.current = editor;
+
+    const styles = editor.getDomNode()?.style;
+
+    if (styles) {
+      // https://github.com/microsoft/monaco-editor/issues/338#issuecomment-1763246584
+      styles.setProperty("--vscode-editor-background", "#000000");
+      styles.setProperty("--vscode-editorGutter-background", "#000000");
+    }
   }
 
   (window as any).GOUT = (output: string) => {
@@ -69,6 +77,7 @@ export function Content({ model, service, method }: ContentProps) {
             handleCodeEditorDidMount(editor, monaco, model);
           }}
           theme="vs-dark"
+          options={{ minimap: { enabled: false }, renderLineHighlight: "none" }}
         />
         <Box sx={{ position: "absolute", top: "10px", right: "30px" }}>
           <IconButton icon={PlayIcon} aria-label="Call" variant="primary" size="large" onClick={callApi} />
@@ -82,6 +91,7 @@ export function Content({ model, service, method }: ContentProps) {
             handleConsoleEditorDidMount(editor, monaco, model);
           }}
           theme="vs-dark"
+          options={{ readOnly: true, minimap: { enabled: false }, renderLineHighlight: "none", lineNumbers: "off" }}
         />
       </Box>
     </Box>
