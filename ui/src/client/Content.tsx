@@ -11,8 +11,6 @@ type ContentProps = {
   method: Method;
 };
 
-let GOUT = (output: string) => {};
-
 export function Content({ model, service, method }: ContentProps) {
   const codeEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
   const consoleEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
