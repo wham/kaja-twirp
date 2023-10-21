@@ -42,16 +42,15 @@ export function Content({ model, service, method }: ContentProps) {
     }
   };
 
-  async function callApi() {
-    //let response = await xSearchService.search()
+  async function callMethod() {
+    if (consoleEditorRef.current) {
+      consoleEditorRef.current.setValue("");
+    }
 
     if (codeEditorRef.current) {
-      //eval(editorRefs.current[selectedTabId].getValue());
       const func = new Function(codeEditorRef.current.getValue());
       func();
     }
-    //alert(JSON.stringify(response));
-    //alert(JSON.stringify(await xSearchService.search()))
   }
 
   useEffect(() => {
@@ -78,7 +77,7 @@ export function Content({ model, service, method }: ContentProps) {
           options={{ minimap: { enabled: false }, renderLineHighlight: "none" }}
         />
         <Box sx={{ position: "absolute", top: "10px", right: "30px" }}>
-          <IconButton icon={PlayIcon} aria-label="Call" variant="primary" size="large" onClick={callApi} />
+          <IconButton icon={PlayIcon} aria-label="Call" variant="primary" size="large" onClick={callMethod} />
         </Box>
       </Box>
       <Box sx={{ color: "fg.default" }}>
