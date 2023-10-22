@@ -1,7 +1,7 @@
 import ts from "typescript";
 import { ExtraLib, Method, Model, ProtocFile, Service } from "./model";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
-import { defaultParam } from "./defaultParams";
+import { defaultInput } from "./defaultInput";
 import { RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 
 export async function loadModel(): Promise<Model> {
@@ -212,7 +212,7 @@ function methodCode(
 ): string {
   let outputFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
-  const dp = defaultParam(ip, sourceFile, allInterfaces);
+  const dp = defaultInput(ip, sourceFile, allInterfaces);
 
   const statements = [
     ts.factory.createExpressionStatement(
