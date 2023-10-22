@@ -3,25 +3,18 @@ import { expect, test } from "vitest";
 import { interfaceDefaultImplementation } from "./defaultInput";
 
 const sourceFileContent = `export interface Result {
-  /**
-   * @generated from protobuf field: string url = 1;
-   */
   url: string;
-  /**
-   * @generated from protobuf field: string title = 2;
-   */
   title: string;
-  /**
-   * @generated from protobuf field: repeated string snippets = 3;
-   */
   snippets: string[];
-  /**
-   * @generated from protobuf field: bool is_ad = 4;
-   */
   isAd: boolean;
+  location: Location;
+}
+
+export interface Location {
+  latlng: float[];
 }`;
 
-const expectedResult = `return { url: "", title: "", snippets: null, isAd: true };
+const expectedResult = `return { url: "", title: "", snippets: null, isAd: true, location: null };
 `;
 
 test("interfaceDefaultImplementation", () => {
@@ -35,7 +28,7 @@ test("interfaceDefaultImplementation", () => {
     }
   });
 
-  expect(interfaces.length).toBe(1);
+  expect(interfaces.length).toBe(2);
 
   const interfaceDeclaration = interfaces[0];
 
