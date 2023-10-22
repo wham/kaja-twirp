@@ -14,7 +14,7 @@ export interface Location {
   latlng: float[];
 }`;
 
-const expectedResult = `return { url: "", title: "", snippets: null, isAd: true, location: null };
+const expectedResult = `return { url: "", title: "", snippets: [""], isAd: true, location: null };
 `;
 
 test("interfaceDefaultImplementation", () => {
