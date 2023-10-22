@@ -1,10 +1,10 @@
-import ts from "typescript";
-import { ExtraLib, Method, Model, ProtocFile, Service } from "./model";
-import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
-import { defaultInput } from "./defaultInput";
 import { RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
+import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
+import ts from "typescript";
+import { defaultInput } from "./defaultInput";
+import { ExtraLib, Method, Project, ProtocFile, Service } from "./project";
 
-export async function loadModel(): Promise<Model> {
+export async function loadProject(): Promise<Project> {
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
   const allInterfaces: {

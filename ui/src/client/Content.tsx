@@ -1,30 +1,30 @@
-import React, { useEffect } from "react";
 import { Editor, Monaco } from "@monaco-editor/react";
+import { PlayIcon } from "@primer/octicons-react";
 import { Box, IconButton } from "@primer/react";
 import { editor } from "monaco-editor";
-import { Method, Model, Service } from "./model";
-import { PlayIcon } from "@primer/octicons-react";
+import React, { useEffect } from "react";
+import { Method, Project, Service } from "./project";
 
 type ContentProps = {
-  model: Model;
+  project: Project;
   service: Service;
   method: Method;
 };
 
-export function Content({ model, service, method }: ContentProps) {
+export function Content({ project, service, method }: ContentProps) {
   const codeEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
   const consoleEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
 
-  function handleCodeEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, model: Model) {
+  function handleCodeEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) {
     codeEditorRef.current = editor;
     editor.focus();
 
-    model.extraLibs.forEach((extraLib) => {
+    project.extraLibs.forEach((extraLib) => {
       monaco.languages.typescript.typescriptDefaults.addExtraLib(extraLib.content, extraLib.filePath);
     });
   }
 
-  function handleConsoleEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, model: Model) {
+  function handleConsoleEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) {
     consoleEditorRef.current = editor;
 
     const styles = editor.getDomNode()?.style;
@@ -71,7 +71,7 @@ export function Content({ model, service, method }: ContentProps) {
           defaultLanguage="typescript"
           defaultValue={method.code}
           onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-            handleCodeEditorDidMount(editor, monaco, model);
+            handleCodeEditorDidMount(editor, monaco, project);
           }}
           theme="vs-dark"
           options={{ minimap: { enabled: false }, renderLineHighlight: "none" }}
@@ -85,7 +85,7 @@ export function Content({ model, service, method }: ContentProps) {
           height="50vh"
           defaultLanguage="typescript"
           onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-            handleConsoleEditorDidMount(editor, monaco, model);
+            handleConsoleEditorDidMount(editor, monaco, project);
           }}
           theme="vs-dark"
           options={{ readOnly: true, minimap: { enabled: false }, renderLineHighlight: "none", lineNumbers: "off" }}
