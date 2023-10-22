@@ -1,6 +1,6 @@
 import ts from "typescript";
 import { expect, test } from "vitest";
-import { interfaceDefaultImplementation } from "./defaultInput";
+import { defaultInterfaceImplementation } from "./defaultInput";
 
 const sourceFileContent = `export interface Result {
   url: string;
@@ -33,7 +33,7 @@ test("interfaceDefaultImplementation", () => {
   const interfaceDeclaration = interfaces[0];
 
   let outputFile = ts.createSourceFile("output.ts", "", ts.ScriptTarget.Latest);
-  const o = interfaceDefaultImplementation([interfaceDeclaration, sourceFile]);
+  const o = defaultInterfaceImplementation([interfaceDeclaration, sourceFile]);
 
   outputFile = ts.factory.updateSourceFile(outputFile, [ts.factory.createReturnStatement(o)]);
 
