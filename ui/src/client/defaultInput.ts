@@ -16,10 +16,10 @@ export function defaultInput(
 
   const interfaceDeclaration = allInterfaces[typeName];
 
-  return interfaceDefaultImplementation(interfaceDeclaration);
+  return defaultInterfaceImplementation(interfaceDeclaration);
 }
 
-export function interfaceDefaultImplementation(interfaceDeclaration: [ts.InterfaceDeclaration, ts.SourceFile]): ts.ObjectLiteralExpression {
+export function defaultInterfaceImplementation(interfaceDeclaration: [ts.InterfaceDeclaration, ts.SourceFile]): ts.ObjectLiteralExpression {
   const properties: ts.PropertyAssignment[] = [];
 
   interfaceDeclaration[0].members.forEach((member) => {
