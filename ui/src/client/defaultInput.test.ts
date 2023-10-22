@@ -1,6 +1,7 @@
 import exp from "constants";
 import ts from "typescript";
 import { defaultInput, interfaceDefaultImplementation } from "./defaultInput";
+import { expect, test } from "vitest";
 
 const sourceFileContent = `export interface Result {
   /**
