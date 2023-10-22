@@ -1,20 +1,20 @@
-import { Box, Link, TreeView, Text } from "@primer/react";
-import { Method, Model, Service, methodId } from "./model";
-import { Icon, MarkGithubIcon } from "@primer/octicons-react";
+import { MarkGithubIcon } from "@primer/octicons-react";
+import { Box, Link, Text, TreeView } from "@primer/react";
+import { Method, Project, Service, methodId } from "./project";
 
 type SidebarProps = {
-  model: Model;
+  project: Project;
   onSelect: (service: Service, method: Method) => void;
   currentMethod?: Method;
 };
 
-export function Sidebar({ model, onSelect, currentMethod }: SidebarProps) {
+export function Sidebar({ project, onSelect, currentMethod }: SidebarProps) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Box sx={{ paddingX: 2, flexGrow: 1 }}>
         <nav aria-label="Services and methods">
           <TreeView aria-label="Services and methods">
-            {model.services.map((service, index) => {
+            {project.services.map((service, index) => {
               return (
                 <TreeView.Item id={service.name} defaultExpanded={index === 0}>
                   {service.name}

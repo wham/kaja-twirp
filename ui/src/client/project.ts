@@ -1,4 +1,4 @@
-export type Model = {
+export type Project = {
   services: Array<Service>;
   extraLibs: Array<ExtraLib>;
   files: Array<ProtocFile>;
