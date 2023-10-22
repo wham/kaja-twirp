@@ -1,13 +1,13 @@
 import ts from "typescript";
 
-export function defaultParam(
-  ip: ts.ParameterDeclaration,
+export function defaultInput(
+  input: ts.ParameterDeclaration,
   sourceFile: ts.SourceFile,
   allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] },
 ): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
-  const type = ip.type;
+  const type = input.type;
   const typeName = type?.getText(sourceFile);
 
   if (!typeName || !allInterfaces[typeName]) {
