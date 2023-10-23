@@ -1,22 +1,19 @@
 import ts from "typescript";
+import { InterfaceMap } from "./project";
 
-export function defaultInput(
-  input: ts.ParameterDeclaration,
-  sourceFile: ts.SourceFile,
-  allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] },
-): ts.ObjectLiteralExpression {
+export function defaultInput(input: ts.ParameterDeclaration, sourceFile: ts.SourceFile, interfaceMap: InterfaceMap): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
   const type = input.type;
   const typeName = type?.getText(sourceFile);
 
-  if (!typeName || !allInterfaces[typeName]) {
+  if (!typeName || !interfaceMap[typeName]) {
     return ts.factory.createObjectLiteralExpression([]);
   }
 
-  const interfaceDeclaration = allInterfaces[typeName];
+  const interfaceDeclaration = interfaceMap[typeName];
 
-  return defaultInterfaceImplementation(interfaceDeclaration);
+  return defaultInterfaceImplementation([interfaceDeclaration.interfaceDeclaration, interfaceDeclaration.sourceFile]);
 }
 
 export function defaultInterfaceImplementation(interfaceDeclaration: [ts.InterfaceDeclaration, ts.SourceFile]): ts.ObjectLiteralExpression {

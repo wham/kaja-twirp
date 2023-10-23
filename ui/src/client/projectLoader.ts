@@ -2,26 +2,15 @@ import { RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
 import { defaultInput } from "./defaultInput";
-import { ExtraLib, Method, Project, Service } from "./project";
+import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
 
 export async function loadProject(): Promise<Project> {
+  const sourceFiles = await loadSourceFiles();
+  const interfaceMap = getInterfaceMap(sourceFiles);
+
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
-  const allInterfaces: {
-    [key: string]: [ts.InterfaceDeclaration, ts.SourceFile];
-  } = {};
-
   const clients: { [key: string]: string } = {};
-
-  const sourceFiles = await loadSourceFiles();
-
-  sourceFiles.forEach((sourceFile) => {
-    sourceFile.statements.forEach((statement) => {
-      if (ts.isInterfaceDeclaration(statement)) {
-        allInterfaces[statement.name.text] = [statement, sourceFile];
-      }
-    });
-  });
 
   sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
@@ -93,7 +82,7 @@ export async function loadProject(): Promise<Project> {
 
         const method: Method = {
           name: member.name.getText(sourceFile),
-          code: methodCode(member.name.getText(sourceFile), name, ip!, sourceFile, allInterfaces),
+          code: methodCode(member.name.getText(sourceFile), name, ip!, sourceFile, interfaceMap),
         };
 
         methods.push(method);
@@ -200,16 +189,24 @@ async function loadSourceFiles(): Promise<ts.SourceFile[]> {
   return sourceFiles;
 }
 
-function methodCode(
-  method: string,
-  service: string,
-  ip: ts.ParameterDeclaration,
-  sourceFile: ts.SourceFile,
-  allInterfaces: { [key: string]: [ts.InterfaceDeclaration, ts.SourceFile] },
-): string {
+function getInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
+  const interfaceMap: InterfaceMap = {};
+
+  sourceFiles.forEach((sourceFile) => {
+    sourceFile.statements.forEach((statement) => {
+      if (ts.isInterfaceDeclaration(statement)) {
+        interfaceMap[statement.name.text] = { interfaceDeclaration: statement, sourceFile };
+      }
+    });
+  });
+
+  return interfaceMap;
+}
+
+function methodCode(method: string, service: string, ip: ts.ParameterDeclaration, sourceFile: ts.SourceFile, interfaceMap: InterfaceMap): string {
   let outputFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
-  const dp = defaultInput(ip, sourceFile, allInterfaces);
+  const dp = defaultInput(ip, sourceFile, interfaceMap);
 
   const statements = [
     ts.factory.createExpressionStatement(
