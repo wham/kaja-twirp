@@ -115,7 +115,6 @@ export async function loadProject(): Promise<Project> {
         name,
         methods,
         proxy: trigger,
-        extraLib: "",
       });
 
       const proxy = ts.factory.createVariableStatement(
