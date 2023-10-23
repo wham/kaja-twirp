@@ -11,16 +11,6 @@ export async function loadProject(): Promise<Project> {
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
 
-  const getClient = async (name: string, transport: RpcTransport): Promise<ServiceInfo | undefined> => {
-    const { sourceFile } = interfaceMap["I" + name + "Client"];
-    if (!sourceFile) {
-      return undefined;
-    }
-    const module = await import("./" + sourceFile.fileName);
-    console.log("module", module);
-    return new module[name + "Client"](transport);
-  };
-
   sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
 
@@ -113,7 +103,7 @@ export async function loadProject(): Promise<Project> {
             [null, ...[transport]]
           ))();*/
 
-          let client = await getClient(name, transport);
+          let client = await createClient(name, transport, interfaceMap);
 
           let { response } = await (client as any)[member.name.getText(sourceFile)](input);
 
@@ -191,6 +181,16 @@ function getInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
   });
 
   return interfaceMap;
+}
+
+async function createClient(name: string, transport: RpcTransport, interfaceMap: InterfaceMap): Promise<ServiceInfo | undefined> {
+  const { sourceFile } = interfaceMap["I" + name + "Client"];
+  if (!sourceFile) {
+    return undefined;
+  }
+  const module = await import("./" + sourceFile.fileName);
+  console.log("module", module);
+  return new module[name + "Client"](transport);
 }
 
 function methodCode(method: string, service: string, ip: ts.ParameterDeclaration, sourceFile: ts.SourceFile, interfaceMap: InterfaceMap): string {
