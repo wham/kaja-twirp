@@ -2,7 +2,7 @@ import { RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
 import { defaultInput } from "./defaultInput";
-import { ExtraLib, Method, Project, ProtocFile, Service } from "./project";
+import { ExtraLib, Method, Project, Service } from "./project";
 
 export async function loadProject(): Promise<Project> {
   const services: Service[] = [];
@@ -13,20 +13,9 @@ export async function loadProject(): Promise<Project> {
 
   const clients: { [key: string]: string } = {};
 
-  const files: ProtocFile[] = [];
+  const sourceFiles = await loadSourceFiles();
 
-  const modules = import.meta.glob("./protoc/**/*.ts", { as: "raw", eager: false });
-  for (const path in modules) {
-    const content = await modules[path]();
-    files.push({
-      path,
-      content,
-    });
-  }
-
-  files.forEach((file) => {
-    const sourceFile = ts.createSourceFile(file.path, file.content, ts.ScriptTarget.Latest);
-
+  sourceFiles.forEach((sourceFile) => {
     sourceFile.statements.forEach((statement) => {
       if (ts.isInterfaceDeclaration(statement)) {
         allInterfaces[statement.name.text] = [statement, sourceFile];
@@ -34,9 +23,7 @@ export async function loadProject(): Promise<Project> {
     });
   });
 
-  files.forEach((file) => {
-    const sourceFile = ts.createSourceFile(file.path, file.content, ts.ScriptTarget.Latest);
-
+  sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
 
     interfaces.forEach((interfaceDeclaration) => {
@@ -45,7 +32,7 @@ export async function loadProject(): Promise<Project> {
         return;
       }
 
-      clients[name] = file.path;
+      clients[name] = "./" + sourceFile.fileName;
     });
   });
 
@@ -55,9 +42,7 @@ export async function loadProject(): Promise<Project> {
     return new module[name + "Client"](transport);
   };
 
-  files.forEach((file) => {
-    const sourceFile = ts.createSourceFile(file.path, file.content, ts.ScriptTarget.Latest);
-
+  sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
 
     const ifcs: ts.InterfaceDeclaration[] = [];
@@ -190,7 +175,7 @@ export async function loadProject(): Promise<Project> {
 
     if (ifcs.length > 0) {
       extraLibs.push({
-        filePath: file.path + ".ts",
+        filePath: sourceFile.fileName,
         content: printer.printFile(tFile),
       });
     }
@@ -199,8 +184,20 @@ export async function loadProject(): Promise<Project> {
   return {
     services,
     extraLibs,
-    files,
+    sourceFiles,
   };
+}
+
+async function loadSourceFiles(): Promise<ts.SourceFile[]> {
+  const sourceFiles: ts.SourceFile[] = [];
+  const modules = import.meta.glob("./protoc/**/*.ts", { as: "raw", eager: false });
+  for (const path in modules) {
+    const content = await modules[path]();
+    const sourceFile = ts.createSourceFile(path, content, ts.ScriptTarget.Latest);
+    sourceFiles.push(sourceFile);
+  }
+
+  return sourceFiles;
 }
 
 function methodCode(

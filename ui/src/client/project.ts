@@ -1,7 +1,9 @@
+import ts from "typescript";
+
 export type Project = {
   services: Array<Service>;
   extraLibs: Array<ExtraLib>;
-  files: Array<ProtocFile>;
+  sourceFiles: Array<ts.SourceFile>;
 };
 
 export type Service = {
@@ -18,11 +20,6 @@ export type Method = {
 
 export type ExtraLib = {
   filePath: string;
-  content: string;
-};
-
-export type ProtocFile = {
-  path: string;
   content: string;
 };
 
