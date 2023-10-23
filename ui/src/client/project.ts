@@ -28,6 +28,8 @@ export type Endpoint = {
   method: Method;
 };
 
+export type InterfaceMap = { [key: string]: { interfaceDeclaration: ts.InterfaceDeclaration; sourceFile: ts.SourceFile } };
+
 export function methodId(service: Service, method: Method): string {
   return `${service.name}.${method.name}`;
 }
