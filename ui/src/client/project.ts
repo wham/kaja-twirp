@@ -10,7 +10,6 @@ export type Service = {
   name: string;
   methods: Array<Method>;
   proxy: any;
-  extraLib: string;
 };
 
 export type Method = {
