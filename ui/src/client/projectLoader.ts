@@ -10,23 +10,13 @@ export async function loadProject(): Promise<Project> {
 
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
-  const clients: { [key: string]: string } = {};
-
-  sourceFiles.forEach((sourceFile) => {
-    const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
-
-    interfaces.forEach((interfaceDeclaration) => {
-      let name = interfaceDeclaration.name.text;
-      if (!name.endsWith("Client")) {
-        return;
-      }
-
-      clients[name] = "./" + sourceFile.fileName;
-    });
-  });
 
   const getClient = async (name: string, transport: RpcTransport): Promise<ServiceInfo | undefined> => {
-    const module = await import(clients["I" + name + "Client"]);
+    const { sourceFile } = interfaceMap["I" + name + "Client"];
+    if (!sourceFile) {
+      return undefined;
+    }
+    const module = await import("./" + sourceFile.fileName);
     console.log("module", module);
     return new module[name + "Client"](transport);
   };
