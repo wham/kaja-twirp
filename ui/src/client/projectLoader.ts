@@ -14,20 +14,9 @@ export async function loadProject(): Promise<Project> {
   sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
 
-    const ifcs: ts.InterfaceDeclaration[] = [];
-
     interfaces.forEach((interfaceDeclaration) => {
       let name = interfaceDeclaration.name.text;
       if (!name.endsWith("Client")) {
-        let i = ts.factory.createInterfaceDeclaration(
-          undefined,
-          undefined,
-          interfaceDeclaration.name,
-          interfaceDeclaration.typeParameters,
-          interfaceDeclaration.heritageClauses,
-          interfaceDeclaration.members,
-        );
-        ifcs.push(i);
         return;
       }
 
@@ -136,12 +125,14 @@ export async function loadProject(): Promise<Project> {
       });
     });
 
-    let tFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+    const nonClientInterfaces = copyNonClientInterfaces(interfaceMap);
 
-    tFile = ts.factory.updateSourceFile(tFile, ifcs);
-    const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+    if (nonClientInterfaces.length > 0) {
+      let tFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
-    if (ifcs.length > 0) {
+      tFile = ts.factory.updateSourceFile(tFile, nonClientInterfaces);
+      const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+
       extraLibs.push({
         filePath: sourceFile.fileName,
         content: printer.printFile(tFile),
@@ -180,6 +171,30 @@ function getInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
   });
 
   return interfaceMap;
+}
+
+function copyNonClientInterfaces(interfaceMap: InterfaceMap): ts.InterfaceDeclaration[] {
+  return Object.values(interfaceMap)
+    .filter(({ interfaceDeclaration }) => !isClientInterface(interfaceDeclaration))
+    .map(({ interfaceDeclaration }) => copyInterface(interfaceDeclaration));
+}
+
+function isClientInterface(interfaceDeclaration: ts.InterfaceDeclaration): boolean {
+  let name = interfaceDeclaration.name.text;
+  return name.endsWith("Client");
+}
+
+function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.InterfaceDeclaration {
+  const copy = ts.factory.createInterfaceDeclaration(
+    undefined,
+    undefined,
+    interfaceDeclaration.name,
+    interfaceDeclaration.typeParameters,
+    interfaceDeclaration.heritageClauses,
+    interfaceDeclaration.members,
+  );
+
+  return copy;
 }
 
 async function createClient(name: string, transport: RpcTransport, interfaceMap: InterfaceMap): Promise<ServiceInfo | undefined> {
