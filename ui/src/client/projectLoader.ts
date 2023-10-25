@@ -6,29 +6,26 @@ import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
 
 export async function loadProject(): Promise<Project> {
   const sourceFiles = await loadSourceFiles();
-  const interfaceMap = getInterfaceMap(sourceFiles);
+  const interfaceMap = createInterfaceMap(sourceFiles);
 
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
 
   sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
+    const nonClientInterfaces: ts.InterfaceDeclaration[] = [];
 
     interfaces.forEach((interfaceDeclaration) => {
-      let name = interfaceDeclaration.name.text;
-      if (!name.endsWith("Client")) {
+      const clientName = extractClientName(interfaceDeclaration.name.text);
+
+      if (!clientName) {
+        nonClientInterfaces.push(copyInterface(interfaceDeclaration));
         return;
-      }
-
-      name = name.substring(0, name.length - 6);
-
-      if (name.startsWith("I")) {
-        name = name.substring(1);
       }
 
       const methods: Method[] = [];
       const funcs: ts.PropertyAssignment[] = [];
-      const trigger = { [name]: async (input: any) => {} };
+      const trigger = { [clientName]: async (input: any) => {} };
 
       interfaceDeclaration.members.forEach((member) => {
         if (!ts.isMethodSignature(member)) {
@@ -51,7 +48,7 @@ export async function loadProject(): Promise<Project> {
 
         const method: Method = {
           name: member.name.getText(sourceFile),
-          code: methodCode(member.name.getText(sourceFile), name, ip!, sourceFile, interfaceMap),
+          code: methodCode(member.name.getText(sourceFile), clientName, ip!, sourceFile, interfaceMap),
         };
 
         methods.push(method);
@@ -92,7 +89,7 @@ export async function loadProject(): Promise<Project> {
             [null, ...[transport]]
           ))();*/
 
-          let client = await createClient(name, transport, interfaceMap);
+          let client = await createClient(clientName, transport, interfaceMap);
 
           let { response } = await (client as any)[member.name.getText(sourceFile)](input);
 
@@ -101,7 +98,7 @@ export async function loadProject(): Promise<Project> {
       });
 
       services.push({
-        name,
+        name: clientName,
         methods,
         proxy: trigger,
       });
@@ -109,7 +106,14 @@ export async function loadProject(): Promise<Project> {
       const proxy = ts.factory.createVariableStatement(
         undefined,
         ts.factory.createVariableDeclarationList(
-          [ts.factory.createVariableDeclaration(ts.factory.createIdentifier(name), undefined, undefined, ts.factory.createObjectLiteralExpression(funcs))],
+          [
+            ts.factory.createVariableDeclaration(
+              ts.factory.createIdentifier(clientName),
+              undefined,
+              undefined,
+              ts.factory.createObjectLiteralExpression(funcs),
+            ),
+          ],
           ts.NodeFlags.Const,
         ),
       );
@@ -124,8 +128,6 @@ export async function loadProject(): Promise<Project> {
         content: printer.printFile(tFile),
       });
     });
-
-    const nonClientInterfaces = copyNonClientInterfaces(interfaceMap);
 
     if (nonClientInterfaces.length > 0) {
       let tFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
@@ -147,6 +149,14 @@ export async function loadProject(): Promise<Project> {
   };
 }
 
+export function extractClientName(interfaceName: string): string | undefined {
+  if (interfaceName.startsWith("I") && interfaceName.endsWith("Client") && interfaceName.length > 7) {
+    return interfaceName.substring(1, interfaceName.length - 6);
+  }
+
+  return undefined;
+}
+
 async function loadSourceFiles(): Promise<ts.SourceFile[]> {
   const sourceFiles: ts.SourceFile[] = [];
   const modules = import.meta.glob("./protoc/**/*.ts", { as: "raw", eager: false });
@@ -159,7 +169,7 @@ async function loadSourceFiles(): Promise<ts.SourceFile[]> {
   return sourceFiles;
 }
 
-function getInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
+function createInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
   const interfaceMap: InterfaceMap = {};
 
   sourceFiles.forEach((sourceFile) => {
@@ -171,17 +181,6 @@ function getInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
   });
 
   return interfaceMap;
-}
-
-function copyNonClientInterfaces(interfaceMap: InterfaceMap): ts.InterfaceDeclaration[] {
-  return Object.values(interfaceMap)
-    .filter(({ interfaceDeclaration }) => !isClientInterface(interfaceDeclaration))
-    .map(({ interfaceDeclaration }) => copyInterface(interfaceDeclaration));
-}
-
-function isClientInterface(interfaceDeclaration: ts.InterfaceDeclaration): boolean {
-  let name = interfaceDeclaration.name.text;
-  return name.endsWith("Client");
 }
 
 function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.InterfaceDeclaration {
