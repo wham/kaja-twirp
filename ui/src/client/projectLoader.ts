@@ -124,7 +124,7 @@ export async function loadProject(): Promise<Project> {
       const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
       extraLibs.push({
-        filePath: name + ".ts",
+        filePath: clientName + ".ts",
         content: printer.printFile(tFile),
       });
     });
