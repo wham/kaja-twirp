@@ -48,7 +48,7 @@ export async function loadProject(): Promise<Project> {
 
         const method: Method = {
           name: member.name.getText(sourceFile),
-          code: methodCode(member.name.getText(sourceFile), clientName, ip!, sourceFile, interfaceMap),
+          editorCode: methodCode(member.name.getText(sourceFile), clientName, ip!, sourceFile, interfaceMap),
         };
 
         methods.push(method);
