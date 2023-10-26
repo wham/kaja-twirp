@@ -30,7 +30,10 @@ function App() {
   }
 
   project.services.forEach((service) => {
-    window[service.name as any] = service.proxy;
+    window[service.name as any] = {} as any;
+    service.methods.forEach((method) => {
+      window[service.name as any][method.name as any] = method.globalTrigger as any;
+    });
   });
 
   const onSelect = (service: Service, method: Method) => {

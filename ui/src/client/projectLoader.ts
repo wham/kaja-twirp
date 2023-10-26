@@ -46,9 +46,25 @@ export async function loadProject(): Promise<Project> {
           }
         });
 
+        const globalTrigger = async (input: any) => {
+          const url = new URL(window.location.href);
+          const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}`;
+
+          let transport = new TwirpFetchTransport({
+            baseUrl: urlWithoutPath + "/twirp",
+          });
+
+          let client = await createClient(clientName, transport, interfaceMap);
+
+          let { response } = await (client as any)[member.name.getText(sourceFile)](input);
+
+          (window as any)["GOUT"](JSON.stringify(response));
+        };
+
         const method: Method = {
           name: member.name.getText(sourceFile),
           editorCode: methodCode(member.name.getText(sourceFile), clientName, ip!, sourceFile, interfaceMap),
+          globalTrigger,
         };
 
         methods.push(method);
@@ -75,32 +91,11 @@ export async function loadProject(): Promise<Project> {
           ),
         );
         funcs.push(func);
-
-        trigger[member.name.getText(sourceFile)] = async (input: any) => {
-          const url = new URL(window.location.href);
-          const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}`;
-
-          let transport = new TwirpFetchTransport({
-            baseUrl: urlWithoutPath + "/twirp",
-          });
-
-          /*let client = new (Function.prototype.bind.apply(
-            eval(name + "Client"),
-            [null, ...[transport]]
-          ))();*/
-
-          let client = await createClient(clientName, transport, interfaceMap);
-
-          let { response } = await (client as any)[member.name.getText(sourceFile)](input);
-
-          (window as any)["GOUT"](JSON.stringify(response));
-        };
       });
 
       services.push({
         name: clientName,
         methods,
-        proxy: trigger,
       });
 
       const proxy = ts.factory.createVariableStatement(

@@ -9,12 +9,12 @@ export type Project = {
 export type Service = {
   name: string;
   methods: Array<Method>;
-  proxy: any;
 };
 
 export type Method = {
   name: string;
   editorCode: string;
+  globalTrigger: (input: any) => {};
 };
 
 export type ExtraLib = {
