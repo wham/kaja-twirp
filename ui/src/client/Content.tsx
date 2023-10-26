@@ -55,7 +55,7 @@ export function Content({ project, service, method }: ContentProps) {
 
   useEffect(() => {
     if (codeEditorRef.current) {
-      codeEditorRef.current.setValue(method.code);
+      codeEditorRef.current.setValue(method.editorCode);
     }
 
     if (consoleEditorRef.current) {
@@ -69,7 +69,7 @@ export function Content({ project, service, method }: ContentProps) {
         <Editor
           height="50vh"
           defaultLanguage="typescript"
-          defaultValue={method.code}
+          defaultValue={method.editorCode}
           onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
             handleCodeEditorDidMount(editor, monaco, project);
           }}

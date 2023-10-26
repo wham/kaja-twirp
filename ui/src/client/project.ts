@@ -14,7 +14,7 @@ export type Service = {
 
 export type Method = {
   name: string;
-  code: string;
+  editorCode: string;
 };
 
 export type ExtraLib = {
