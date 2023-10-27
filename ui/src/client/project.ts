@@ -3,7 +3,6 @@ import ts from "typescript";
 export type Project = {
   services: Array<Service>;
   extraLibs: Array<ExtraLib>;
-  sourceFiles: Array<ts.SourceFile>;
 };
 
 export type Service = {

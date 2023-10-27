@@ -140,7 +140,6 @@ export async function loadProject(): Promise<Project> {
   return {
     services,
     extraLibs,
-    sourceFiles,
   };
 }
 
