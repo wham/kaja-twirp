@@ -1,0 +1,72 @@
+{
+  "services": [
+    {
+      "name": "Quirks",
+      "methods": [
+        {
+          "name": "getAuthentication",
+          "editorCode": "Quirks.getAuthentication({});\n"
+        },
+        {
+          "name": "map",
+          "editorCode": "Quirks.map({ stringString: null, stringInt32: null, sint64String: null, stringRepeatedString: null });\n"
+        },
+        {
+          "name": "methodWithAReallyLongNameGmthggupcbmnphflnnvu",
+          "editorCode": "Quirks.methodWithAReallyLongNameGmthggupcbmnphflnnvu({});\n"
+        },
+        {
+          "name": "panic",
+          "editorCode": "Quirks.panic({});\n"
+        },
+        {
+          "name": "repeated",
+          "editorCode": "Quirks.repeated({ string: [\"\"], int32: [0], enum: [null], message: [null] });\n"
+        },
+        {
+          "name": "types",
+          "editorCode": "Quirks.types({ timestamp: null, bool: true });\n"
+        }
+      ]
+    },
+    {
+      "name": "SearchService",
+      "methods": [
+        {
+          "name": "search",
+          "editorCode": "SearchService.search({ query: \"\", pageNumber: 0, resultPerPage: 0 });\n"
+        },
+        {
+          "name": "index",
+          "editorCode": "SearchService.index({ result: null, position: null, additionalCopies: \"\" });\n"
+        }
+      ]
+    }
+  ],
+  "extraLibs": [
+    {
+      "filePath": "protoc/google/protobuf/timestamp.ts",
+      "content": "interface Timestamp {\n    seconds: string;\n    nanos: number;\n}\n"
+    },
+    {
+      "filePath": "protoc/lib/message.ts",
+      "content": "interface Message {\n    name: string;\n}\n"
+    },
+    {
+      "filePath": "Quirks.ts",
+      "content": "const Quirks = { getAuthentication: async (input: Void) => { }, map: async (input: MapRequest) => { }, methodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, panic: async (input: Void) => { }, repeated: async (input: RepeatedRequest) => { }, types: async (input: TypesRequest) => { } };\n"
+    },
+    {
+      "filePath": "protoc/quirks.ts",
+      "content": "interface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\ninterface MapRequest_RepeatedString {\n    value: string[];\n}\ninterface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\ninterface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\ninterface Void {\n}\n"
+    },
+    {
+      "filePath": "SearchService.ts",
+      "content": "const SearchService = { search: async (input: SearchRequest) => { }, index: async (input: IndexRequest) => { } };\n"
+    },
+    {
+      "filePath": "protoc/search-service.ts",
+      "content": "interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: string;\n}\ninterface IndexResponse {\n    result?: Result;\n}\n"
+    }
+  ]
+}
