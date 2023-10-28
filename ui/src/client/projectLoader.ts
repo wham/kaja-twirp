@@ -36,6 +36,8 @@ export async function loadProject(): Promise<Project> {
           return;
         }
 
+        const methodName = member.name.getText(sourceFile);
+
         let ip: ts.ParameterDeclaration;
         let input: string;
 
@@ -56,21 +58,21 @@ export async function loadProject(): Promise<Project> {
 
           let client = await createClient(clientName, transport, interfaceMap);
 
-          let { response } = await (client as any)[member.name.getText(sourceFile)](input);
+          let { response } = await (client as any)[methodName](input);
 
           (window as any)["GOUT"](JSON.stringify(response));
         };
 
         const method: Method = {
-          name: member.name.getText(sourceFile),
-          editorCode: methodCode(member.name.getText(sourceFile), clientName, ip!, sourceFile, interfaceMap),
+          name: methodName,
+          editorCode: methodEditorCode(methodName, clientName, ip!, sourceFile, interfaceMap),
           globalTrigger,
         };
 
         methods.push(method);
 
         const func = ts.factory.createPropertyAssignment(
-          member.name.getText(sourceFile),
+          methodName,
           ts.factory.createArrowFunction(
             [ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword)],
             undefined,
@@ -200,7 +202,7 @@ async function createClient(name: string, transport: RpcTransport, interfaceMap:
   return new module[name + "Client"](transport);
 }
 
-function methodCode(method: string, service: string, ip: ts.ParameterDeclaration, sourceFile: ts.SourceFile, interfaceMap: InterfaceMap): string {
+function methodEditorCode(method: string, service: string, ip: ts.ParameterDeclaration, sourceFile: ts.SourceFile, interfaceMap: InterfaceMap): string {
   let outputFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
   const dp = defaultInput(ip, sourceFile, interfaceMap);
