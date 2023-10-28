@@ -46,5 +46,9 @@ function defaultValue(type: ts.TypeNode): ts.Expression {
     return ts.factory.createArrayLiteralExpression([defaultValue(arrayType.elementType)]);
   }
 
+  if (type.kind === ts.SyntaxKind.TypeLiteral) {
+    return ts.factory.createObjectLiteralExpression([]);
+  }
+
   return ts.factory.createNull();
 }
