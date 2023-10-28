@@ -13,6 +13,7 @@ export async function loadProject(): Promise<Project> {
 
   sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
+    const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
     const nonClientInterfaces: ts.InterfaceDeclaration[] = [];
 
     interfaces.forEach((interfaceDeclaration) => {
@@ -97,7 +98,7 @@ export async function loadProject(): Promise<Project> {
         methods,
       });
 
-      const proxy = ts.factory.createVariableStatement(
+      const serviceInterfaceDefinition = ts.factory.createVariableStatement(
         undefined,
         ts.factory.createVariableDeclarationList(
           [
@@ -112,26 +113,13 @@ export async function loadProject(): Promise<Project> {
         ),
       );
 
-      let tFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-
-      tFile = ts.factory.updateSourceFile(tFile, [proxy]);
-      const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-
-      extraLibs.push({
-        filePath: serviceName + ".ts",
-        content: printer.printFile(tFile),
-      });
+      serviceInterfaceDefinitions.push(serviceInterfaceDefinition);
     });
 
-    if (nonClientInterfaces.length > 0) {
-      let tFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-
-      tFile = ts.factory.updateSourceFile(tFile, nonClientInterfaces);
-      const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-
+    if (serviceInterfaceDefinitions.length > 0 || nonClientInterfaces.length > 0) {
       extraLibs.push({
         filePath: sourceFile.fileName,
-        content: printer.printFile(tFile),
+        content: printStatements([...serviceInterfaceDefinitions, ...nonClientInterfaces]),
       });
     }
   });
