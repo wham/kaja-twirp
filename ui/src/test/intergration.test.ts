@@ -29,7 +29,7 @@ test("integration", () => {
 
       loadProject()
         .then((project) => {
-          fs.writeFileSync(path.resolve(process.cwd(), "../ui/src/test/project.actual.json"), JSON.stringify(project, null, 2));
+          fs.writeFileSync(path.resolve(process.cwd(), "../ui/src/test/project.actual.json"), JSON.stringify(project, null, 2) + "\n");
           expect(fs.readFileSync(path.resolve(process.cwd(), "../ui/src/test/project.actual.json"))).toEqual(
             fs.readFileSync(path.resolve(process.cwd(), "../ui/src/test/project.expected.json")),
           );

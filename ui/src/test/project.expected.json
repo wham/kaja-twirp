@@ -53,7 +53,7 @@
       "content": "interface Message {\n    name: string;\n}\n"
     },
     {
-      "filePath": "Quirks.ts",
+      "filePath": "protoc/quirks.client.ts",
       "content": "const Quirks = { getAuthentication: async (input: Void) => { }, map: async (input: MapRequest) => { }, methodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, panic: async (input: Void) => { }, repeated: async (input: RepeatedRequest) => { }, types: async (input: TypesRequest) => { } };\n"
     },
     {
@@ -61,7 +61,7 @@
       "content": "interface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\ninterface MapRequest_RepeatedString {\n    value: string[];\n}\ninterface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\ninterface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\ninterface Void {\n}\n"
     },
     {
-      "filePath": "SearchService.ts",
+      "filePath": "protoc/search-service.client.ts",
       "content": "const SearchService = { search: async (input: SearchRequest) => { }, index: async (input: IndexRequest) => { } };\n"
     },
     {
