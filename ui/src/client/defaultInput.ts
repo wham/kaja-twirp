@@ -21,14 +21,14 @@ export function defaultInterfaceImplementation(interfaceDeclaration: [ts.Interfa
 
   interfaceDeclaration[0].members.forEach((member) => {
     if (ts.isPropertySignature(member) && member.name && member.type) {
-      properties.push(ts.factory.createPropertyAssignment(member.name.getText(interfaceDeclaration[1]), defaultValue(member.type)));
+      properties.push(ts.factory.createPropertyAssignment(member.name.getText(interfaceDeclaration[1]), defaultValue(member.type, interfaceDeclaration[1])));
     }
   });
 
   return ts.factory.createObjectLiteralExpression(properties);
 }
 
-function defaultValue(type: ts.TypeNode): ts.Expression {
+function defaultValue(type: ts.TypeNode, sourceFile: ts.SourceFile): ts.Expression {
   if (type.kind === ts.SyntaxKind.StringKeyword) {
     return ts.factory.createStringLiteral("");
   }
@@ -43,11 +43,22 @@ function defaultValue(type: ts.TypeNode): ts.Expression {
 
   if (type.kind === ts.SyntaxKind.ArrayType) {
     const arrayType = type as ts.ArrayTypeNode;
-    return ts.factory.createArrayLiteralExpression([defaultValue(arrayType.elementType)]);
+    return ts.factory.createArrayLiteralExpression([defaultValue(arrayType.elementType, sourceFile)]);
   }
 
   if (type.kind === ts.SyntaxKind.TypeLiteral) {
-    return ts.factory.createObjectLiteralExpression([]);
+    const typeLiteral = type as ts.TypeLiteralNode;
+    const properties: ts.PropertyAssignment[] = [];
+    typeLiteral.members.forEach((member) => {
+      //if (ts.is(member) && member.type) {
+      //properties.push(ts.factory.createPropertyAssignment("key", defaultValue(member.type, sourceFile)));
+      //}
+      if (ts.isIndexSignatureDeclaration(member)) {
+        const keyType = member.parameters[0].type;
+        properties.push(ts.factory.createPropertyAssignment("key", defaultValue(member.type, sourceFile)));
+      }
+    });
+    return ts.factory.createObjectLiteralExpression(properties);
   }
 
   return ts.factory.createNull();
