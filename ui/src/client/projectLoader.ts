@@ -16,16 +16,16 @@ export async function loadProject(): Promise<Project> {
     const nonClientInterfaces: ts.InterfaceDeclaration[] = [];
 
     interfaces.forEach((interfaceDeclaration) => {
-      const clientName = extractClientName(interfaceDeclaration.name.text);
+      const serviceName = extractClientName(interfaceDeclaration.name.text);
 
-      if (!clientName) {
+      if (!serviceName) {
         nonClientInterfaces.push(copyInterface(interfaceDeclaration));
         return;
       }
 
       const methods: Method[] = [];
       const funcs: ts.PropertyAssignment[] = [];
-      const trigger = { [clientName]: async (input: any) => {} };
+      const trigger = { [serviceName]: async (input: any) => {} };
 
       interfaceDeclaration.members.forEach((member) => {
         if (!ts.isMethodSignature(member)) {
@@ -53,7 +53,7 @@ export async function loadProject(): Promise<Project> {
             baseUrl: urlWithoutPath + "/twirp",
           });
 
-          let client = await createClient(clientName, transport, interfaceMap);
+          let client = await createClient(serviceName, transport, interfaceMap);
 
           let { response } = await (client as any)[methodName](input);
 
@@ -62,7 +62,7 @@ export async function loadProject(): Promise<Project> {
 
         const method: Method = {
           name: methodName,
-          editorCode: methodEditorCode(methodName, clientName, inputParameter, sourceFile, interfaceMap),
+          editorCode: methodEditorCode(methodName, serviceName, inputParameter, sourceFile, interfaceMap),
           globalTrigger,
         };
 
@@ -93,7 +93,7 @@ export async function loadProject(): Promise<Project> {
       });
 
       services.push({
-        name: clientName,
+        name: serviceName,
         methods,
       });
 
@@ -102,7 +102,7 @@ export async function loadProject(): Promise<Project> {
         ts.factory.createVariableDeclarationList(
           [
             ts.factory.createVariableDeclaration(
-              ts.factory.createIdentifier(clientName),
+              ts.factory.createIdentifier(serviceName),
               undefined,
               undefined,
               ts.factory.createObjectLiteralExpression(funcs),
@@ -118,7 +118,7 @@ export async function loadProject(): Promise<Project> {
       const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
       extraLibs.push({
-        filePath: clientName + ".ts",
+        filePath: serviceName + ".ts",
         content: printer.printFile(tFile),
       });
     });
@@ -203,15 +203,21 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
   return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
-function methodEditorCode(method: string, service: string, ip: ts.ParameterDeclaration, sourceFile: ts.SourceFile, interfaceMap: InterfaceMap): string {
+function methodEditorCode(
+  methodName: string,
+  serviceName: string,
+  inputParameter: ts.ParameterDeclaration,
+  sourceFile: ts.SourceFile,
+  interfaceMap: InterfaceMap,
+): string {
   let outputFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
-  const dp = defaultInput(ip, sourceFile, interfaceMap);
+  const dp = defaultInput(inputParameter, sourceFile, interfaceMap);
 
   const statements = [
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
-        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(service), ts.factory.createIdentifier(method)),
+        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(serviceName), ts.factory.createIdentifier(methodName)),
         undefined,
         [dp],
       ),
