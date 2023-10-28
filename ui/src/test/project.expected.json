@@ -9,7 +9,7 @@
         },
         {
           "name": "map",
-          "editorCode": "Quirks.map({ stringString: null, stringInt32: null, sint64String: null, stringRepeatedString: null });\n"
+          "editorCode": "Quirks.map({ stringString: {}, stringInt32: {}, sint64String: {}, stringRepeatedString: {} });\n"
         },
         {
           "name": "methodWithAReallyLongNameGmthggupcbmnphflnnvu",
