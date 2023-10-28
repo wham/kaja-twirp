@@ -37,16 +37,13 @@ export async function loadProject(): Promise<Project> {
         }
 
         const methodName = member.name.getText(sourceFile);
+        const inputParameter = getInputParameter(member, sourceFile);
 
-        let ip: ts.ParameterDeclaration;
-        let input: string;
+        if (!inputParameter || !inputParameter.type) {
+          return;
+        }
 
-        member.parameters.forEach((parameter) => {
-          if (parameter.name.getText(sourceFile) == "input" && parameter.type) {
-            ip = parameter;
-            input = parameter.type.getText(sourceFile);
-          }
-        });
+        const inputParameterType = inputParameter.type.getText(sourceFile);
 
         const globalTrigger = async (input: any) => {
           const url = new URL(window.location.href);
@@ -65,7 +62,7 @@ export async function loadProject(): Promise<Project> {
 
         const method: Method = {
           name: methodName,
-          editorCode: methodEditorCode(methodName, clientName, ip!, sourceFile, interfaceMap),
+          editorCode: methodEditorCode(methodName, clientName, inputParameter, sourceFile, interfaceMap),
           globalTrigger,
         };
 
@@ -83,7 +80,7 @@ export async function loadProject(): Promise<Project> {
                 undefined,
                 "input",
                 undefined,
-                ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(input!), undefined),
+                ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(inputParameterType), undefined),
               ),
             ],
             undefined,
@@ -200,6 +197,10 @@ async function createClient(name: string, transport: RpcTransport, interfaceMap:
   const module = await import("./" + sourceFile.fileName);
   console.log("module", module);
   return new module[name + "Client"](transport);
+}
+
+function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile): ts.ParameterDeclaration | undefined {
+  return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
 function methodEditorCode(method: string, service: string, ip: ts.ParameterDeclaration, sourceFile: ts.SourceFile, interfaceMap: InterfaceMap): string {
