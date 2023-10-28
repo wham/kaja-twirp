@@ -210,22 +210,26 @@ function methodEditorCode(
   sourceFile: ts.SourceFile,
   interfaceMap: InterfaceMap,
 ): string {
-  let outputFile = ts.createSourceFile("new-file.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-
-  const dp = defaultInput(inputParameter, sourceFile, interfaceMap);
+  const input = defaultInput(inputParameter, sourceFile, interfaceMap);
 
   const statements = [
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(serviceName), ts.factory.createIdentifier(methodName)),
         undefined,
-        [dp],
+        [input],
       ),
     ),
   ];
-  outputFile = ts.factory.updateSourceFile(outputFile, statements);
-  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-  const out = printer.printFile(outputFile);
 
-  return out;
+  return printStatements(statements);
+}
+
+function printStatements(statements: ts.Statement[]): string {
+  let sourceFile = ts.createSourceFile("temp.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+  sourceFile = ts.factory.updateSourceFile(sourceFile, statements);
+
+  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+
+  return printer.printFile(sourceFile);
 }
