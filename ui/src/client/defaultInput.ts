@@ -53,13 +53,25 @@ function defaultValue(type: ts.TypeNode, sourceFile: ts.SourceFile): ts.Expressi
       //if (ts.is(member) && member.type) {
       //properties.push(ts.factory.createPropertyAssignment("key", defaultValue(member.type, sourceFile)));
       //}
-      if (ts.isIndexSignatureDeclaration(member)) {
+      if (ts.isIndexSignatureDeclaration(member) && member.parameters[0].type) {
         const keyType = member.parameters[0].type;
-        properties.push(ts.factory.createPropertyAssignment("key", defaultValue(member.type, sourceFile)));
+        properties.push(ts.factory.createPropertyAssignment(defaultKeyValue(keyType), defaultValue(member.type, sourceFile)));
       }
     });
     return ts.factory.createObjectLiteralExpression(properties);
   }
 
   return ts.factory.createNull();
+}
+
+function defaultKeyValue(type: ts.TypeNode): ts.PropertyName {
+  if (type.kind === ts.SyntaxKind.StringKeyword) {
+    return ts.factory.createStringLiteral("");
+  }
+
+  if (type.kind === ts.SyntaxKind.NumberKeyword) {
+    return ts.factory.createNumericLiteral(0);
+  }
+
+  return ts.factory.createStringLiteral("?");
 }
