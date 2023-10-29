@@ -1,6 +1,5 @@
 /bin
 /ui/src/client/protoc
 /ui/src/test/protoc
-/ui/src/test/project.actual.json
 dist
 node_modules

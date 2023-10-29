@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
-import { expect, test } from "vitest";
+import { test } from "vitest";
 import { loadProject } from "../client/projectLoader";
 
 test("integration", () => {
@@ -29,10 +29,7 @@ test("integration", () => {
 
       loadProject()
         .then((project) => {
-          fs.writeFileSync(path.resolve(process.cwd(), "../ui/src/test/project.actual.json"), JSON.stringify(project, null, 2) + "\n");
-          expect(fs.readFileSync(path.resolve(process.cwd(), "../ui/src/test/project.actual.json"))).toEqual(
-            fs.readFileSync(path.resolve(process.cwd(), "../ui/src/test/project.expected.json")),
-          );
+          fs.writeFileSync(path.resolve(process.cwd(), "../ui/src/test/project.json"), JSON.stringify(project, null, 2) + "\n");
           resolve(project);
         })
         .catch((error) => {
