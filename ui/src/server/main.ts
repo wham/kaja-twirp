@@ -1,10 +1,10 @@
-import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
-import ViteExpress from "vite-express";
-import * as dotenv from "dotenv";
-import fs from "fs";
 import { exec } from "child_process";
+import * as dotenv from "dotenv";
+import express from "express";
+import fs from "fs";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
+import ViteExpress from "vite-express";
 dotenv.config({ path: process.cwd() + "/../.env" });
 
 const app = express();
@@ -25,7 +25,7 @@ app.use("/bootstrap", (req, res) => {
     }
   });
 
-  exec(`protoc --ts_out ${outPath} --ts_opt long_type_string -I${protoPath} $(find ${protoPath} -iname "*.proto")`, (error, stdout, stderr) => {
+  exec(`protoc --ts_out ${outPath} --ts_opt long_type_bigint -I${protoPath} $(find ${protoPath} -iname "*.proto")`, (error, stdout, stderr) => {
     if (error) {
       res.send(`exec error: ${error}`);
       return;

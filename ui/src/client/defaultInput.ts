@@ -46,6 +46,10 @@ function defaultValue(type: ts.TypeNode, sourceFile: ts.SourceFile, interfaceMap
     return ts.factory.createNumericLiteral("0");
   }
 
+  if (type.kind === ts.SyntaxKind.BigIntKeyword) {
+    return ts.factory.createNumericLiteral(0);
+  }
+
   if (type.kind === ts.SyntaxKind.ArrayType) {
     const arrayType = type as ts.ArrayTypeNode;
     return ts.factory.createArrayLiteralExpression([defaultValue(arrayType.elementType, sourceFile, interfaceMap)]);
@@ -83,6 +87,10 @@ function defaultKeyValue(type: ts.TypeNode): ts.PropertyName {
   }
 
   if (type.kind === ts.SyntaxKind.NumberKeyword) {
+    return ts.factory.createNumericLiteral(0);
+  }
+
+  if (type.kind === ts.SyntaxKind.BigIntKeyword) {
     return ts.factory.createNumericLiteral(0);
   }
 

@@ -25,7 +25,7 @@
         },
         {
           "name": "types",
-          "editorCode": "Quirks.types({ timestamp: { seconds: \"\", nanos: 0 }, bool: true });\n"
+          "editorCode": "Quirks.types({ timestamp: { seconds: 0, nanos: 0 }, bool: true });\n"
         }
       ]
     },
@@ -38,7 +38,7 @@
         },
         {
           "name": "index",
-          "editorCode": "SearchService.index({ result: { url: \"\", title: \"\", snippets: [\"\"], isAd: true }, position: null, additionalCopies: \"\" });\n"
+          "editorCode": "SearchService.index({ result: { url: \"\", title: \"\", snippets: [\"\"], isAd: true }, position: null, additionalCopies: 0 });\n"
         }
       ]
     }
@@ -46,7 +46,7 @@
   "extraLibs": [
     {
       "filePath": "protoc/google/protobuf/timestamp.ts",
-      "content": "interface Timestamp {\n    seconds: string;\n    nanos: number;\n}\n"
+      "content": "interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
     },
     {
       "filePath": "protoc/lib/message.ts",
@@ -66,7 +66,7 @@
     },
     {
       "filePath": "protoc/search-service.ts",
-      "content": "interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: string;\n}\ninterface IndexResponse {\n    result?: Result;\n}\n"
+      "content": "interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\ninterface IndexResponse {\n    result?: Result;\n}\n"
     }
   ]
 }
