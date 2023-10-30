@@ -9,7 +9,7 @@
         },
         {
           "name": "map",
-          "editorCode": "Quirks.map({ stringString: { \"\": \"\" }, stringInt32: { \"\": 0 }, sint64String: { \"\": \"\" }, stringRepeatedString: { \"\": null } });\n"
+          "editorCode": "Quirks.map({ stringString: { \"\": \"\" }, stringInt32: { \"\": 0 }, sint64String: { \"\": \"\" }, stringRepeatedString: { \"\": { value: [\"\"] } } });\n"
         },
         {
           "name": "methodWithAReallyLongNameGmthggupcbmnphflnnvu",
@@ -21,11 +21,11 @@
         },
         {
           "name": "repeated",
-          "editorCode": "Quirks.repeated({ string: [\"\"], int32: [0], enum: [null], message: [null] });\n"
+          "editorCode": "Quirks.repeated({ string: [\"\"], int32: [0], enum: [null], message: [{ name: \"\" }] });\n"
         },
         {
           "name": "types",
-          "editorCode": "Quirks.types({ timestamp: null, bool: true });\n"
+          "editorCode": "Quirks.types({ timestamp: { seconds: \"\", nanos: 0 }, bool: true });\n"
         }
       ]
     },
@@ -38,7 +38,7 @@
         },
         {
           "name": "index",
-          "editorCode": "SearchService.index({ result: null, position: null, additionalCopies: \"\" });\n"
+          "editorCode": "SearchService.index({ result: { url: \"\", title: \"\", snippets: [\"\"], isAd: true }, position: null, additionalCopies: \"\" });\n"
         }
       ]
     }
