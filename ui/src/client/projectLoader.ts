@@ -16,6 +16,28 @@ export async function loadProject(): Promise<Project> {
     const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
     const nonClientInterfaces: ts.InterfaceDeclaration[] = [];
 
+    sourceFile.statements.forEach((statement) => {
+      if (ts.isVariableStatement(statement)) {
+        const declarationList = statement.declarationList;
+        declarationList.declarations.forEach((declaration) => {
+          if (ts.isIdentifier(declaration.name)) {
+            const n = declaration.name.text;
+            if (declaration.initializer && ts.isNewExpression(declaration.initializer)) {
+              if (declaration.initializer.expression.getText(sourceFile) === "ServiceType") {
+                import("./" + sourceFile.fileName).then((module) => {
+                  console.log("module", module);
+                  const s: ServiceInfo = module[n];
+                  console.log("s", s.methods);
+                });
+              }
+            }
+          }
+          return false;
+        });
+      }
+      return false;
+    });
+
     interfaces.forEach((interfaceDeclaration) => {
       const serviceName = extractClientName(interfaceDeclaration.name.text);
 
