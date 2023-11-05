@@ -6,6 +6,7 @@ import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
 
 export async function loadProject(): Promise<Project> {
   const sourceFiles = await loadSourceFiles();
+  const modules = await loadModules();
   const interfaceMap = createInterfaceMap(sourceFiles);
 
   const services: Service[] = [];
@@ -24,11 +25,15 @@ export async function loadProject(): Promise<Project> {
             const n = declaration.name.text;
             if (declaration.initializer && ts.isNewExpression(declaration.initializer)) {
               if (declaration.initializer.expression.getText(sourceFile) === "ServiceType") {
-                import("./" + sourceFile.fileName).then((module) => {
-                  console.log("module", module);
-                  const s: ServiceInfo = module[n];
-                  console.log("s", s.methods);
-                });
+                const module = modules["./" + sourceFile.fileName];
+                if (module && module[n]) {
+                  const serviceInfo: ServiceInfo = module[n];
+                  services.push({
+                    name: serviceInfo.typeName,
+                    methods: [],
+                    info: serviceInfo,
+                  });
+                }
               }
             }
           }
@@ -170,6 +175,18 @@ async function loadSourceFiles(): Promise<ts.SourceFile[]> {
   }
 
   return sourceFiles;
+}
+
+async function loadModules(): Promise<Record<string, any>> {
+  const imports = import.meta.glob("./protoc/**/*.ts");
+  const modules: Record<string, any> = {};
+
+  for (const path in imports) {
+    const module = await imports[path]();
+    modules[path] = module;
+  }
+
+  return modules;
 }
 
 function createInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
