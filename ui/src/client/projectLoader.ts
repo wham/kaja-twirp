@@ -1,7 +1,8 @@
-import { RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
+import { MethodInfo, RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
 import { defaultInput } from "./defaultInput";
+import { defaultInput2 } from "./defaultInput2";
 import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
 
 export async function loadProject(): Promise<Project> {
@@ -28,9 +29,17 @@ export async function loadProject(): Promise<Project> {
                 const module = modules["./" + sourceFile.fileName];
                 if (module && module[n]) {
                   const serviceInfo: ServiceInfo = module[n];
+                  const methods: Method[] = [];
+                  serviceInfo.methods.forEach((methodInfo) => {
+                    methods.push({
+                      name: methodInfo.name,
+                      editorCode: methodEditorCode2(methodInfo),
+                      globalTrigger: async (input: any) => {},
+                    });
+                  });
                   services.push({
                     name: serviceInfo.typeName,
-                    methods: [],
+                    methods,
                     info: serviceInfo,
                   });
                 }
@@ -243,6 +252,22 @@ function methodEditorCode(
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(serviceName), ts.factory.createIdentifier(methodName)),
+        undefined,
+        [input],
+      ),
+    ),
+  ];
+
+  return printStatements(statements);
+}
+
+function methodEditorCode2(methodInfo: MethodInfo): string {
+  const input = defaultInput2(methodInfo);
+
+  const statements = [
+    ts.factory.createExpressionStatement(
+      ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(methodInfo.service.typeName), ts.factory.createIdentifier(methodInfo.name)),
         undefined,
         [input],
       ),
