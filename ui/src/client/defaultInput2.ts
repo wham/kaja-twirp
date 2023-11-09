@@ -1,46 +1,46 @@
+import { FieldInfo, ScalarType } from "@protobuf-ts/runtime";
 import { MethodInfo } from "@protobuf-ts/runtime-rpc";
 import ts from "typescript";
-import { InterfaceMap } from "./project";
 
 export function defaultInput2(methodInfo: MethodInfo): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
-  properties.push(ts.factory.createPropertyAssignment("test", ts.factory.createStringLiteral(methodInfo.I.toJsonString(methodInfo.I.create()))));
-
-  return ts.factory.createObjectLiteralExpression(properties);
-}
-
-export function defaultInterfaceImplementation(
-  interfaceDeclaration: [ts.InterfaceDeclaration, ts.SourceFile],
-  interfaceMap: InterfaceMap,
-): ts.ObjectLiteralExpression {
-  const properties: ts.PropertyAssignment[] = [];
-
-  interfaceDeclaration[0].members.forEach((member) => {
-    if (ts.isPropertySignature(member) && member.name && member.type) {
-      properties.push(
-        ts.factory.createPropertyAssignment(member.name.getText(interfaceDeclaration[1]), defaultValue(member.type, interfaceDeclaration[1], interfaceMap)),
-      );
-    }
+  methodInfo.I.fields.forEach((field) => {
+    properties.push(ts.factory.createPropertyAssignment(field.localName, defaultValue(field)));
   });
 
   return ts.factory.createObjectLiteralExpression(properties);
 }
 
-function defaultValue(type: ts.TypeNode, sourceFile: ts.SourceFile, interfaceMap: InterfaceMap): ts.Expression {
-  if (type.kind === ts.SyntaxKind.StringKeyword) {
+function defaultValue(field: FieldInfo): ts.Expression {
+  if (field.kind === "scalar" && field.T === ScalarType.STRING) {
     return ts.factory.createStringLiteral("");
   }
 
-  if (type.kind === ts.SyntaxKind.BooleanKeyword) {
+  if (field.kind === "scalar" && field.T === ScalarType.BOOL) {
     return ts.factory.createTrue();
   }
 
-  if (type.kind === ts.SyntaxKind.NumberKeyword) {
+  const numericTypes = [
+    ScalarType.DOUBLE,
+    ScalarType.FLOAT,
+    ScalarType.INT64,
+    ScalarType.UINT64,
+    ScalarType.INT32,
+    ScalarType.FIXED64,
+    ScalarType.FIXED32,
+    ScalarType.UINT32,
+    ScalarType.SFIXED32,
+    ScalarType.SFIXED64,
+    ScalarType.SINT32,
+    ScalarType.SINT64,
+  ];
+
+  if (field.kind === "scalar" && numericTypes.includes(field.T)) {
     return ts.factory.createNumericLiteral("0");
   }
 
-  if (type.kind === ts.SyntaxKind.BigIntKeyword) {
+  /*if (type.kind === ts.SyntaxKind.BigIntKeyword) {
     return ts.factory.createNumericLiteral(0);
   }
 
@@ -70,23 +70,7 @@ function defaultValue(type: ts.TypeNode, sourceFile: ts.SourceFile, interfaceMap
     if (interfaceMap[typeName]) {
       return defaultInterfaceImplementation([interfaceMap[typeName].interfaceDeclaration, interfaceMap[typeName].sourceFile], interfaceMap);
     }
-  }
+  }*/
 
   return ts.factory.createNull();
-}
-
-function defaultKeyValue(type: ts.TypeNode): ts.PropertyName {
-  if (type.kind === ts.SyntaxKind.StringKeyword) {
-    return ts.factory.createStringLiteral("");
-  }
-
-  if (type.kind === ts.SyntaxKind.NumberKeyword) {
-    return ts.factory.createNumericLiteral(0);
-  }
-
-  if (type.kind === ts.SyntaxKind.BigIntKeyword) {
-    return ts.factory.createNumericLiteral(0);
-  }
-
-  return ts.factory.createStringLiteral("?");
 }
