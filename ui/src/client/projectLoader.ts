@@ -1,7 +1,6 @@
 import { MethodInfo, RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
-import { defaultInput } from "./defaultInput";
 import { defaultInput2 } from "./defaultInput2";
 import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
 
@@ -43,7 +42,7 @@ export async function loadProject(): Promise<Project> {
 
           methods.push({
             name: methodName,
-            editorCode: methodEditorCode2(methodInfo),
+            editorCode: methodEditorCode(methodInfo),
             globalTrigger,
           });
         });
@@ -177,19 +176,6 @@ function createInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
   return interfaceMap;
 }
 
-function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.InterfaceDeclaration {
-  const copy = ts.factory.createInterfaceDeclaration(
-    undefined,
-    undefined,
-    interfaceDeclaration.name,
-    interfaceDeclaration.typeParameters,
-    interfaceDeclaration.heritageClauses,
-    interfaceDeclaration.members,
-  );
-
-  return copy;
-}
-
 async function createClient(name: string, transport: RpcTransport, interfaceMap: InterfaceMap): Promise<ServiceInfo | undefined> {
   const { sourceFile } = interfaceMap["I" + name + "Client"];
   if (!sourceFile) {
@@ -204,29 +190,7 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
   return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
-function methodEditorCode(
-  methodName: string,
-  serviceName: string,
-  inputParameter: ts.ParameterDeclaration,
-  sourceFile: ts.SourceFile,
-  interfaceMap: InterfaceMap,
-): string {
-  const input = defaultInput(inputParameter, sourceFile, interfaceMap);
-
-  const statements = [
-    ts.factory.createExpressionStatement(
-      ts.factory.createCallExpression(
-        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(serviceName), ts.factory.createIdentifier(methodName)),
-        undefined,
-        [input],
-      ),
-    ),
-  ];
-
-  return printStatements(statements);
-}
-
-function methodEditorCode2(methodInfo: MethodInfo): string {
+function methodEditorCode(methodInfo: MethodInfo): string {
   const input = defaultInput2(methodInfo);
 
   const statements = [
