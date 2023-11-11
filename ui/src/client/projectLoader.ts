@@ -1,7 +1,7 @@
 import { MethodInfo, RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
-import { defaultInput2 } from "./defaultInput2";
+import { defaultInput } from "./defaultInput";
 import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
 
 export async function loadProject(): Promise<Project> {
@@ -191,7 +191,7 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
 }
 
 function methodEditorCode(methodInfo: MethodInfo): string {
-  const input = defaultInput2(methodInfo);
+  const input = defaultInput(methodInfo);
 
   const statements = [
     ts.factory.createExpressionStatement(
