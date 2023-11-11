@@ -16,146 +16,111 @@ export async function loadProject(): Promise<Project> {
   sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
     const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
-    const nonClientInterfaces: ts.InterfaceDeclaration[] = [];
+    const serviceNames = findServiceNames(sourceFile);
+    const module = modules["./" + sourceFile.fileName];
 
-    sourceFile.statements.forEach((statement) => {
-      if (ts.isVariableStatement(statement)) {
-        const declarationList = statement.declarationList;
-        declarationList.declarations.forEach((declaration) => {
-          if (ts.isIdentifier(declaration.name)) {
-            const n = declaration.name.text;
-            if (declaration.initializer && ts.isNewExpression(declaration.initializer)) {
-              if (declaration.initializer.expression.getText(sourceFile) === "ServiceType") {
-                const module = modules["./" + sourceFile.fileName];
-                if (module && module[n]) {
-                  const serviceInfo: ServiceInfo = module[n];
-                  const methods: Method[] = [];
-                  serviceInfo.methods.forEach((methodInfo) => {
-                    methods.push({
-                      name: methodInfo.name,
-                      editorCode: methodEditorCode2(methodInfo),
-                      globalTrigger: async (input: any) => {},
-                    });
-                  });
-                  services.push({
-                    name: serviceInfo.typeName,
-                    methods,
-                    info: serviceInfo,
-                  });
-                }
-              }
-            }
-          }
-          return false;
+    serviceNames.forEach((serviceName) => {
+      if (module && module[serviceName]) {
+        const serviceInfo: ServiceInfo = module[serviceName];
+        const methods: Method[] = [];
+        const { interfaceDeclaration } = interfaceMap["I" + serviceName + "Client"];
+        serviceInfo.methods.forEach((methodInfo) => {
+          const methodName = methodInfo.name;
+          const globalTrigger = async (input: any) => {
+            const url = new URL(window.location.href);
+            const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}`;
+
+            let transport = new TwirpFetchTransport({
+              baseUrl: urlWithoutPath + "/twirp",
+            });
+
+            let client = await createClient(serviceName, transport, interfaceMap);
+
+            let { response } = await (client as any)[methodName](input);
+
+            (window as any)["GOUT"](JSON.stringify(response));
+          };
+
+          methods.push({
+            name: methodName,
+            editorCode: methodEditorCode2(methodInfo),
+            globalTrigger,
+          });
         });
-      }
-      return false;
-    });
+        services.push({
+          name: serviceName,
+          methods,
+          info: serviceInfo,
+        });
 
-    interfaces.forEach((interfaceDeclaration) => {
-      const serviceName = extractClientName(interfaceDeclaration.name.text);
+        if (interfaceDeclaration) {
+          const funcs: ts.PropertyAssignment[] = [];
+          interfaceDeclaration.members.forEach((member) => {
+            if (!ts.isMethodSignature(member)) {
+              return;
+            }
 
-      if (!serviceName) {
-        nonClientInterfaces.push(copyInterface(interfaceDeclaration));
-        return;
-      }
+            if (!member.name) {
+              return;
+            }
 
-      const methods: Method[] = [];
-      const funcs: ts.PropertyAssignment[] = [];
-      const trigger = { [serviceName]: async (input: any) => {} };
+            const methodName = member.name.getText(sourceFile);
+            const inputParameter = getInputParameter(member, sourceFile);
 
-      interfaceDeclaration.members.forEach((member) => {
-        if (!ts.isMethodSignature(member)) {
-          return;
-        }
+            if (!inputParameter || !inputParameter.type) {
+              return;
+            }
 
-        if (!member.name) {
-          return;
-        }
+            const inputParameterType = inputParameter.type.getText(sourceFile);
 
-        const methodName = member.name.getText(sourceFile);
-        const inputParameter = getInputParameter(member, sourceFile);
-
-        if (!inputParameter || !inputParameter.type) {
-          return;
-        }
-
-        const inputParameterType = inputParameter.type.getText(sourceFile);
-
-        const globalTrigger = async (input: any) => {
-          const url = new URL(window.location.href);
-          const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}`;
-
-          let transport = new TwirpFetchTransport({
-            baseUrl: urlWithoutPath + "/twirp",
+            const func = ts.factory.createPropertyAssignment(
+              methodName,
+              ts.factory.createArrowFunction(
+                [ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword)],
+                undefined,
+                [
+                  ts.factory.createParameterDeclaration(
+                    undefined,
+                    undefined,
+                    undefined,
+                    "input",
+                    undefined,
+                    ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(inputParameterType), undefined),
+                  ),
+                ],
+                undefined,
+                ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+                ts.factory.createBlock([]),
+                /*this.proxyBody(protoService, protoMethod)*/
+              ),
+            );
+            funcs.push(func);
           });
 
-          let client = await createClient(serviceName, transport, interfaceMap);
-
-          let { response } = await (client as any)[methodName](input);
-
-          (window as any)["GOUT"](JSON.stringify(response));
-        };
-
-        const method: Method = {
-          name: methodName,
-          editorCode: methodEditorCode(methodName, serviceName, inputParameter, sourceFile, interfaceMap),
-          globalTrigger,
-        };
-
-        methods.push(method);
-
-        const func = ts.factory.createPropertyAssignment(
-          methodName,
-          ts.factory.createArrowFunction(
-            [ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword)],
+          const serviceInterfaceDefinition = ts.factory.createVariableStatement(
             undefined,
-            [
-              ts.factory.createParameterDeclaration(
-                undefined,
-                undefined,
-                undefined,
-                "input",
-                undefined,
-                ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(inputParameterType), undefined),
-              ),
-            ],
-            undefined,
-            ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-            ts.factory.createBlock([]),
-            /*this.proxyBody(protoService, protoMethod)*/
-          ),
-        );
-        funcs.push(func);
-      });
-
-      services.push({
-        name: serviceName,
-        methods,
-      });
-
-      const serviceInterfaceDefinition = ts.factory.createVariableStatement(
-        undefined,
-        ts.factory.createVariableDeclarationList(
-          [
-            ts.factory.createVariableDeclaration(
-              ts.factory.createIdentifier(serviceName),
-              undefined,
-              undefined,
-              ts.factory.createObjectLiteralExpression(funcs),
+            ts.factory.createVariableDeclarationList(
+              [
+                ts.factory.createVariableDeclaration(
+                  ts.factory.createIdentifier(serviceName),
+                  undefined,
+                  undefined,
+                  ts.factory.createObjectLiteralExpression(funcs),
+                ),
+              ],
+              ts.NodeFlags.Const,
             ),
-          ],
-          ts.NodeFlags.Const,
-        ),
-      );
+          );
 
-      serviceInterfaceDefinitions.push(serviceInterfaceDefinition);
+          serviceInterfaceDefinitions.push(serviceInterfaceDefinition);
+        }
+      }
     });
 
-    if (serviceInterfaceDefinitions.length > 0 || nonClientInterfaces.length > 0) {
+    if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0) {
       extraLibs.push({
         filePath: sourceFile.fileName,
-        content: printStatements([...serviceInterfaceDefinitions, ...nonClientInterfaces]),
+        content: printStatements([...serviceInterfaceDefinitions, ...interfaces]),
       });
     }
   });
@@ -284,4 +249,26 @@ function printStatements(statements: ts.Statement[]): string {
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
   return printer.printFile(sourceFile);
+}
+
+function findServiceNames(sourceFile: ts.SourceFile): string[] {
+  const serviceNames: string[] = [];
+
+  sourceFile.statements.forEach((statement) => {
+    if (!ts.isVariableStatement(statement)) {
+      return;
+    }
+
+    statement.declarationList.declarations.forEach((declaration) => {
+      if (!ts.isIdentifier(declaration.name)) {
+        return;
+      }
+
+      if (declaration.initializer && ts.isNewExpression(declaration.initializer) && declaration.initializer.expression.getText(sourceFile) === "ServiceType") {
+        serviceNames.push(declaration.name.text);
+      }
+    });
+  });
+
+  return serviceNames;
 }
