@@ -35,7 +35,7 @@ export async function loadProject(): Promise<Project> {
 
             let client = await createClient(serviceName, transport, interfaceMap);
 
-            let { response } = await (client as any)[methodName](input);
+            let { response } = await (client as any)[lcfirst(methodName)](input);
 
             (window as any)["GOUT"](JSON.stringify(response));
           };
@@ -194,7 +194,7 @@ function createServiceInterfaceDefinition(serviceName: string, interfaceDeclarat
       return;
     }
 
-    const methodName = member.name.getText(sourceFile);
+    const methodName = ucfirst(member.name.getText(sourceFile));
     const inputParameter = getInputParameter(member, sourceFile);
 
     if (!inputParameter || !inputParameter.type) {
@@ -249,4 +249,12 @@ function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.Interf
   );
 
   return copy;
+}
+
+function ucfirst(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function lcfirst(str: string): string {
+  return str.charAt(0).toLowerCase() + str.slice(1);
 }
