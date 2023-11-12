@@ -51,65 +51,12 @@ export async function loadProject(): Promise<Project> {
           methods,
         });
 
-        if (interfaceDeclaration) {
-          const funcs: ts.PropertyAssignment[] = [];
-          interfaceDeclaration.members.forEach((member) => {
-            if (!ts.isMethodSignature(member)) {
-              return;
-            }
-
-            if (!member.name) {
-              return;
-            }
-
-            const methodName = member.name.getText(sourceFile);
-            const inputParameter = getInputParameter(member, sourceFile);
-
-            if (!inputParameter || !inputParameter.type) {
-              return;
-            }
-
-            const inputParameterType = inputParameter.type.getText(sourceFile);
-
-            const func = ts.factory.createPropertyAssignment(
-              methodName,
-              ts.factory.createArrowFunction(
-                [ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword)],
-                undefined,
-                [
-                  ts.factory.createParameterDeclaration(
-                    undefined,
-                    undefined,
-                    undefined,
-                    "input",
-                    undefined,
-                    ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(inputParameterType), undefined),
-                  ),
-                ],
-                undefined,
-                ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-                ts.factory.createBlock([]),
-                /*this.proxyBody(protoService, protoMethod)*/
-              ),
-            );
-            funcs.push(func);
-          });
-
-          const serviceInterfaceDefinition = ts.factory.createVariableStatement(
-            undefined,
-            ts.factory.createVariableDeclarationList(
-              [
-                ts.factory.createVariableDeclaration(
-                  ts.factory.createIdentifier(serviceName),
-                  undefined,
-                  undefined,
-                  ts.factory.createObjectLiteralExpression(funcs),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
+        if (interfaceMap["I" + serviceName + "Client"]) {
+          const serviceInterfaceDefinition = createServiceInterfaceDefinition(
+            serviceName,
+            interfaceMap["I" + serviceName + "Client"].interfaceDeclaration,
+            interfaceMap["I" + serviceName + "Client"].sourceFile,
           );
-
           serviceInterfaceDefinitions.push(serviceInterfaceDefinition);
         }
       }
@@ -234,4 +181,59 @@ function findServiceNames(sourceFile: ts.SourceFile): string[] {
   });
 
   return serviceNames;
+}
+
+function createServiceInterfaceDefinition(serviceName: string, interfaceDeclaration: ts.InterfaceDeclaration, sourceFile: ts.SourceFile): ts.VariableStatement {
+  const funcs: ts.PropertyAssignment[] = [];
+  interfaceDeclaration.members.forEach((member) => {
+    if (!ts.isMethodSignature(member)) {
+      return;
+    }
+
+    if (!member.name) {
+      return;
+    }
+
+    const methodName = member.name.getText(sourceFile);
+    const inputParameter = getInputParameter(member, sourceFile);
+
+    if (!inputParameter || !inputParameter.type) {
+      return;
+    }
+
+    const inputParameterType = inputParameter.type.getText(sourceFile);
+
+    const func = ts.factory.createPropertyAssignment(
+      methodName,
+      ts.factory.createArrowFunction(
+        [ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword)],
+        undefined,
+        [
+          ts.factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            undefined,
+            "input",
+            undefined,
+            ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(inputParameterType), undefined),
+          ),
+        ],
+        undefined,
+        ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+        ts.factory.createBlock([]),
+        /*this.proxyBody(protoService, protoMethod)*/
+      ),
+    );
+    funcs.push(func);
+  });
+
+  const serviceInterfaceDefinition = ts.factory.createVariableStatement(
+    undefined,
+    ts.factory.createVariableDeclarationList(
+      [ts.factory.createVariableDeclaration(ts.factory.createIdentifier(serviceName), undefined, undefined, ts.factory.createObjectLiteralExpression(funcs))],
+      ts.NodeFlags.Const,
+    ),
+  );
+
+  return serviceInterfaceDefinition;
 }

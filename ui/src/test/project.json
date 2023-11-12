@@ -46,7 +46,7 @@
   "extraLibs": [
     {
       "filePath": "protoc/google/protobuf/timestamp.ts",
-      "content": "export interface Timestamp {\n    seconds: string;\n    nanos: number;\n}\n"
+      "content": "export interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
     },
     {
       "filePath": "protoc/lib/message.ts",
@@ -58,7 +58,7 @@
     },
     {
       "filePath": "protoc/quirks.ts",
-      "content": "const Quirks = {};\nexport interface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\nexport interface MapRequest_RepeatedString {\n    value: string[];\n}\nexport interface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\nexport interface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\nexport interface Void {\n}\n"
+      "content": "const Quirks = { getAuthentication: async (input: Void) => { }, map: async (input: MapRequest) => { }, methodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, panic: async (input: Void) => { }, repeated: async (input: RepeatedRequest) => { }, types: async (input: TypesRequest) => { } };\nexport interface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\nexport interface MapRequest_RepeatedString {\n    value: string[];\n}\nexport interface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\nexport interface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\nexport interface Void {\n}\n"
     },
     {
       "filePath": "protoc/search-service.client.ts",
@@ -66,7 +66,7 @@
     },
     {
       "filePath": "protoc/search-service.ts",
-      "content": "const SearchService = {};\nexport interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\nexport interface SearchResponse {\n    results: Result[];\n}\nexport interface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\nexport interface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: string;\n}\nexport interface IndexResponse {\n    result?: Result;\n}\n"
+      "content": "const SearchService = { search: async (input: SearchRequest) => { }, index: async (input: IndexRequest) => { } };\nexport interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\nexport interface SearchResponse {\n    results: Result[];\n}\nexport interface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\nexport interface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\nexport interface IndexResponse {\n    result?: Result;\n}\n"
     }
   ]
 }
