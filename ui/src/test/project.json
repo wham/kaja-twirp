@@ -46,27 +46,27 @@
   "extraLibs": [
     {
       "filePath": "protoc/google/protobuf/timestamp.ts",
-      "content": "export interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
+      "content": "interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
     },
     {
       "filePath": "protoc/lib/message.ts",
-      "content": "export interface Message {\n    name: string;\n}\n"
+      "content": "interface Message {\n    name: string;\n}\n"
     },
     {
       "filePath": "protoc/quirks.client.ts",
-      "content": "export interface IQuirksClient {\n    getAuthentication(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    map(input: MapRequest, options?: RpcOptions): UnaryCall<MapRequest, MapRequest>;\n    methodWithAReallyLongNameGmthggupcbmnphflnnvu(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    panic(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    repeated(input: RepeatedRequest, options?: RpcOptions): UnaryCall<RepeatedRequest, RepeatedRequest>;\n    types(input: TypesRequest, options?: RpcOptions): UnaryCall<TypesRequest, TypesRequest>;\n}\n"
+      "content": "interface IQuirksClient {\n    getAuthentication(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    map(input: MapRequest, options?: RpcOptions): UnaryCall<MapRequest, MapRequest>;\n    methodWithAReallyLongNameGmthggupcbmnphflnnvu(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    panic(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    repeated(input: RepeatedRequest, options?: RpcOptions): UnaryCall<RepeatedRequest, RepeatedRequest>;\n    types(input: TypesRequest, options?: RpcOptions): UnaryCall<TypesRequest, TypesRequest>;\n}\n"
     },
     {
       "filePath": "protoc/quirks.ts",
-      "content": "const Quirks = { getAuthentication: async (input: Void) => { }, map: async (input: MapRequest) => { }, methodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, panic: async (input: Void) => { }, repeated: async (input: RepeatedRequest) => { }, types: async (input: TypesRequest) => { } };\nexport interface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\nexport interface MapRequest_RepeatedString {\n    value: string[];\n}\nexport interface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\nexport interface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\nexport interface Void {\n}\n"
+      "content": "const Quirks = { getAuthentication: async (input: Void) => { }, map: async (input: MapRequest) => { }, methodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, panic: async (input: Void) => { }, repeated: async (input: RepeatedRequest) => { }, types: async (input: TypesRequest) => { } };\ninterface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\ninterface MapRequest_RepeatedString {\n    value: string[];\n}\ninterface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\ninterface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\ninterface Void {\n}\n"
     },
     {
       "filePath": "protoc/search-service.client.ts",
-      "content": "export interface ISearchServiceClient {\n    search(input: SearchRequest, options?: RpcOptions): UnaryCall<SearchRequest, SearchResponse>;\n    index(input: IndexRequest, options?: RpcOptions): UnaryCall<IndexRequest, IndexResponse>;\n}\n"
+      "content": "interface ISearchServiceClient {\n    search(input: SearchRequest, options?: RpcOptions): UnaryCall<SearchRequest, SearchResponse>;\n    index(input: IndexRequest, options?: RpcOptions): UnaryCall<IndexRequest, IndexResponse>;\n}\n"
     },
     {
       "filePath": "protoc/search-service.ts",
-      "content": "const SearchService = { search: async (input: SearchRequest) => { }, index: async (input: IndexRequest) => { } };\nexport interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\nexport interface SearchResponse {\n    results: Result[];\n}\nexport interface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\nexport interface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\nexport interface IndexResponse {\n    result?: Result;\n}\n"
+      "content": "const SearchService = { search: async (input: SearchRequest) => { }, index: async (input: IndexRequest) => { } };\ninterface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\ninterface IndexResponse {\n    result?: Result;\n}\n"
     }
   ]
 }
