@@ -5,27 +5,27 @@
       "methods": [
         {
           "name": "GetAuthentication",
-          "editorCode": "quirks.v1.Quirks.GetAuthentication({});\n"
+          "editorCode": "Quirks.GetAuthentication({});\n"
         },
         {
           "name": "Map",
-          "editorCode": "quirks.v1.Quirks.Map({ stringString: null, stringInt32: null, sint64String: null, stringRepeatedString: null });\n"
+          "editorCode": "Quirks.Map({ stringString: null, stringInt32: null, sint64String: null, stringRepeatedString: null });\n"
         },
         {
           "name": "MethodWithAReallyLongNameGmthggupcbmnphflnnvu",
-          "editorCode": "quirks.v1.Quirks.MethodWithAReallyLongNameGmthggupcbmnphflnnvu({});\n"
+          "editorCode": "Quirks.MethodWithAReallyLongNameGmthggupcbmnphflnnvu({});\n"
         },
         {
           "name": "Panic",
-          "editorCode": "quirks.v1.Quirks.Panic({});\n"
+          "editorCode": "Quirks.Panic({});\n"
         },
         {
           "name": "Repeated",
-          "editorCode": "quirks.v1.Quirks.Repeated({ string: \"\", int32: 0, enum: null, message: null });\n"
+          "editorCode": "Quirks.Repeated({ string: \"\", int32: 0, enum: null, message: null });\n"
         },
         {
           "name": "Types",
-          "editorCode": "quirks.v1.Quirks.Types({ timestamp: null, bool: true });\n"
+          "editorCode": "Quirks.Types({ timestamp: null, bool: true });\n"
         }
       ]
     },
