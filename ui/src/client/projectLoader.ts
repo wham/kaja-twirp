@@ -65,7 +65,7 @@ export async function loadProject(): Promise<Project> {
     if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0) {
       extraLibs.push({
         filePath: sourceFile.fileName,
-        content: printStatements([...serviceInterfaceDefinitions, ...interfaces]),
+        content: printStatements([...serviceInterfaceDefinitions, ...interfaces.map((i) => copyInterface(i))]),
       });
     }
   });
@@ -236,4 +236,17 @@ function createServiceInterfaceDefinition(serviceName: string, interfaceDeclarat
   );
 
   return serviceInterfaceDefinition;
+}
+
+function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.InterfaceDeclaration {
+  const copy = ts.factory.createInterfaceDeclaration(
+    undefined,
+    undefined,
+    interfaceDeclaration.name,
+    interfaceDeclaration.typeParameters,
+    interfaceDeclaration.heritageClauses,
+    interfaceDeclaration.members,
+  );
+
+  return copy;
 }
