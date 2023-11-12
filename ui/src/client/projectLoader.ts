@@ -42,7 +42,7 @@ export async function loadProject(): Promise<Project> {
 
           methods.push({
             name: methodName,
-            editorCode: methodEditorCode(methodInfo),
+            editorCode: methodEditorCode(methodInfo, serviceName),
             globalTrigger,
           });
         });
@@ -189,13 +189,13 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
   return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
-function methodEditorCode(methodInfo: MethodInfo): string {
+function methodEditorCode(methodInfo: MethodInfo, serviceName: string): string {
   const input = defaultInput(methodInfo);
 
   const statements = [
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
-        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(methodInfo.service.typeName), ts.factory.createIdentifier(methodInfo.name)),
+        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(serviceName), ts.factory.createIdentifier(methodInfo.name)),
         undefined,
         [input],
       ),
