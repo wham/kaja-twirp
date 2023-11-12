@@ -49,7 +49,6 @@ export async function loadProject(): Promise<Project> {
         services.push({
           name: serviceName,
           methods,
-          info: serviceInfo,
         });
 
         if (interfaceDeclaration) {

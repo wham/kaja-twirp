@@ -4,28 +4,28 @@
       "name": "Quirks",
       "methods": [
         {
-          "name": "getAuthentication",
-          "editorCode": "Quirks.getAuthentication({});\n"
+          "name": "GetAuthentication",
+          "editorCode": "quirks.v1.Quirks.GetAuthentication({});\n"
         },
         {
-          "name": "map",
-          "editorCode": "Quirks.map({ stringString: { \"\": \"\" }, stringInt32: { \"\": 0 }, sint64String: { \"\": \"\" }, stringRepeatedString: { \"\": { value: [\"\"] } } });\n"
+          "name": "Map",
+          "editorCode": "quirks.v1.Quirks.Map({ stringString: null, stringInt32: null, sint64String: null, stringRepeatedString: null });\n"
         },
         {
-          "name": "methodWithAReallyLongNameGmthggupcbmnphflnnvu",
-          "editorCode": "Quirks.methodWithAReallyLongNameGmthggupcbmnphflnnvu({});\n"
+          "name": "MethodWithAReallyLongNameGmthggupcbmnphflnnvu",
+          "editorCode": "quirks.v1.Quirks.MethodWithAReallyLongNameGmthggupcbmnphflnnvu({});\n"
         },
         {
-          "name": "panic",
-          "editorCode": "Quirks.panic({});\n"
+          "name": "Panic",
+          "editorCode": "quirks.v1.Quirks.Panic({});\n"
         },
         {
-          "name": "repeated",
-          "editorCode": "Quirks.repeated({ string: [\"\"], int32: [0], enum: [null], message: [{ name: \"\" }] });\n"
+          "name": "Repeated",
+          "editorCode": "quirks.v1.Quirks.Repeated({ string: \"\", int32: 0, enum: null, message: null });\n"
         },
         {
-          "name": "types",
-          "editorCode": "Quirks.types({ timestamp: { seconds: 0, nanos: 0 }, bool: true });\n"
+          "name": "Types",
+          "editorCode": "quirks.v1.Quirks.Types({ timestamp: null, bool: true });\n"
         }
       ]
     },
@@ -33,12 +33,12 @@
       "name": "SearchService",
       "methods": [
         {
-          "name": "search",
-          "editorCode": "SearchService.search({ query: \"\", pageNumber: 0, resultPerPage: 0 });\n"
+          "name": "Search",
+          "editorCode": "SearchService.Search({ query: \"\", pageNumber: 0, resultPerPage: 0 });\n"
         },
         {
-          "name": "index",
-          "editorCode": "SearchService.index({ result: { url: \"\", title: \"\", snippets: [\"\"], isAd: true }, position: null, additionalCopies: 0 });\n"
+          "name": "Index",
+          "editorCode": "SearchService.Index({ result: null, position: null, additionalCopies: 0 });\n"
         }
       ]
     }
@@ -46,27 +46,27 @@
   "extraLibs": [
     {
       "filePath": "protoc/google/protobuf/timestamp.ts",
-      "content": "interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
+      "content": "export interface Timestamp {\n    seconds: string;\n    nanos: number;\n}\n"
     },
     {
       "filePath": "protoc/lib/message.ts",
-      "content": "interface Message {\n    name: string;\n}\n"
+      "content": "export interface Message {\n    name: string;\n}\n"
     },
     {
       "filePath": "protoc/quirks.client.ts",
-      "content": "const Quirks = { getAuthentication: async (input: Void) => { }, map: async (input: MapRequest) => { }, methodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, panic: async (input: Void) => { }, repeated: async (input: RepeatedRequest) => { }, types: async (input: TypesRequest) => { } };\n"
+      "content": "export interface IQuirksClient {\n    getAuthentication(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    map(input: MapRequest, options?: RpcOptions): UnaryCall<MapRequest, MapRequest>;\n    methodWithAReallyLongNameGmthggupcbmnphflnnvu(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    panic(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    repeated(input: RepeatedRequest, options?: RpcOptions): UnaryCall<RepeatedRequest, RepeatedRequest>;\n    types(input: TypesRequest, options?: RpcOptions): UnaryCall<TypesRequest, TypesRequest>;\n}\n"
     },
     {
       "filePath": "protoc/quirks.ts",
-      "content": "interface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\ninterface MapRequest_RepeatedString {\n    value: string[];\n}\ninterface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\ninterface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\ninterface Void {\n}\n"
+      "content": "const Quirks = {};\nexport interface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\nexport interface MapRequest_RepeatedString {\n    value: string[];\n}\nexport interface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\nexport interface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\nexport interface Void {\n}\n"
     },
     {
       "filePath": "protoc/search-service.client.ts",
-      "content": "const SearchService = { search: async (input: SearchRequest) => { }, index: async (input: IndexRequest) => { } };\n"
+      "content": "export interface ISearchServiceClient {\n    search(input: SearchRequest, options?: RpcOptions): UnaryCall<SearchRequest, SearchResponse>;\n    index(input: IndexRequest, options?: RpcOptions): UnaryCall<IndexRequest, IndexResponse>;\n}\n"
     },
     {
       "filePath": "protoc/search-service.ts",
-      "content": "interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\ninterface IndexResponse {\n    result?: Result;\n}\n"
+      "content": "const SearchService = {};\nexport interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\nexport interface SearchResponse {\n    results: Result[];\n}\nexport interface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\nexport interface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: string;\n}\nexport interface IndexResponse {\n    result?: Result;\n}\n"
     }
   ]
 }
