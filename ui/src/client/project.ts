@@ -1,4 +1,3 @@
-import { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import ts from "typescript";
 
 export type Project = {
@@ -9,7 +8,6 @@ export type Project = {
 export type Service = {
   name: string;
   methods: Array<Method>;
-  info?: ServiceInfo;
 };
 
 export type Method = {

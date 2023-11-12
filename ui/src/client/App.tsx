@@ -6,9 +6,9 @@ import { Endpoint, Method, Project, Service, defaultEndpoint } from "./project";
 import { loadProject } from "./projectLoader";
 
 function App() {
-  console.log("Rendering App");
   const [project, setProject] = useState<Project>();
   const [selectedEndpoint, setSelectedEndpoint] = useState<Endpoint>();
+  console.log("Rendering App", project);
 
   useEffect(() => {
     const load = async () => {
