@@ -16,12 +16,12 @@ export function Sidebar({ project, onSelect, currentMethod }: SidebarProps) {
           <TreeView aria-label="Services and methods">
             {project.services.map((service, index) => {
               return (
-                <TreeView.Item id={service.name} defaultExpanded={index === 0}>
+                <TreeView.Item id={service.name} key={service.name} defaultExpanded={index === 0}>
                   {service.name}
                   <TreeView.SubTree>
                     {service.methods.map((method) => {
                       return (
-                        <TreeView.Item id={methodId(service, method)} onSelect={() => onSelect(service, method)} current={currentMethod === method}>
+                        <TreeView.Item id={methodId(service, method)} key={methodId(service, method)} onSelect={() => onSelect(service, method)} current={currentMethod === method}>
                           {method.name}
                         </TreeView.Item>
                       );
