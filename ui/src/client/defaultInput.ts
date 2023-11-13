@@ -80,3 +80,25 @@ function defaultValue(field: FieldInfo): ts.Expression {
 
   return ts.factory.createNull();
 }
+
+function defaultScalar(value: ScalarType): ts.TrueLiteral | ts.NumericLiteral | ts.StringLiteral {
+  switch (value) {
+    case ScalarType.DOUBLE:
+    case ScalarType.FLOAT:
+    case ScalarType.INT64:
+    case ScalarType.UINT64:
+    case ScalarType.INT32:
+    case ScalarType.FIXED64:
+    case ScalarType.FIXED32:
+    case ScalarType.UINT32:
+    case ScalarType.SFIXED32:
+    case ScalarType.SFIXED64:
+    case ScalarType.SINT32:
+    case ScalarType.SINT64:
+      return ts.factory.createNumericLiteral(0);
+    case ScalarType.BOOL:
+      return ts.factory.createTrue();
+  }
+
+  return ts.factory.createStringLiteral("");
+}
