@@ -39,6 +39,13 @@ function defaultValue(field: FieldInfo): ts.Expression {
     return ts.factory.createNumericLiteral("0");
   }
 
+  if (field.kind === "map") {
+    const properties: ts.PropertyAssignment[] = [];
+    properties.push(ts.factory.createPropertyAssignment("foo", /*defaultInput(field.V)*/ ts.factory.createTrue()));
+
+    return ts.factory.createObjectLiteralExpression(properties);
+  }
+
   /*if (type.kind === ts.SyntaxKind.BigIntKeyword) {
     return ts.factory.createNumericLiteral(0);
   }
