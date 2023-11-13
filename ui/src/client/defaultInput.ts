@@ -1,11 +1,10 @@
-import { FieldInfo, ScalarType } from "@protobuf-ts/runtime";
-import { MethodInfo } from "@protobuf-ts/runtime-rpc";
+import { FieldInfo, IMessageType, ScalarType } from "@protobuf-ts/runtime";
 import ts from "typescript";
 
-export function defaultInput(methodInfo: MethodInfo): ts.ObjectLiteralExpression {
+export function defaultInput<T extends object>(I: IMessageType<T>): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
-  methodInfo.I.fields.forEach((field) => {
+  I.fields.forEach((field) => {
     properties.push(ts.factory.createPropertyAssignment(field.localName, defaultValue(field)));
   });
 
