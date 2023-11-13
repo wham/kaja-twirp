@@ -12,35 +12,13 @@ export function defaultInput<T extends object>(I: IMessageType<T>): ts.ObjectLit
 }
 
 function defaultValue(field: FieldInfo): ts.Expression {
-  if (field.kind === "scalar" && field.T === ScalarType.STRING) {
-    return ts.factory.createStringLiteral("");
-  }
-
-  if (field.kind === "scalar" && field.T === ScalarType.BOOL) {
-    return ts.factory.createTrue();
-  }
-
-  const numericTypes = [
-    ScalarType.DOUBLE,
-    ScalarType.FLOAT,
-    ScalarType.INT64,
-    ScalarType.UINT64,
-    ScalarType.INT32,
-    ScalarType.FIXED64,
-    ScalarType.FIXED32,
-    ScalarType.UINT32,
-    ScalarType.SFIXED32,
-    ScalarType.SFIXED64,
-    ScalarType.SINT32,
-    ScalarType.SINT64,
-  ];
-
-  if (field.kind === "scalar" && numericTypes.includes(field.T)) {
-    return ts.factory.createNumericLiteral("0");
+  if (field.kind === "scalar") {
+    return defaultScalar(field.T);
   }
 
   if (field.kind === "map") {
     const properties: ts.PropertyAssignment[] = [];
+    field.K;
     properties.push(ts.factory.createPropertyAssignment("foo", /*defaultInput(field.V)*/ ts.factory.createTrue()));
 
     return ts.factory.createObjectLiteralExpression(properties);
