@@ -137,7 +137,7 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
 }
 
 function methodEditorCode(methodInfo: MethodInfo, serviceName: string): string {
-  const input = defaultInput(methodInfo);
+  const input = defaultInput(methodInfo.I);
 
   const statements = [
     ts.factory.createExpressionStatement(
@@ -152,7 +152,7 @@ function methodEditorCode(methodInfo: MethodInfo, serviceName: string): string {
   return printStatements(statements);
 }
 
-function printStatements(statements: ts.Statement[]): string {
+export function printStatements(statements: ts.Statement[]): string {
   let sourceFile = ts.createSourceFile("temp.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
   sourceFile = ts.factory.updateSourceFile(sourceFile, statements);
 

@@ -46,7 +46,7 @@
   "extraLibs": [
     {
       "filePath": "protoc/google/protobuf/timestamp.ts",
-      "content": "interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
+      "content": "interface Timestamp {\n    seconds: string;\n    nanos: number;\n}\n"
     },
     {
       "filePath": "protoc/lib/message.ts",
@@ -66,7 +66,7 @@
     },
     {
       "filePath": "protoc/search-service.ts",
-      "content": "const SearchService = { Search: async (input: SearchRequest) => { }, Index: async (input: IndexRequest) => { } };\ninterface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\ninterface IndexResponse {\n    result?: Result;\n}\n"
+      "content": "const SearchService = { Search: async (input: SearchRequest) => { }, Index: async (input: IndexRequest) => { } };\ninterface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: string;\n}\ninterface IndexResponse {\n    result?: Result;\n}\n"
     }
   ]
 }
