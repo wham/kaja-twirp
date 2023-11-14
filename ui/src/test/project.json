@@ -9,7 +9,7 @@
         },
         {
           "name": "Map",
-          "editorCode": "Quirks.Map({ stringString: { key: true }, stringInt32: { key: true }, sint64String: { 0: true }, stringRepeatedString: { key: true } });\n"
+          "editorCode": "Quirks.Map({ stringString: { key: \"\" }, stringInt32: { key: 0 }, sint64String: { 0: \"\" }, stringRepeatedString: { key: { value: \"\" } } });\n"
         },
         {
           "name": "MethodWithAReallyLongNameGmthggupcbmnphflnnvu",

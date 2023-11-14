@@ -1,4 +1,4 @@
-import { FieldInfo, IMessageType, ScalarType } from "@protobuf-ts/runtime";
+import { EnumInfo, FieldInfo, IMessageType, LongType, ScalarType } from "@protobuf-ts/runtime";
 import ts from "typescript";
 
 export function defaultInput<T extends object>(I: IMessageType<T>): ts.ObjectLiteralExpression {
@@ -18,7 +18,7 @@ function defaultValue(field: FieldInfo): ts.Expression {
 
   if (field.kind === "map") {
     const properties: ts.PropertyAssignment[] = [];
-    properties.push(ts.factory.createPropertyAssignment(defaultMapKey(field.K), ts.factory.createTrue()));
+    properties.push(ts.factory.createPropertyAssignment(defaultMapKey(field.K), defaultMapValue(field.V)));
 
     return ts.factory.createObjectLiteralExpression(properties);
   }
@@ -80,9 +80,9 @@ function defaultScalar(value: ScalarType): ts.TrueLiteral | ts.NumericLiteral | 
   return ts.factory.createStringLiteral("");
 }
 
-type MapKeyType = Exclude<ScalarType, ScalarType.FLOAT | ScalarType.DOUBLE | ScalarType.BYTES>;
+type mapKeyType = Exclude<ScalarType, ScalarType.FLOAT | ScalarType.DOUBLE | ScalarType.BYTES>;
 
-function defaultMapKey(key: MapKeyType): string {
+function defaultMapKey(key: mapKeyType): string {
   switch (key) {
     case ScalarType.INT64:
     case ScalarType.UINT64:
@@ -100,4 +100,32 @@ function defaultMapKey(key: MapKeyType): string {
   }
 
   return "key";
+}
+
+type mapValueType =
+  | {
+      kind: "scalar";
+      T: ScalarType;
+      L?: LongType;
+    }
+  | {
+      kind: "enum";
+      T: () => EnumInfo;
+    }
+  | {
+      kind: "message";
+      T: () => IMessageType<any>;
+    };
+
+function defaultMapValue(value: mapValueType): ts.Expression {
+  switch (value.kind) {
+    case "scalar":
+      return defaultScalar(value.T);
+    case "message":
+      return defaultInput(value.T());
+  }
+
+  console.warn("Unsupported map value kind", value.kind);
+
+  return ts.factory.createNull();
 }
