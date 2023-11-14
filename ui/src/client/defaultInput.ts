@@ -18,8 +18,7 @@ function defaultValue(field: FieldInfo): ts.Expression {
 
   if (field.kind === "map") {
     const properties: ts.PropertyAssignment[] = [];
-    field.K;
-    properties.push(ts.factory.createPropertyAssignment("foo", /*defaultInput(field.V)*/ ts.factory.createTrue()));
+    properties.push(ts.factory.createPropertyAssignment(defaultMapKey(field.K), ts.factory.createTrue()));
 
     return ts.factory.createObjectLiteralExpression(properties);
   }
@@ -79,4 +78,26 @@ function defaultScalar(value: ScalarType): ts.TrueLiteral | ts.NumericLiteral | 
   }
 
   return ts.factory.createStringLiteral("");
+}
+
+type MapKeyType = Exclude<ScalarType, ScalarType.FLOAT | ScalarType.DOUBLE | ScalarType.BYTES>;
+
+function defaultMapKey(key: MapKeyType): string {
+  switch (key) {
+    case ScalarType.INT64:
+    case ScalarType.UINT64:
+    case ScalarType.INT32:
+    case ScalarType.FIXED64:
+    case ScalarType.FIXED32:
+    case ScalarType.UINT32:
+    case ScalarType.SFIXED32:
+    case ScalarType.SFIXED64:
+    case ScalarType.SINT32:
+    case ScalarType.SINT64:
+      return "0";
+    case ScalarType.BOOL:
+      return "true";
+  }
+
+  return "";
 }
