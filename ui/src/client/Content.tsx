@@ -61,6 +61,11 @@ export function Content({ project, service, method }: ContentProps) {
       if (codeEditorRef.current) {
         codeEditorRef.current.setValue(formattedEditorCode);
       }
+    }).catch((error) => {
+      console.error("Failed to format the method code", error)
+      if (codeEditorRef.current) {
+        codeEditorRef.current.setValue(method.editorCode);
+      }
     });
 
     if (consoleEditorRef.current) {
