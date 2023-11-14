@@ -99,5 +99,5 @@ function defaultMapKey(key: MapKeyType): string {
       return "true";
   }
 
-  return "";
+  return "key";
 }
