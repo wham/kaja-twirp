@@ -5,7 +5,9 @@ export function defaultInput<T extends object>(I: IMessageType<T>): ts.ObjectLit
   let properties: ts.PropertyAssignment[] = [];
 
   I.fields.forEach((field) => {
-    properties.push(ts.factory.createPropertyAssignment(field.localName, defaultValue(field)));
+    const value = field.repeat ? ts.factory.createArrayLiteralExpression([defaultValue(field)]) : defaultValue(field);
+
+    properties.push(ts.factory.createPropertyAssignment(field.localName, value));
   });
 
   return ts.factory.createObjectLiteralExpression(properties);

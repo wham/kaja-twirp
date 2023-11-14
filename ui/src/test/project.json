@@ -9,7 +9,7 @@
         },
         {
           "name": "Map",
-          "editorCode": "Quirks.Map({ stringString: { key: \"\" }, stringInt32: { key: 0 }, sint64String: { 0: \"\" }, stringRepeatedString: { key: { value: \"\" } } });\n"
+          "editorCode": "Quirks.Map({ stringString: { key: \"\" }, stringInt32: { key: 0 }, sint64String: { 0: \"\" }, stringRepeatedString: { key: { value: [\"\"] } } });\n"
         },
         {
           "name": "MethodWithAReallyLongNameGmthggupcbmnphflnnvu",
@@ -21,7 +21,7 @@
         },
         {
           "name": "Repeated",
-          "editorCode": "Quirks.Repeated({ string: \"\", int32: 0, enum: null, message: null });\n"
+          "editorCode": "Quirks.Repeated({ string: [\"\"], int32: [0], enum: [null], message: [null] });\n"
         },
         {
           "name": "Types",
