@@ -123,11 +123,13 @@ function defaultMapValue(value: mapValueType): ts.Expression {
   switch (value.kind) {
     case "scalar":
       return defaultScalar(value.T);
+    case "enum":
+      return defaultEnum(value.T());
     case "message":
       return defaultInput(value.T());
   }
+}
 
-  console.warn("Unsupported map value kind", value.kind);
-
+function defaultEnum(value: EnumInfo): ts.Expression {
   return ts.factory.createNull();
 }
