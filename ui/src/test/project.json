@@ -21,7 +21,7 @@
         },
         {
           "name": "Repeated",
-          "editorCode": "Quirks.Repeated({ string: [\"\"], int32: [0], enum: [null], message: [null] });\n"
+          "editorCode": "Quirks.Repeated({ string: [\"\"], int32: [0], enum: [quirks.v1.RepeatedRequest.Enum.KEY_0], message: [null] });\n"
         },
         {
           "name": "Types",
@@ -38,7 +38,7 @@
         },
         {
           "name": "Index",
-          "editorCode": "SearchService.Index({ result: null, position: null, additionalCopies: 0 });\n"
+          "editorCode": "SearchService.Index({ result: null, position: Position.TOP, additionalCopies: 0 });\n"
         }
       ]
     }

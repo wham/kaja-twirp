@@ -25,6 +25,10 @@ function defaultValue(field: FieldInfo): ts.Expression {
     return ts.factory.createObjectLiteralExpression(properties);
   }
 
+  if (field.kind === "enum") {
+    return defaultEnum(field.T());
+  }
+
   /*if (type.kind === ts.SyntaxKind.BigIntKeyword) {
     return ts.factory.createNumericLiteral(0);
   }
@@ -131,5 +135,5 @@ function defaultMapValue(value: mapValueType): ts.Expression {
 }
 
 function defaultEnum(value: EnumInfo): ts.Expression {
-  return ts.factory.createNull();
+  return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(value[0]), ts.factory.createIdentifier(value[1][0]));
 }
