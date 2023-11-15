@@ -35,10 +35,16 @@ export async function loadProject(): Promise<Project> {
 
             let client = await createClient(serviceName, transport, interfaceMap);
 
-            let { response } = await (client as any)[lcfirst(methodName)](input);
+            try {
+              let { response } = await (client as any)[lcfirst(methodName)](input);
 
-            if (window.setOutput) {
-              window.setOutput(JSON.stringify(response));
+              if (window.setOutput) {
+                window.setOutput(JSON.stringify(response));
+              }
+            } catch (error) {
+              if (window.setOutput) {
+                window.setOutput(getErrorMessage(error));
+              }
             }
           };
 
@@ -259,4 +265,9 @@ function ucfirst(str: string): string {
 
 function lcfirst(str: string): string {
   return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
 }

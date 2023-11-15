@@ -15,7 +15,7 @@ type ContentProps = {
   method: Method;
 };
 
-export function Content({ project, service, method }: ContentProps) {
+export function Content({ project, method }: ContentProps) {
   const codeEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
   const consoleEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
 
