@@ -37,7 +37,9 @@ export async function loadProject(): Promise<Project> {
 
             let { response } = await (client as any)[lcfirst(methodName)](input);
 
-            (window as any)["GOUT"](JSON.stringify(response));
+            if (window.setOutput) {
+              window.setOutput(JSON.stringify(response));
+            }
           };
 
           methods.push({
