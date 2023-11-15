@@ -71,6 +71,13 @@ export async function loadProject(): Promise<Project> {
       }
     });
 
+    enums.forEach((enumDeclaration) => {
+      const enumName = enumDeclaration.name.text;
+      try {
+        (window as any)[enumName] = module[enumName];
+      } catch (error) {}
+    });
+
     if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0 || enums.length > 0) {
       extraLibs.push({
         filePath: sourceFile.fileName,
