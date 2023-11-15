@@ -13,7 +13,8 @@ export async function loadProject(): Promise<Project> {
   const extraLibs: ExtraLib[] = [];
 
   sourceFiles.forEach((sourceFile) => {
-    const interfaces = sourceFile.statements.filter((statement): statement is ts.InterfaceDeclaration => ts.isInterfaceDeclaration(statement));
+    const interfaces = sourceFile.statements.filter(ts.isInterfaceDeclaration);
+    const enums = sourceFile.statements.filter(ts.isEnumDeclaration);
     const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
     const serviceNames = findServiceNames(sourceFile);
     const module = modules["./" + sourceFile.fileName];
@@ -70,10 +71,10 @@ export async function loadProject(): Promise<Project> {
       }
     });
 
-    if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0) {
+    if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0 || enums.length > 0) {
       extraLibs.push({
         filePath: sourceFile.fileName,
-        content: printStatements([...serviceInterfaceDefinitions, ...interfaces.map((i) => copyInterface(i))]),
+        content: printStatements([...serviceInterfaceDefinitions, ...interfaces.map((i) => copyInterface(i)), ...enums.map((e) => copyEnum(e))]),
       });
     }
   });
@@ -255,6 +256,12 @@ function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.Interf
     interfaceDeclaration.heritageClauses,
     interfaceDeclaration.members,
   );
+
+  return copy;
+}
+
+function copyEnum(enumDeclaration: ts.EnumDeclaration): ts.EnumDeclaration {
+  const copy = ts.factory.createEnumDeclaration(undefined, undefined, enumDeclaration.name, enumDeclaration.members);
 
   return copy;
 }
