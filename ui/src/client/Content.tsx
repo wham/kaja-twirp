@@ -39,7 +39,7 @@ export function Content({ project, service, method }: ContentProps) {
     }
   }
 
-  (window as any).GOUT = (output: string) => {
+  window.setOutput = (output: string) => {
     if (consoleEditorRef.current) {
       consoleEditorRef.current.setValue(output);
     }
