@@ -3,6 +3,7 @@ import { PlayIcon } from "@primer/octicons-react";
 import { Box, IconButton } from "@primer/react";
 import { editor } from "monaco-editor";
 import * as prettier from "prettier";
+import prettierPluginBabel from "prettier/plugins/babel";
 import prettierPluginEsTree from "prettier/plugins/estree";
 import prettierPluginTypescript from "prettier/plugins/typescript";
 import React, { useEffect } from "react";
@@ -40,9 +41,16 @@ export function Content({ project, service, method }: ContentProps) {
   }
 
   window.setOutput = (output: string) => {
-    if (consoleEditorRef.current) {
-      consoleEditorRef.current.setValue(output);
-    }
+    prettier.format(output, { parser: "json", plugins: [prettierPluginBabel, prettierPluginEsTree] }).then((formattedOutput) => {
+      if (consoleEditorRef.current) {
+        consoleEditorRef.current.setValue(formattedOutput);
+      }
+    }).catch((error) => {
+      console.warn("Failed to format the output", error)
+      if (consoleEditorRef.current) {
+        consoleEditorRef.current.setValue(output);
+      }
+    });
   };
 
   async function callMethod() {
