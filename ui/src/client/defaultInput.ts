@@ -1,11 +1,11 @@
 import { EnumInfo, FieldInfo, IMessageType, LongType, ScalarType } from "@protobuf-ts/runtime";
 import ts from "typescript";
 
-export function defaultInput<T extends object>(I: IMessageType<T>): ts.ObjectLiteralExpression {
+export function defaultMessage<T extends object>(message: IMessageType<T>): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
-  I.fields.forEach((field) => {
-    const value = field.repeat ? ts.factory.createArrayLiteralExpression([defaultValue(field)]) : defaultValue(field);
+  message.fields.forEach((field) => {
+    const value = field.repeat ? ts.factory.createArrayLiteralExpression([defaultMessageField(field)]) : defaultMessageField(field);
 
     properties.push(ts.factory.createPropertyAssignment(field.localName, value));
   });
@@ -13,7 +13,7 @@ export function defaultInput<T extends object>(I: IMessageType<T>): ts.ObjectLit
   return ts.factory.createObjectLiteralExpression(properties);
 }
 
-function defaultValue(field: FieldInfo): ts.Expression {
+function defaultMessageField(field: FieldInfo): ts.Expression {
   if (field.kind === "scalar") {
     return defaultScalar(field.T);
   }
@@ -29,37 +29,9 @@ function defaultValue(field: FieldInfo): ts.Expression {
     return defaultEnum(field.T());
   }
 
-  /*if (type.kind === ts.SyntaxKind.BigIntKeyword) {
-    return ts.factory.createNumericLiteral(0);
+  if (field.kind === "message") {
+    return defaultMessage(field.T());
   }
-
-  if (type.kind === ts.SyntaxKind.ArrayType) {
-    const arrayType = type as ts.ArrayTypeNode;
-    return ts.factory.createArrayLiteralExpression([defaultValue(arrayType.elementType, sourceFile, interfaceMap)]);
-  }
-
-  if (type.kind === ts.SyntaxKind.TypeLiteral) {
-    const typeLiteral = type as ts.TypeLiteralNode;
-    const properties: ts.PropertyAssignment[] = [];
-    typeLiteral.members.forEach((member) => {
-      //if (ts.is(member) && member.type) {
-      //properties.push(ts.factory.createPropertyAssignment("key", defaultValue(member.type, sourceFile)));
-      //}
-      if (ts.isIndexSignatureDeclaration(member) && member.parameters[0].type) {
-        const keyType = member.parameters[0].type;
-        properties.push(ts.factory.createPropertyAssignment(defaultKeyValue(keyType), defaultValue(member.type, sourceFile, interfaceMap)));
-      }
-    });
-    return ts.factory.createObjectLiteralExpression(properties);
-  }
-
-  if (type.kind === ts.SyntaxKind.TypeReference) {
-    const typeReference = type as ts.TypeReferenceNode;
-    const typeName = typeReference.typeName.getText(sourceFile);
-    if (interfaceMap[typeName]) {
-      return defaultInterfaceImplementation([interfaceMap[typeName].interfaceDeclaration, interfaceMap[typeName].sourceFile], interfaceMap);
-    }
-  }*/
 
   return ts.factory.createNull();
 }
@@ -130,7 +102,7 @@ function defaultMapValue(value: mapValueType): ts.Expression {
     case "enum":
       return defaultEnum(value.T());
     case "message":
-      return defaultInput(value.T());
+      return defaultMessage(value.T());
   }
 }
 
