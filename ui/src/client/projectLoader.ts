@@ -23,7 +23,6 @@ export async function loadProject(): Promise<Project> {
       if (module && module[serviceName]) {
         const serviceInfo: ServiceInfo = module[serviceName];
         const methods: Method[] = [];
-        const { interfaceDeclaration } = interfaceMap["I" + serviceName + "Client"];
         serviceInfo.methods.forEach((methodInfo) => {
           const methodName = methodInfo.name;
           const globalTrigger = async (input: any) => {
