@@ -15,7 +15,7 @@ export function defaultMessage<T extends object>(message: IMessageType<T>): ts.O
 
 function defaultMessageField(field: FieldInfo): ts.Expression {
   if (field.kind === "scalar") {
-    return defaultScalar(field.T);
+    return defaultScalar(field.T, field.L);
   }
 
   if (field.kind === "map") {
@@ -36,7 +36,7 @@ function defaultMessageField(field: FieldInfo): ts.Expression {
   return ts.factory.createNull();
 }
 
-function defaultScalar(value: ScalarType): ts.TrueLiteral | ts.NumericLiteral | ts.StringLiteral {
+function defaultScalar(value: ScalarType, long?: LongType): ts.TrueLiteral | ts.NumericLiteral | ts.StringLiteral | ts.BigIntLiteral {
   switch (value) {
     case ScalarType.DOUBLE:
     case ScalarType.FLOAT:
@@ -50,6 +50,9 @@ function defaultScalar(value: ScalarType): ts.TrueLiteral | ts.NumericLiteral | 
     case ScalarType.SFIXED64:
     case ScalarType.SINT32:
     case ScalarType.SINT64:
+      if (long === LongType.BIGINT) {
+        return ts.factory.createBigIntLiteral("0n");
+      }
       return ts.factory.createNumericLiteral(0);
     case ScalarType.BOOL:
       return ts.factory.createTrue();
@@ -98,7 +101,7 @@ type mapValueType =
 function defaultMapValue(value: mapValueType): ts.Expression {
   switch (value.kind) {
     case "scalar":
-      return defaultScalar(value.T);
+      return defaultScalar(value.T, value.L);
     case "enum":
       return defaultEnum(value.T());
     case "message":
@@ -107,5 +110,13 @@ function defaultMapValue(value: mapValueType): ts.Expression {
 }
 
 function defaultEnum(value: EnumInfo): ts.Expression {
-  return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(value[0]), ts.factory.createIdentifier(value[1][0]));
+  let enumName = value[0];
+  // Temp hack to quirks.v1.RepeatedRequest.Enum -> RepeatedRequest_Enum
+  // Won't work with any real projects
+  const nameParts = enumName.split(".");
+  if (nameParts.length === 4) {
+    enumName = nameParts[2] + "_" + nameParts[3];
+  }
+
+  return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(enumName), ts.factory.createIdentifier(value[1][0]));
 }

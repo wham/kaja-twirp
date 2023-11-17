@@ -5,6 +5,11 @@ import { Sidebar } from "./Sidebar";
 import { Endpoint, Method, Project, Service, defaultEndpoint } from "./project";
 import { loadProject } from "./projectLoader";
 
+// https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006088574
+(BigInt.prototype as any)["toJSON"] = function () {
+  return this.toString();
+};
+
 function App() {
   const [project, setProject] = useState<Project>();
   const [selectedEndpoint, setSelectedEndpoint] = useState<Endpoint>();
