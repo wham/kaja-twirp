@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
 
-(cd ./ui && npm run start)
+(cd ./app && npm run start)
