@@ -7,7 +7,7 @@ import { loadProject } from "../client/projectLoader";
 test("integration", () => {
   console.log(process.cwd());
   const protoPath = path.resolve(process.cwd(), "../proto");
-  const outPath = path.resolve(process.cwd(), "../ui/src/test/protoc");
+  const outPath = path.resolve(process.cwd(), "../app/src/test/protoc");
   console.log("protoPath", protoPath);
 
   fs.mkdir(outPath, { recursive: true }, (error) => {
@@ -29,7 +29,7 @@ test("integration", () => {
 
       loadProject()
         .then((project) => {
-          fs.writeFileSync(path.resolve(process.cwd(), "../ui/src/test/project.json"), JSON.stringify(project, null, 2) + "\n");
+          fs.writeFileSync(path.resolve(process.cwd(), "../app/src/test/project.json"), JSON.stringify(project, null, 2) + "\n");
           resolve(project);
         })
         .catch((error) => {

@@ -14,7 +14,7 @@ app.use("/twirp", createProxyMiddleware({ target: process.env.BASE_URL, changeOr
 app.use("/bootstrap", (req, res) => {
   console.log(process.cwd());
   const protoPath = path.resolve(process.cwd(), "../proto");
-  const outPath = path.resolve(process.cwd(), "../ui/src/client/protoc");
+  const outPath = path.resolve(process.cwd(), "../app/src/client/protoc");
   console.log("protoPath", protoPath);
 
   fs.mkdir(outPath, { recursive: true }, (error) => {

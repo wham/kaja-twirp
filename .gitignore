@@ -1,5 +1,5 @@
 /bin
-/ui/src/client/protoc
-/ui/src/test/protoc
+/app/src/client/protoc
+/app/src/test/protoc
 dist
 node_modules
