@@ -3,7 +3,6 @@
     "options": ["--proto_path=proto"]
   },
   "editor.tabSize": 2,
-  "jest.rootPath": "ui",
   "editor.codeActionsOnSave": {
     "source.organizeImports": "always"
   }
