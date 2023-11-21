@@ -2,7 +2,7 @@ import { BaseStyles, Box, ThemeProvider } from "@primer/react";
 import { useEffect, useState } from "react";
 import { Content } from "./Content";
 import { Sidebar } from "./Sidebar";
-import { Endpoint, Method, Project, Service, defaultEndpoint } from "./project";
+import { Endpoint, Method, Project, Service, getDefaultEndpoint } from "./project";
 import { loadProject } from "./projectLoader";
 
 // https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006088574
@@ -28,10 +28,11 @@ function App() {
   }
 
   if (!selectedEndpoint) {
-    setSelectedEndpoint(defaultEndpoint(project.services));
-    if (!selectedEndpoint) {
+    const defaultEndpoint = getDefaultEndpoint(project.services);
+    if (!defaultEndpoint) {
       return <Box>No methods found</Box>;
     }
+    setSelectedEndpoint(defaultEndpoint);
   }
 
   project.services.forEach((service) => {
@@ -50,7 +51,7 @@ function App() {
       <BaseStyles>
         <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>
           <Box sx={{ width: 300, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", flexShrink: 0 }}>
-            <Sidebar project={project} onSelect={onSelect} currentMethod={selectedEndpoint.method} />
+            <Sidebar project={project} onSelect={onSelect} currentMethod={selectedEndpoint!.method} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
             {selectedEndpoint ? <Content project={project} service={selectedEndpoint.service} method={selectedEndpoint.method} /> : <Box>Empty state</Box>}

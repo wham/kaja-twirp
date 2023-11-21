@@ -32,7 +32,7 @@ export function methodId(service: Service, method: Method): string {
   return `${service.name}.${method.name}`;
 }
 
-export function defaultEndpoint(services: Service[]): Endpoint | undefined {
+export function getDefaultEndpoint(services: Service[]): Endpoint | undefined {
   for (const service of services) {
     for (const method of service.methods) {
       return { service, method };
