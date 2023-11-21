@@ -1,5 +1,6 @@
 import { BaseStyles, Box, ThemeProvider } from "@primer/react";
 import { useEffect, useState } from "react";
+import { Blankslate } from "./Blankslate";
 import { Content } from "./Content";
 import { Sidebar } from "./Sidebar";
 import { Endpoint, Method, Project, Service, getDefaultEndpoint } from "./project";
@@ -30,7 +31,8 @@ function App() {
   if (!selectedEndpoint) {
     const defaultEndpoint = getDefaultEndpoint(project.services);
     if (!defaultEndpoint) {
-      return <Box>No methods found</Box>;
+      return <Blankslate/>;
+      //return <Box>No methods found</Box>;
     }
     setSelectedEndpoint(defaultEndpoint);
   }
