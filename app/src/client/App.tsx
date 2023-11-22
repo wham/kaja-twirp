@@ -1,4 +1,4 @@
-import { BaseStyles, Box, ThemeProvider } from "@primer/react";
+import { BaseStyles, Box, Spinner, ThemeProvider } from "@primer/react";
 import { useEffect, useState } from "react";
 import { Blankslate } from "./Blankslate";
 import { Workspace } from "./Workspace";
@@ -36,7 +36,11 @@ function App() {
   let content: JSX.Element;
 
   if (!project) {
-    content = <Box>Loading...</Box>;
+    content = (
+      <Box>
+        <Spinner /> Loading...
+      </Box>
+    );
   } else if (!defaultEndpoint) {
     content = <Blankslate />;
   } else {
