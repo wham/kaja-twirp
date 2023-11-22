@@ -1,9 +1,8 @@
 import { BaseStyles, Box, ThemeProvider } from "@primer/react";
 import { useEffect, useState } from "react";
 import { Blankslate } from "./Blankslate";
-import { Content } from "./Content";
-import { Sidebar } from "./Sidebar";
-import { Endpoint, Method, Project, Service, getDefaultEndpoint } from "./project";
+import { Workspace } from "./Workspace";
+import { Project, getDefaultEndpoint } from "./project";
 import { loadProject } from "./projectLoader";
 
 // https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006088574
@@ -13,7 +12,6 @@ import { loadProject } from "./projectLoader";
 
 function App() {
   const [project, setProject] = useState<Project>();
-  const [selectedEndpoint, setSelectedEndpoint] = useState<Endpoint>();
   console.log("Rendering App", project);
 
   useEffect(() => {
@@ -24,41 +22,31 @@ function App() {
     load();
   }, []);
 
-  if (!project) {
-    return <Box>Loading...</Box>;
-  }
+  const defaultEndpoint = project ? getDefaultEndpoint(project.services) : undefined;
 
-  if (!selectedEndpoint) {
-    const defaultEndpoint = getDefaultEndpoint(project.services);
-    if (!defaultEndpoint) {
-      return <Blankslate/>;
-      //return <Box>No methods found</Box>;
-    }
-    setSelectedEndpoint(defaultEndpoint);
-  }
-
-  project.services.forEach((service) => {
-    window[service.name as any] = {} as any;
-    service.methods.forEach((method) => {
-      window[service.name as any][method.name as any] = method.globalTrigger as any;
+  if (project) {
+    project.services.forEach((service) => {
+      window[service.name as any] = {} as any;
+      service.methods.forEach((method) => {
+        window[service.name as any][method.name as any] = method.globalTrigger as any;
+      });
     });
-  });
+  }
 
-  const onSelect = (service: Service, method: Method) => {
-    setSelectedEndpoint({ service, method });
-  };
+  let content: JSX.Element;
+
+  if (!project) {
+    content = <Box>Loading...</Box>;
+  } else if (!defaultEndpoint) {
+    content = <Blankslate />;
+  } else {
+    content = <Workspace project={project} defaultEndpoint={defaultEndpoint} />;
+  }
 
   return (
     <ThemeProvider colorMode="night">
       <BaseStyles>
-        <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>
-          <Box sx={{ width: 300, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", flexShrink: 0 }}>
-            <Sidebar project={project} onSelect={onSelect} currentMethod={selectedEndpoint!.method} />
-          </Box>
-          <Box sx={{ flexGrow: 1 }}>
-            {selectedEndpoint ? <Content project={project} service={selectedEndpoint.service} method={selectedEndpoint.method} /> : <Box>Empty state</Box>}
-          </Box>
-        </Box>
+        <Box sx={{ display: "flex", height: "100vh", bg: "canvas.default" }}>{content}</Box>
       </BaseStyles>
     </ThemeProvider>
   );
