@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+service Server {
+  rpc Bootstrap(BoostrapRequest) returns (BootstrapResponse);
+  rpc BootstrapProgress(BootstrapProgressRequest) returns (BootstrapProgressResponse);
+}
+
+message BoostrapRequest {
+}
+
+message BootstrapResponse {
+  string id = 1;
+}
+
+message BootstrapProgressRequest {
+  string id = 1;
+}
+
+message BootstrapProgressResponse {
+  int32 progress = 1;
+}
