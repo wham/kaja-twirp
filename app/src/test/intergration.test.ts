@@ -6,7 +6,7 @@ import { loadProject } from "../client/projectLoader";
 
 test("integration", () => {
   console.log(process.cwd());
-  const protoPath = path.resolve(process.cwd(), "../proto");
+  const protoPath = path.resolve(process.cwd(), "../app/proto");
   const outPath = path.resolve(process.cwd(), "../app/src/test/protoc");
   console.log("protoPath", protoPath);
 
