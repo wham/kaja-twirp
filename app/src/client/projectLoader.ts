@@ -91,6 +91,15 @@ export async function loadProject(): Promise<Project> {
   };
 }
 
+export function registerGlobalTriggers(services: Service[]): void {
+  services.forEach((service) => {
+    window[service.name as any] = {} as any;
+    service.methods.forEach((method) => {
+      window[service.name as any][method.name as any] = method.globalTrigger as any;
+    });
+  });
+}
+
 export function extractClientName(interfaceName: string): string | undefined {
   if (interfaceName.startsWith("I") && interfaceName.endsWith("Client") && interfaceName.length > 7) {
     return interfaceName.substring(1, interfaceName.length - 6);

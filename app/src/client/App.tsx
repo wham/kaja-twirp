@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Blankslate } from "./Blankslate";
 import { Workspace } from "./Workspace";
 import { Project, getDefaultEndpoint } from "./project";
-import { loadProject } from "./projectLoader";
+import { loadProject, registerGlobalTriggers } from "./projectLoader";
 
 // https://github.com/GoogleChromeLabs/jsbi/issues/30#issuecomment-1006088574
 (BigInt.prototype as any)["toJSON"] = function () {
@@ -16,22 +16,15 @@ function App() {
 
   useEffect(() => {
     const load = async () => {
-      setProject(await loadProject());
+      const project = await loadProject();
+      registerGlobalTriggers(project.services);
+      setProject(project);
     };
 
     load();
   }, []);
 
   const defaultEndpoint = project ? getDefaultEndpoint(project.services) : undefined;
-
-  if (project) {
-    project.services.forEach((service) => {
-      window[service.name as any] = {} as any;
-      service.methods.forEach((method) => {
-        window[service.name as any][method.name as any] = method.globalTrigger as any;
-      });
-    });
-  }
 
   let content: JSX.Element;
 
