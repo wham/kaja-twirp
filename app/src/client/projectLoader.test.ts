@@ -1,15 +1,6 @@
 import { expect, test, vi } from "vitest";
 import { Service } from "./project";
-import { extractClientName, registerGlobalTriggers } from "./projectLoader";
-
-test("extractClientName", () => {
-  expect(extractClientName("IQuirksClient")).toBe("Quirks");
-  expect(extractClientName("QuirksClient")).toBe(undefined);
-  expect(extractClientName("IQuirks")).toBe(undefined);
-  expect(extractClientName("IQuirksClientX")).toBe(undefined);
-  expect(extractClientName("IClient")).toBe(undefined);
-  expect(extractClientName("")).toBe(undefined);
-});
+import { registerGlobalTriggers } from "./projectLoader";
 
 test("registerGlobalTriggers", () => {
   if (typeof window === "undefined") {

@@ -1,4 +1,93 @@
 {
-  "services": [],
-  "extraLibs": []
+  "services": [
+    {
+      "name": "Api",
+      "methods": [
+        {
+          "name": "Bootstrap",
+          "editorCode": "Api.Bootstrap({});\n"
+        },
+        {
+          "name": "BootstrapProgress",
+          "editorCode": "Api.BootstrapProgress({ id: \"\" });\n"
+        }
+      ]
+    },
+    {
+      "name": "Quirks",
+      "methods": [
+        {
+          "name": "GetAuthentication",
+          "editorCode": "Quirks.GetAuthentication({});\n"
+        },
+        {
+          "name": "Map",
+          "editorCode": "Quirks.Map({ stringString: { key: \"\" }, stringInt32: { key: 0 }, sint64String: { 0: \"\" }, stringRepeatedString: { key: { value: [\"\"] } } });\n"
+        },
+        {
+          "name": "MethodWithAReallyLongNameGmthggupcbmnphflnnvu",
+          "editorCode": "Quirks.MethodWithAReallyLongNameGmthggupcbmnphflnnvu({});\n"
+        },
+        {
+          "name": "Panic",
+          "editorCode": "Quirks.Panic({});\n"
+        },
+        {
+          "name": "Repeated",
+          "editorCode": "Quirks.Repeated({ string: [\"\"], int32: [0], enum: [RepeatedRequest_Enum.KEY_0], message: [{ name: \"\" }] });\n"
+        },
+        {
+          "name": "Types",
+          "editorCode": "Quirks.Types({ timestamp: { seconds: 0n, nanos: 0 }, bool: true });\n"
+        }
+      ]
+    },
+    {
+      "name": "SearchService",
+      "methods": [
+        {
+          "name": "Search",
+          "editorCode": "SearchService.Search({ query: \"\", pageNumber: 0, resultPerPage: 0 });\n"
+        },
+        {
+          "name": "Index",
+          "editorCode": "SearchService.Index({ result: { url: \"\", title: \"\", snippets: [\"\"], isAd: true }, position: Position.TOP, additionalCopies: 0n });\n"
+        }
+      ]
+    }
+  ],
+  "extraLibs": [
+    {
+      "filePath": "protoc/api.client.ts",
+      "content": "interface IApiClient {\n    bootstrap(input: BoostrapRequest, options?: RpcOptions): UnaryCall<BoostrapRequest, BootstrapResponse>;\n    bootstrapProgress(input: BootstrapProgressRequest, options?: RpcOptions): UnaryCall<BootstrapProgressRequest, BootstrapProgressResponse>;\n}\n"
+    },
+    {
+      "filePath": "protoc/api.ts",
+      "content": "const Api = { Bootstrap: async (input: BoostrapRequest) => { }, BootstrapProgress: async (input: BootstrapProgressRequest) => { } };\ninterface BoostrapRequest {\n}\ninterface BootstrapResponse {\n    id: string;\n}\ninterface BootstrapProgressRequest {\n    id: string;\n}\ninterface BootstrapProgressResponse {\n    progress: number;\n}\n"
+    },
+    {
+      "filePath": "protoc/google/protobuf/timestamp.ts",
+      "content": "interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
+    },
+    {
+      "filePath": "protoc/lib/message.ts",
+      "content": "interface Message {\n    name: string;\n}\n"
+    },
+    {
+      "filePath": "protoc/quirks.client.ts",
+      "content": "interface IQuirksClient {\n    getAuthentication(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    map(input: MapRequest, options?: RpcOptions): UnaryCall<MapRequest, MapRequest>;\n    methodWithAReallyLongNameGmthggupcbmnphflnnvu(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    panic(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    repeated(input: RepeatedRequest, options?: RpcOptions): UnaryCall<RepeatedRequest, RepeatedRequest>;\n    types(input: TypesRequest, options?: RpcOptions): UnaryCall<TypesRequest, TypesRequest>;\n}\n"
+    },
+    {
+      "filePath": "protoc/quirks.ts",
+      "content": "const Quirks = { GetAuthentication: async (input: Void) => { }, Map: async (input: MapRequest) => { }, MethodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, Panic: async (input: Void) => { }, Repeated: async (input: RepeatedRequest) => { }, Types: async (input: TypesRequest) => { } };\ninterface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\ninterface MapRequest_RepeatedString {\n    value: string[];\n}\ninterface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\ninterface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\ninterface Void {\n}\nenum RepeatedRequest_Enum {\n    KEY_0 = 0,\n    KEY_1 = 1\n}\n"
+    },
+    {
+      "filePath": "protoc/search-service.client.ts",
+      "content": "interface ISearchServiceClient {\n    search(input: SearchRequest, options?: RpcOptions): UnaryCall<SearchRequest, SearchResponse>;\n    index(input: IndexRequest, options?: RpcOptions): UnaryCall<IndexRequest, IndexResponse>;\n}\n"
+    },
+    {
+      "filePath": "protoc/search-service.ts",
+      "content": "const SearchService = { Search: async (input: SearchRequest) => { }, Index: async (input: IndexRequest) => { } };\ninterface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\ninterface IndexResponse {\n    result?: Result;\n}\nenum Position {\n    TOP = 0,\n    BOTTOM = 1\n}\n"
+    }
+  ]
 }

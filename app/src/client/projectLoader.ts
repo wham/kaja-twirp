@@ -100,14 +100,6 @@ export function registerGlobalTriggers(services: Service[]): void {
   });
 }
 
-export function extractClientName(interfaceName: string): string | undefined {
-  if (interfaceName.startsWith("I") && interfaceName.endsWith("Client") && interfaceName.length > 7) {
-    return interfaceName.substring(1, interfaceName.length - 6);
-  }
-
-  return undefined;
-}
-
 async function loadSourceFiles(): Promise<ts.SourceFile[]> {
   const sourceFiles: ts.SourceFile[] = [];
   const modules = import.meta.glob("./protoc/**/*.ts", { as: "raw", eager: false });
