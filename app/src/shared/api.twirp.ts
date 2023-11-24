@@ -1,5 +1,5 @@
 import { TwirpContext, TwirpServer, RouterEvents, TwirpError, TwirpErrorCode, Interceptor, TwirpContentType, chainInterceptors } from "twirp-ts";
-import { BoostrapRequest, BootstrapResponse, BootstrapProgressRequest, BootstrapProgressResponse } from "./server";
+import { BoostrapRequest, BootstrapResponse, BootstrapProgressRequest, BootstrapProgressResponse } from "./api";
 
 //==================================//
 //          Client Code             //
@@ -9,12 +9,12 @@ interface Rpc {
   request(service: string, method: string, contentType: "application/json" | "application/protobuf", data: object | Uint8Array): Promise<object | Uint8Array>;
 }
 
-export interface ServerClient {
+export interface ApiClient {
   Bootstrap(request: BoostrapRequest): Promise<BootstrapResponse>;
   BootstrapProgress(request: BootstrapProgressRequest): Promise<BootstrapProgressResponse>;
 }
 
-export class ServerClientJSON implements ServerClient {
+export class ApiClientJSON implements ApiClient {
   private readonly rpc: Rpc;
   constructor(rpc: Rpc) {
     this.rpc = rpc;
@@ -23,18 +23,18 @@ export class ServerClientJSON implements ServerClient {
   }
   Bootstrap(request: BoostrapRequest): Promise<BootstrapResponse> {
     const data = BoostrapRequest.toJson(request, { useProtoFieldName: true, emitDefaultValues: false });
-    const promise = this.rpc.request("Server", "Bootstrap", "application/json", data as object);
+    const promise = this.rpc.request("Api", "Bootstrap", "application/json", data as object);
     return promise.then((data) => BootstrapResponse.fromJson(data as any, { ignoreUnknownFields: true }));
   }
 
   BootstrapProgress(request: BootstrapProgressRequest): Promise<BootstrapProgressResponse> {
     const data = BootstrapProgressRequest.toJson(request, { useProtoFieldName: true, emitDefaultValues: false });
-    const promise = this.rpc.request("Server", "BootstrapProgress", "application/json", data as object);
+    const promise = this.rpc.request("Api", "BootstrapProgress", "application/json", data as object);
     return promise.then((data) => BootstrapProgressResponse.fromJson(data as any, { ignoreUnknownFields: true }));
   }
 }
 
-export class ServerClientProtobuf implements ServerClient {
+export class ApiClientProtobuf implements ApiClient {
   private readonly rpc: Rpc;
   constructor(rpc: Rpc) {
     this.rpc = rpc;
@@ -43,13 +43,13 @@ export class ServerClientProtobuf implements ServerClient {
   }
   Bootstrap(request: BoostrapRequest): Promise<BootstrapResponse> {
     const data = BoostrapRequest.toBinary(request);
-    const promise = this.rpc.request("Server", "Bootstrap", "application/protobuf", data);
+    const promise = this.rpc.request("Api", "Bootstrap", "application/protobuf", data);
     return promise.then((data) => BootstrapResponse.fromBinary(data as Uint8Array));
   }
 
   BootstrapProgress(request: BootstrapProgressRequest): Promise<BootstrapProgressResponse> {
     const data = BootstrapProgressRequest.toBinary(request);
-    const promise = this.rpc.request("Server", "BootstrapProgress", "application/protobuf", data);
+    const promise = this.rpc.request("Api", "BootstrapProgress", "application/protobuf", data);
     return promise.then((data) => BootstrapProgressResponse.fromBinary(data as Uint8Array));
   }
 }
@@ -58,41 +58,41 @@ export class ServerClientProtobuf implements ServerClient {
 //          Server Code             //
 //==================================//
 
-export interface ServerTwirp<T extends TwirpContext = TwirpContext> {
+export interface ApiTwirp<T extends TwirpContext = TwirpContext> {
   Bootstrap(ctx: T, request: BoostrapRequest): Promise<BootstrapResponse>;
   BootstrapProgress(ctx: T, request: BootstrapProgressRequest): Promise<BootstrapProgressResponse>;
 }
 
-export enum ServerMethod {
+export enum ApiMethod {
   Bootstrap = "Bootstrap",
   BootstrapProgress = "BootstrapProgress",
 }
 
-export const ServerMethodList = [ServerMethod.Bootstrap, ServerMethod.BootstrapProgress];
+export const ApiMethodList = [ApiMethod.Bootstrap, ApiMethod.BootstrapProgress];
 
-export function createServerServer<T extends TwirpContext = TwirpContext>(service: ServerTwirp<T>) {
-  return new TwirpServer<ServerTwirp, T>({
+export function createApiServer<T extends TwirpContext = TwirpContext>(service: ApiTwirp<T>) {
+  return new TwirpServer<ApiTwirp, T>({
     service,
     packageName: "",
-    serviceName: "Server",
-    methodList: ServerMethodList,
-    matchRoute: matchServerRoute,
+    serviceName: "Api",
+    methodList: ApiMethodList,
+    matchRoute: matchApiRoute,
   });
 }
 
-function matchServerRoute<T extends TwirpContext = TwirpContext>(method: string, events: RouterEvents<T>) {
+function matchApiRoute<T extends TwirpContext = TwirpContext>(method: string, events: RouterEvents<T>) {
   switch (method) {
     case "Bootstrap":
-      return async (ctx: T, service: ServerTwirp, data: Buffer, interceptors?: Interceptor<T, BoostrapRequest, BootstrapResponse>[]) => {
+      return async (ctx: T, service: ApiTwirp, data: Buffer, interceptors?: Interceptor<T, BoostrapRequest, BootstrapResponse>[]) => {
         ctx = { ...ctx, methodName: "Bootstrap" };
         await events.onMatch(ctx);
-        return handleServerBootstrapRequest(ctx, service, data, interceptors);
+        return handleApiBootstrapRequest(ctx, service, data, interceptors);
       };
     case "BootstrapProgress":
-      return async (ctx: T, service: ServerTwirp, data: Buffer, interceptors?: Interceptor<T, BootstrapProgressRequest, BootstrapProgressResponse>[]) => {
+      return async (ctx: T, service: ApiTwirp, data: Buffer, interceptors?: Interceptor<T, BootstrapProgressRequest, BootstrapProgressResponse>[]) => {
         ctx = { ...ctx, methodName: "BootstrapProgress" };
         await events.onMatch(ctx);
-        return handleServerBootstrapProgressRequest(ctx, service, data, interceptors);
+        return handleApiBootstrapProgressRequest(ctx, service, data, interceptors);
       };
     default:
       events.onNotFound();
@@ -101,42 +101,42 @@ function matchServerRoute<T extends TwirpContext = TwirpContext>(method: string,
   }
 }
 
-function handleServerBootstrapRequest<T extends TwirpContext = TwirpContext>(
+function handleApiBootstrapRequest<T extends TwirpContext = TwirpContext>(
   ctx: T,
-  service: ServerTwirp,
+  service: ApiTwirp,
   data: Buffer,
   interceptors?: Interceptor<T, BoostrapRequest, BootstrapResponse>[]
 ): Promise<string | Uint8Array> {
   switch (ctx.contentType) {
     case TwirpContentType.JSON:
-      return handleServerBootstrapJSON<T>(ctx, service, data, interceptors);
+      return handleApiBootstrapJSON<T>(ctx, service, data, interceptors);
     case TwirpContentType.Protobuf:
-      return handleServerBootstrapProtobuf<T>(ctx, service, data, interceptors);
+      return handleApiBootstrapProtobuf<T>(ctx, service, data, interceptors);
     default:
       const msg = "unexpected Content-Type";
       throw new TwirpError(TwirpErrorCode.BadRoute, msg);
   }
 }
 
-function handleServerBootstrapProgressRequest<T extends TwirpContext = TwirpContext>(
+function handleApiBootstrapProgressRequest<T extends TwirpContext = TwirpContext>(
   ctx: T,
-  service: ServerTwirp,
+  service: ApiTwirp,
   data: Buffer,
   interceptors?: Interceptor<T, BootstrapProgressRequest, BootstrapProgressResponse>[]
 ): Promise<string | Uint8Array> {
   switch (ctx.contentType) {
     case TwirpContentType.JSON:
-      return handleServerBootstrapProgressJSON<T>(ctx, service, data, interceptors);
+      return handleApiBootstrapProgressJSON<T>(ctx, service, data, interceptors);
     case TwirpContentType.Protobuf:
-      return handleServerBootstrapProgressProtobuf<T>(ctx, service, data, interceptors);
+      return handleApiBootstrapProgressProtobuf<T>(ctx, service, data, interceptors);
     default:
       const msg = "unexpected Content-Type";
       throw new TwirpError(TwirpErrorCode.BadRoute, msg);
   }
 }
-async function handleServerBootstrapJSON<T extends TwirpContext = TwirpContext>(
+async function handleApiBootstrapJSON<T extends TwirpContext = TwirpContext>(
   ctx: T,
-  service: ServerTwirp,
+  service: ApiTwirp,
   data: Buffer,
   interceptors?: Interceptor<T, BoostrapRequest, BootstrapResponse>[]
 ) {
@@ -165,9 +165,9 @@ async function handleServerBootstrapJSON<T extends TwirpContext = TwirpContext>(
   return JSON.stringify(BootstrapResponse.toJson(response, { useProtoFieldName: true, emitDefaultValues: false }) as string);
 }
 
-async function handleServerBootstrapProgressJSON<T extends TwirpContext = TwirpContext>(
+async function handleApiBootstrapProgressJSON<T extends TwirpContext = TwirpContext>(
   ctx: T,
-  service: ServerTwirp,
+  service: ApiTwirp,
   data: Buffer,
   interceptors?: Interceptor<T, BootstrapProgressRequest, BootstrapProgressResponse>[]
 ) {
@@ -195,9 +195,9 @@ async function handleServerBootstrapProgressJSON<T extends TwirpContext = TwirpC
 
   return JSON.stringify(BootstrapProgressResponse.toJson(response, { useProtoFieldName: true, emitDefaultValues: false }) as string);
 }
-async function handleServerBootstrapProtobuf<T extends TwirpContext = TwirpContext>(
+async function handleApiBootstrapProtobuf<T extends TwirpContext = TwirpContext>(
   ctx: T,
-  service: ServerTwirp,
+  service: ApiTwirp,
   data: Buffer,
   interceptors?: Interceptor<T, BoostrapRequest, BootstrapResponse>[]
 ) {
@@ -225,9 +225,9 @@ async function handleServerBootstrapProtobuf<T extends TwirpContext = TwirpConte
   return Buffer.from(BootstrapResponse.toBinary(response));
 }
 
-async function handleServerBootstrapProgressProtobuf<T extends TwirpContext = TwirpContext>(
+async function handleApiBootstrapProgressProtobuf<T extends TwirpContext = TwirpContext>(
   ctx: T,
-  service: ServerTwirp,
+  service: ApiTwirp,
   data: Buffer,
   interceptors?: Interceptor<T, BootstrapProgressRequest, BootstrapProgressResponse>[]
 ) {
