@@ -228,7 +228,6 @@ function createServiceInterfaceDefinition(serviceName: string, interfaceDeclarat
           ts.factory.createParameterDeclaration(
             undefined,
             undefined,
-            undefined,
             "input",
             undefined,
             ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(inputParameterType), undefined),
@@ -257,7 +256,6 @@ function createServiceInterfaceDefinition(serviceName: string, interfaceDeclarat
 function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.InterfaceDeclaration {
   const copy = ts.factory.createInterfaceDeclaration(
     undefined,
-    undefined,
     interfaceDeclaration.name,
     interfaceDeclaration.typeParameters,
     interfaceDeclaration.heritageClauses,
@@ -268,7 +266,7 @@ function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.Interf
 }
 
 function copyEnum(enumDeclaration: ts.EnumDeclaration): ts.EnumDeclaration {
-  const copy = ts.factory.createEnumDeclaration(undefined, undefined, enumDeclaration.name, enumDeclaration.members);
+  const copy = ts.factory.createEnumDeclaration(undefined, enumDeclaration.name, enumDeclaration.members);
 
   return copy;
 }
