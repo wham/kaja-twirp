@@ -5,9 +5,23 @@ import fs from "fs";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
 import ViteExpress from "vite-express";
+import { createServerServer } from "../shared/server.twirp";
 dotenv.config({ path: process.cwd() + "/../.env" });
 
 const app = express();
+
+const server = createServerServer({
+  async Bootstrap(ctx, request) {
+    return Promise.resolve({ id: "foo" });
+  },
+  async BootstrapProgress(ctx, request) {
+    return Promise.resolve({ progress: 100 });
+  },
+});
+
+server.withPrefix("/api");
+
+app.post(server.matchingPath(), server.httpHandler());
 
 app.use("/twirp", createProxyMiddleware({ target: process.env.BASE_URL, changeOrigin: true }));
 
