@@ -7,7 +7,8 @@
     "start": "NODE_ENV=production ts-node src/server/main.ts",
     "build": "vite build",
     "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "test": "vitest"
+    "test": "vitest",
+    "proto": "protoc --ts_opt=client_none --ts_opt=generate_dependencies --ts_out ./src/shared --twirp_ts_out ./src/shared --proto_path proto proto/server.proto"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.5.0",
@@ -23,6 +24,7 @@
     "react-dom": "^18.2.0",
     "styled-components": "^5.3.10",
     "ts-node": "^10.9.1",
+    "twirp-ts": "^2.5.0",
     "typescript": "^4.9.5",
     "vite-express": "*"
   },
