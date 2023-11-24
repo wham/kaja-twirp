@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-service Server {
+service Api {
   rpc Bootstrap(BoostrapRequest) returns (BootstrapResponse);
   rpc BootstrapProgress(BootstrapProgressRequest) returns (BootstrapProgressResponse);
 }

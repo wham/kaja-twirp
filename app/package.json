@@ -8,7 +8,7 @@
     "build": "vite build",
     "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "test": "vitest",
-    "proto": "protoc --ts_opt=client_none --ts_opt=generate_dependencies --ts_out ./src/shared --twirp_ts_out ./src/shared --proto_path proto proto/server.proto"
+    "protoc": "protoc --ts_opt=client_none --ts_opt=generate_dependencies --ts_out ./src/shared --twirp_ts_out ./src/shared --proto_path proto proto/api.proto"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.5.0",

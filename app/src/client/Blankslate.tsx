@@ -2,11 +2,11 @@ import { Box } from "@primer/react";
 import { Blankslate as PrimerBlankslate } from "@primer/react/drafts";
 import { useEffect } from "react";
 import { FetchRPC } from "twirp-ts";
-import { ServerClientJSON } from "../shared/server.twirp";
+import { ApiClientJSON } from "../shared/api.twirp";
 
 export function Blankslate() {
   useEffect(() => {
-    const client = new ServerClientJSON(
+    const client = new ApiClientJSON(
       FetchRPC({
         baseUrl: "http://localhost:3000/api",
       }),
