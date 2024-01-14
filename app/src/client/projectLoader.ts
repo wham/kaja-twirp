@@ -33,7 +33,7 @@ export async function loadProject(): Promise<Project> {
               baseUrl: urlWithoutPath + "/twirp",
             });
 
-            let client = await createClient(serviceName, transport, interfaceMap);
+            let client = await createClient(serviceName, transport, interfaceMap, modules);
 
             try {
               let { response } = await (client as any)[lcfirst(methodName)](input);
@@ -138,12 +138,12 @@ function createInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
   return interfaceMap;
 }
 
-async function createClient(name: string, transport: RpcTransport, interfaceMap: InterfaceMap): Promise<ServiceInfo | undefined> {
+async function createClient(name: string, transport: RpcTransport, interfaceMap: InterfaceMap, modules: Record<string, any>): Promise<ServiceInfo | undefined> {
   const { sourceFile } = interfaceMap["I" + name + "Client"];
   if (!sourceFile) {
     return undefined;
   }
-  const module = await import("./" + sourceFile.fileName);
+  const module = modules["./" + sourceFile.fileName];
   console.log("module", module);
   return new module[name + "Client"](transport);
 }
