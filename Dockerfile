@@ -14,7 +14,6 @@ RUN apk update && apk add --no-cache make protobuf-dev
 WORKDIR /app
 COPY --from=builder /workspace/app/ ./app
 COPY --from=builder /workspace/script/ ./script
-COPY --from=builder /workspace/proto/ ./proto
 
 EXPOSE 3000
 
