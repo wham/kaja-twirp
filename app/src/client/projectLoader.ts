@@ -79,7 +79,7 @@ export async function loadProject(): Promise<Project> {
 
     if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0 || enums.length > 0) {
       extraLibs.push({
-        filePath: sourceFile.fileName,
+        filePath: sourceFile.fileName.replace(".ts", ".d.ts"),
         content: printStatements([...serviceInterfaceDefinitions, ...interfaces.map((i) => copyInterface(i)), ...enums.map((e) => copyEnum(e))]),
       });
     }
@@ -243,7 +243,7 @@ function createServiceInterfaceDefinition(serviceName: string, interfaceDeclarat
   });
 
   const serviceInterfaceDefinition = ts.factory.createVariableStatement(
-    undefined,
+    [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     ts.factory.createVariableDeclarationList(
       [ts.factory.createVariableDeclaration(ts.factory.createIdentifier(serviceName), undefined, undefined, ts.factory.createObjectLiteralExpression(funcs))],
       ts.NodeFlags.Const,
@@ -255,7 +255,7 @@ function createServiceInterfaceDefinition(serviceName: string, interfaceDeclarat
 
 function copyInterface(interfaceDeclaration: ts.InterfaceDeclaration): ts.InterfaceDeclaration {
   const copy = ts.factory.createInterfaceDeclaration(
-    undefined,
+    interfaceDeclaration.modifiers,
     interfaceDeclaration.name,
     interfaceDeclaration.typeParameters,
     interfaceDeclaration.heritageClauses,
