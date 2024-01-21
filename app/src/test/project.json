@@ -1,15 +1,87 @@
 {
   "services": [
     {
-      "name": "Api",
+      "name": "ManyMethods",
       "methods": [
         {
-          "name": "Bootstrap",
-          "editorCode": "Api.Bootstrap({});\n"
+          "name": "Method1",
+          "editorCode": "ManyMethods.Method1({});\n"
         },
         {
-          "name": "BootstrapProgress",
-          "editorCode": "Api.BootstrapProgress({ id: \"\" });\n"
+          "name": "Method2",
+          "editorCode": "ManyMethods.Method2({});\n"
+        },
+        {
+          "name": "Method3",
+          "editorCode": "ManyMethods.Method3({});\n"
+        },
+        {
+          "name": "Method4",
+          "editorCode": "ManyMethods.Method4({});\n"
+        },
+        {
+          "name": "Method5",
+          "editorCode": "ManyMethods.Method5({});\n"
+        },
+        {
+          "name": "Method6",
+          "editorCode": "ManyMethods.Method6({});\n"
+        },
+        {
+          "name": "Method7",
+          "editorCode": "ManyMethods.Method7({});\n"
+        },
+        {
+          "name": "Method8",
+          "editorCode": "ManyMethods.Method8({});\n"
+        },
+        {
+          "name": "Method9",
+          "editorCode": "ManyMethods.Method9({});\n"
+        },
+        {
+          "name": "Method10",
+          "editorCode": "ManyMethods.Method10({});\n"
+        },
+        {
+          "name": "Method11",
+          "editorCode": "ManyMethods.Method11({});\n"
+        },
+        {
+          "name": "Method12",
+          "editorCode": "ManyMethods.Method12({});\n"
+        },
+        {
+          "name": "Method13",
+          "editorCode": "ManyMethods.Method13({});\n"
+        },
+        {
+          "name": "Method14",
+          "editorCode": "ManyMethods.Method14({});\n"
+        },
+        {
+          "name": "Method15",
+          "editorCode": "ManyMethods.Method15({});\n"
+        },
+        {
+          "name": "Method16",
+          "editorCode": "ManyMethods.Method16({});\n"
+        },
+        {
+          "name": "Method17",
+          "editorCode": "ManyMethods.Method17({});\n"
+        },
+        {
+          "name": "Method18",
+          "editorCode": "ManyMethods.Method18({});\n"
+        },
+        {
+          "name": "Method19",
+          "editorCode": "ManyMethods.Method19({});\n"
+        },
+        {
+          "name": "Method20",
+          "editorCode": "ManyMethods.Method20({});\n"
         }
       ]
     },
@@ -58,36 +130,36 @@
   ],
   "extraLibs": [
     {
-      "filePath": "protoc/api.client.ts",
-      "content": "interface IApiClient {\n    bootstrap(input: BoostrapRequest, options?: RpcOptions): UnaryCall<BoostrapRequest, BootstrapResponse>;\n    bootstrapProgress(input: BootstrapProgressRequest, options?: RpcOptions): UnaryCall<BootstrapProgressRequest, BootstrapProgressResponse>;\n}\n"
+      "filePath": "protoc/google/protobuf/timestamp.d.ts",
+      "content": "export interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
     },
     {
-      "filePath": "protoc/api.ts",
-      "content": "const Api = { Bootstrap: async (input: BoostrapRequest) => { }, BootstrapProgress: async (input: BootstrapProgressRequest) => { } };\ninterface BoostrapRequest {\n}\ninterface BootstrapResponse {\n    id: string;\n}\ninterface BootstrapProgressRequest {\n    id: string;\n}\ninterface BootstrapProgressResponse {\n    progress: number;\n}\n"
+      "filePath": "protoc/lib/message.d.ts",
+      "content": "export interface Message {\n    name: string;\n}\n"
     },
     {
-      "filePath": "protoc/google/protobuf/timestamp.ts",
-      "content": "interface Timestamp {\n    seconds: bigint;\n    nanos: number;\n}\n"
+      "filePath": "protoc/many-methods.client.d.ts",
+      "content": "export interface IManyMethodsClient {\n    method1(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method2(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method3(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method4(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method5(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method6(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method7(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method8(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method9(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method10(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method11(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method12(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method13(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method14(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method15(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method16(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method17(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method18(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method19(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n    method20(input: Request, options?: RpcOptions): UnaryCall<Request, Response>;\n}\n"
     },
     {
-      "filePath": "protoc/lib/message.ts",
-      "content": "interface Message {\n    name: string;\n}\n"
+      "filePath": "protoc/many-methods.d.ts",
+      "content": "export const ManyMethods = { Method1: async (input: Request) => { }, Method2: async (input: Request) => { }, Method3: async (input: Request) => { }, Method4: async (input: Request) => { }, Method5: async (input: Request) => { }, Method6: async (input: Request) => { }, Method7: async (input: Request) => { }, Method8: async (input: Request) => { }, Method9: async (input: Request) => { }, Method10: async (input: Request) => { }, Method11: async (input: Request) => { }, Method12: async (input: Request) => { }, Method13: async (input: Request) => { }, Method14: async (input: Request) => { }, Method15: async (input: Request) => { }, Method16: async (input: Request) => { }, Method17: async (input: Request) => { }, Method18: async (input: Request) => { }, Method19: async (input: Request) => { }, Method20: async (input: Request) => { } };\nexport interface Request {\n}\nexport interface Response {\n}\n"
     },
     {
-      "filePath": "protoc/quirks.client.ts",
-      "content": "interface IQuirksClient {\n    getAuthentication(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    map(input: MapRequest, options?: RpcOptions): UnaryCall<MapRequest, MapRequest>;\n    methodWithAReallyLongNameGmthggupcbmnphflnnvu(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    panic(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    repeated(input: RepeatedRequest, options?: RpcOptions): UnaryCall<RepeatedRequest, RepeatedRequest>;\n    types(input: TypesRequest, options?: RpcOptions): UnaryCall<TypesRequest, TypesRequest>;\n}\n"
+      "filePath": "protoc/quirks.client.d.ts",
+      "content": "export interface IQuirksClient {\n    getAuthentication(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    map(input: MapRequest, options?: RpcOptions): UnaryCall<MapRequest, MapRequest>;\n    methodWithAReallyLongNameGmthggupcbmnphflnnvu(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    panic(input: Void, options?: RpcOptions): UnaryCall<Void, Message>;\n    repeated(input: RepeatedRequest, options?: RpcOptions): UnaryCall<RepeatedRequest, RepeatedRequest>;\n    types(input: TypesRequest, options?: RpcOptions): UnaryCall<TypesRequest, TypesRequest>;\n}\n"
     },
     {
-      "filePath": "protoc/quirks.ts",
-      "content": "const Quirks = { GetAuthentication: async (input: Void) => { }, Map: async (input: MapRequest) => { }, MethodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, Panic: async (input: Void) => { }, Repeated: async (input: RepeatedRequest) => { }, Types: async (input: TypesRequest) => { } };\ninterface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\ninterface MapRequest_RepeatedString {\n    value: string[];\n}\ninterface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\ninterface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\ninterface Void {\n}\nenum RepeatedRequest_Enum {\n    KEY_0 = 0,\n    KEY_1 = 1\n}\n"
+      "filePath": "protoc/quirks.d.ts",
+      "content": "export const Quirks = { GetAuthentication: async (input: Void) => { }, Map: async (input: MapRequest) => { }, MethodWithAReallyLongNameGmthggupcbmnphflnnvu: async (input: Void) => { }, Panic: async (input: Void) => { }, Repeated: async (input: RepeatedRequest) => { }, Types: async (input: TypesRequest) => { } };\nexport interface MapRequest {\n    stringString: {\n        [key: string]: string;\n    };\n    stringInt32: {\n        [key: string]: number;\n    };\n    sint64String: {\n        [key: string]: string;\n    };\n    stringRepeatedString: {\n        [key: string]: MapRequest_RepeatedString;\n    };\n}\nexport interface MapRequest_RepeatedString {\n    value: string[];\n}\nexport interface RepeatedRequest {\n    string: string[];\n    int32: number[];\n    enum: RepeatedRequest_Enum[];\n    message: Message[];\n}\nexport interface TypesRequest {\n    timestamp?: Timestamp;\n    bool: boolean;\n}\nexport interface Void {\n}\nenum RepeatedRequest_Enum {\n    KEY_0 = 0,\n    KEY_1 = 1\n}\n"
     },
     {
-      "filePath": "protoc/search-service.client.ts",
-      "content": "interface ISearchServiceClient {\n    search(input: SearchRequest, options?: RpcOptions): UnaryCall<SearchRequest, SearchResponse>;\n    index(input: IndexRequest, options?: RpcOptions): UnaryCall<IndexRequest, IndexResponse>;\n}\n"
+      "filePath": "protoc/search-service.client.d.ts",
+      "content": "export interface ISearchServiceClient {\n    search(input: SearchRequest, options?: RpcOptions): UnaryCall<SearchRequest, SearchResponse>;\n    index(input: IndexRequest, options?: RpcOptions): UnaryCall<IndexRequest, IndexResponse>;\n}\n"
     },
     {
-      "filePath": "protoc/search-service.ts",
-      "content": "const SearchService = { Search: async (input: SearchRequest) => { }, Index: async (input: IndexRequest) => { } };\ninterface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\ninterface SearchResponse {\n    results: Result[];\n}\ninterface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\ninterface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\ninterface IndexResponse {\n    result?: Result;\n}\nenum Position {\n    TOP = 0,\n    BOTTOM = 1\n}\n"
+      "filePath": "protoc/search-service.d.ts",
+      "content": "export const SearchService = { Search: async (input: SearchRequest) => { }, Index: async (input: IndexRequest) => { } };\nexport interface SearchRequest {\n    query: string;\n    pageNumber: number;\n    resultPerPage: number;\n}\nexport interface SearchResponse {\n    results: Result[];\n}\nexport interface Result {\n    url: string;\n    title: string;\n    snippets: string[];\n    isAd: boolean;\n}\nexport interface IndexRequest {\n    result?: Result;\n    position: Position;\n    additionalCopies: bigint;\n}\nexport interface IndexResponse {\n    result?: Result;\n}\nenum Position {\n    TOP = 0,\n    BOTTOM = 1\n}\n"
     }
   ]
 }

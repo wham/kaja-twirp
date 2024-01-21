@@ -20,11 +20,21 @@ export function Content({ project, method }: ContentProps) {
   const consoleEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
 
   function handleCodeEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) {
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES2016,
+      allowNonTsExtensions: true,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      module: monaco.languages.typescript.ModuleKind.CommonJS,
+      noEmit: true,
+      typeRoots: ["node_modules/@types"]
+  });
+    
     codeEditorRef.current = editor;
     editor.focus();
 
     project.extraLibs.forEach((extraLib) => {
-      monaco.languages.typescript.typescriptDefaults.addExtraLib(extraLib.content, extraLib.filePath);
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(extraLib.content, "file:///node_modules/@types/" + extraLib.filePath.replace(".d.ts", "") + "/index.d.ts");
+      monaco.editor.createModel(extraLib.content, "typescript", monaco.Uri.parse("file:///node_modules/@types/" + extraLib.filePath.replace(".d.ts", "") + "/index.d.ts"));
     });
   }
 
