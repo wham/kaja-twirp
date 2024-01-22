@@ -74,13 +74,19 @@ export async function loadProject(): Promise<Project> {
       const enumName = enumDeclaration.name.text;
       try {
         (window as any)[enumName] = module[enumName];
-      } catch (error) {}
+      } catch (error) { }
     });
 
     if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0 || enums.length > 0) {
+      const moduleDeclaration = ts.factory.createModuleDeclaration(
+        [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)], // modifiers
+        ts.factory.createIdentifier('"' + sourceFile.fileName.replace(".ts", "") + '"'), // name
+        ts.factory.createModuleBlock([...serviceInterfaceDefinitions, ...interfaces.map((i) => copyInterface(i)), ...enums.map((e) => copyEnum(e))]), // body
+      );
+
       extraLibs.push({
-        filePath: sourceFile.fileName.replace(".ts", ".d.ts"),
-        content: printStatements([...serviceInterfaceDefinitions, ...interfaces.map((i) => copyInterface(i)), ...enums.map((e) => copyEnum(e))]),
+        filePath: sourceFile.fileName,
+        content: printStatements([moduleDeclaration]),
       });
     }
   });
