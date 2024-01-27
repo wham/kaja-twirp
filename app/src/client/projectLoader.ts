@@ -50,7 +50,7 @@ export async function loadProject(): Promise<Project> {
 
           methods.push({
             name: methodName,
-            editorCode: methodEditorCode(methodInfo, serviceName),
+            editorCode: methodEditorCode(methodInfo, serviceName, sourceFile.fileName.replace(".ts", "")),
             globalTrigger,
           });
         });
@@ -158,10 +158,25 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
   return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
-function methodEditorCode(methodInfo: MethodInfo, serviceName: string): string {
+function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importModuleName: string): string {
   const input = defaultMessage(methodInfo.I);
 
   const statements = [
+    ts.factory.createImportDeclaration(
+      undefined, // modifiers
+      ts.factory.createImportClause(
+        false, // isTypeOnly
+        undefined, // name
+        ts.factory.createNamedImports([
+          ts.factory.createImportSpecifier(
+            false, // propertyName
+            undefined,
+            ts.factory.createIdentifier(serviceName)
+          )
+        ]) // elements
+      ), // importClause
+      ts.factory.createStringLiteral(importModuleName) // moduleSpecifier
+    ),
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(serviceName), ts.factory.createIdentifier(methodInfo.name)),
