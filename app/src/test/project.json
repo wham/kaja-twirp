@@ -160,6 +160,10 @@
     {
       "filePath": "protoc/search-service.ts",
       "content": "declare module \"protoc/search-service\" {\n    export const SearchService = { Search: async (input: SearchRequest) => { }, Index: async (input: IndexRequest) => { } };\n    export interface SearchRequest {\n        query: string;\n        pageNumber: number;\n        resultPerPage: number;\n    }\n    export interface SearchResponse {\n        results: Result[];\n    }\n    export interface Result {\n        url: string;\n        title: string;\n        snippets: string[];\n        isAd: boolean;\n    }\n    export interface IndexRequest {\n        result?: Result;\n        position: Position;\n        additionalCopies: bigint;\n    }\n    export interface IndexResponse {\n        result?: Result;\n    }\n    enum Position {\n        TOP = 0,\n        BOTTOM = 1\n    }\n}\n"
+    },
+    {
+      "filePath": "global-imports",
+      "content": "import { ManyMethods as ManyMethodsX } from \"protoc/many-methods\";\nimport { Quirks as QuirksX } from \"protoc/quirks\";\nimport { SearchService as SearchServiceX } from \"protoc/search-service\";\nconst ManyMethods = ManyMethodsX;\nconst Quirks = QuirksX;\nconst SearchService = SearchServiceX;\n"
     }
   ]
 }
