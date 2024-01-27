@@ -8,6 +8,8 @@ export async function loadProject(): Promise<Project> {
   const sourceFiles = await loadSourceFiles();
   const modules = await loadModules();
   const interfaceMap = createInterfaceMap(sourceFiles);
+  const globalImports: ts.ImportDeclaration[] = [];
+  const globalVars: ts.VariableStatement[] = [];
 
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
@@ -58,6 +60,33 @@ export async function loadProject(): Promise<Project> {
           name: serviceName,
           methods,
         });
+        globalImports.push(ts.factory.createImportDeclaration(
+          undefined, // modifiers
+          ts.factory.createImportClause(
+            false, // isTypeOnly
+            undefined, // name
+            ts.factory.createNamedImports([
+              ts.factory.createImportSpecifier(
+                false, // propertyName
+                ts.factory.createIdentifier(serviceName),
+                ts.factory.createIdentifier(serviceName + "X")
+              )
+            ]) // elements
+          ), // importClause
+          ts.factory.createStringLiteral(sourceFile.fileName.replace(".ts", "")) // moduleSpecifier
+        ));
+        globalVars.push(ts.factory.createVariableStatement(
+          [], // modifiers
+          ts.factory.createVariableDeclarationList(
+            [ts.factory.createVariableDeclaration(
+              serviceName, // name
+              undefined, // type
+              undefined, // initializer
+              ts.factory.createIdentifier(serviceName + "X") // value
+            )], // declarations
+            ts.NodeFlags.Const // flags
+          )
+        ));
 
         if (interfaceMap["I" + serviceName + "Client"]) {
           const serviceInterfaceDefinition = createServiceInterfaceDefinition(
@@ -90,6 +119,13 @@ export async function loadProject(): Promise<Project> {
       });
     }
   });
+
+  if (globalImports.length > 0) {
+    extraLibs.push({
+      filePath: "global-imports",
+      content: printStatements([...globalImports, ...globalVars]),
+    });
+  }
 
   return {
     services,
