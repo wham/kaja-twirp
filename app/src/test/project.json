@@ -5,83 +5,83 @@
       "methods": [
         {
           "name": "Method1",
-          "editorCode": "ManyMethods.Method1({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method1({});\n"
         },
         {
           "name": "Method2",
-          "editorCode": "ManyMethods.Method2({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method2({});\n"
         },
         {
           "name": "Method3",
-          "editorCode": "ManyMethods.Method3({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method3({});\n"
         },
         {
           "name": "Method4",
-          "editorCode": "ManyMethods.Method4({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method4({});\n"
         },
         {
           "name": "Method5",
-          "editorCode": "ManyMethods.Method5({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method5({});\n"
         },
         {
           "name": "Method6",
-          "editorCode": "ManyMethods.Method6({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method6({});\n"
         },
         {
           "name": "Method7",
-          "editorCode": "ManyMethods.Method7({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method7({});\n"
         },
         {
           "name": "Method8",
-          "editorCode": "ManyMethods.Method8({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method8({});\n"
         },
         {
           "name": "Method9",
-          "editorCode": "ManyMethods.Method9({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method9({});\n"
         },
         {
           "name": "Method10",
-          "editorCode": "ManyMethods.Method10({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method10({});\n"
         },
         {
           "name": "Method11",
-          "editorCode": "ManyMethods.Method11({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method11({});\n"
         },
         {
           "name": "Method12",
-          "editorCode": "ManyMethods.Method12({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method12({});\n"
         },
         {
           "name": "Method13",
-          "editorCode": "ManyMethods.Method13({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method13({});\n"
         },
         {
           "name": "Method14",
-          "editorCode": "ManyMethods.Method14({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method14({});\n"
         },
         {
           "name": "Method15",
-          "editorCode": "ManyMethods.Method15({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method15({});\n"
         },
         {
           "name": "Method16",
-          "editorCode": "ManyMethods.Method16({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method16({});\n"
         },
         {
           "name": "Method17",
-          "editorCode": "ManyMethods.Method17({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method17({});\n"
         },
         {
           "name": "Method18",
-          "editorCode": "ManyMethods.Method18({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method18({});\n"
         },
         {
           "name": "Method19",
-          "editorCode": "ManyMethods.Method19({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method19({});\n"
         },
         {
           "name": "Method20",
-          "editorCode": "ManyMethods.Method20({});\n"
+          "editorCode": "import { ManyMethods } from \"protoc/many-methods\";\nManyMethods.Method20({});\n"
         }
       ]
     },
@@ -90,27 +90,27 @@
       "methods": [
         {
           "name": "GetAuthentication",
-          "editorCode": "Quirks.GetAuthentication({});\n"
+          "editorCode": "import { Quirks } from \"protoc/quirks\";\nQuirks.GetAuthentication({});\n"
         },
         {
           "name": "Map",
-          "editorCode": "Quirks.Map({ stringString: { key: \"\" }, stringInt32: { key: 0 }, sint64String: { 0: \"\" }, stringRepeatedString: { key: { value: [\"\"] } } });\n"
+          "editorCode": "import { Quirks } from \"protoc/quirks\";\nQuirks.Map({ stringString: { key: \"\" }, stringInt32: { key: 0 }, sint64String: { 0: \"\" }, stringRepeatedString: { key: { value: [\"\"] } } });\n"
         },
         {
           "name": "MethodWithAReallyLongNameGmthggupcbmnphflnnvu",
-          "editorCode": "Quirks.MethodWithAReallyLongNameGmthggupcbmnphflnnvu({});\n"
+          "editorCode": "import { Quirks } from \"protoc/quirks\";\nQuirks.MethodWithAReallyLongNameGmthggupcbmnphflnnvu({});\n"
         },
         {
           "name": "Panic",
-          "editorCode": "Quirks.Panic({});\n"
+          "editorCode": "import { Quirks } from \"protoc/quirks\";\nQuirks.Panic({});\n"
         },
         {
           "name": "Repeated",
-          "editorCode": "Quirks.Repeated({ string: [\"\"], int32: [0], enum: [RepeatedRequest_Enum.KEY_0], message: [{ name: \"\" }] });\n"
+          "editorCode": "import { Quirks } from \"protoc/quirks\";\nQuirks.Repeated({ string: [\"\"], int32: [0], enum: [RepeatedRequest_Enum.KEY_0], message: [{ name: \"\" }] });\n"
         },
         {
           "name": "Types",
-          "editorCode": "Quirks.Types({ timestamp: { seconds: 0n, nanos: 0 }, bool: true });\n"
+          "editorCode": "import { Quirks } from \"protoc/quirks\";\nQuirks.Types({ timestamp: { seconds: 0n, nanos: 0 }, bool: true });\n"
         }
       ]
     },
@@ -119,11 +119,11 @@
       "methods": [
         {
           "name": "Search",
-          "editorCode": "SearchService.Search({ query: \"\", pageNumber: 0, resultPerPage: 0 });\n"
+          "editorCode": "import { SearchService } from \"protoc/search-service\";\nSearchService.Search({ query: \"\", pageNumber: 0, resultPerPage: 0 });\n"
         },
         {
           "name": "Index",
-          "editorCode": "SearchService.Index({ result: { url: \"\", title: \"\", snippets: [\"\"], isAd: true }, position: Position.TOP, additionalCopies: 0n });\n"
+          "editorCode": "import { SearchService } from \"protoc/search-service\";\nSearchService.Index({ result: { url: \"\", title: \"\", snippets: [\"\"], isAd: true }, position: Position.TOP, additionalCopies: 0n });\n"
         }
       ]
     }
