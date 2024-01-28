@@ -19,7 +19,7 @@ export function Content({ project, method }: ContentProps) {
   const codeEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
   const consoleEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
 
-  function handleCodeEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) { 
+  function handleCodeEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) {
     codeEditorRef.current = editor;
     editor.focus();
 
@@ -42,16 +42,19 @@ export function Content({ project, method }: ContentProps) {
   }
 
   window.setOutput = (output: string) => {
-    prettier.format(output, { parser: "json", plugins: [prettierPluginBabel, prettierPluginEsTree] }).then((formattedOutput) => {
-      if (consoleEditorRef.current) {
-        consoleEditorRef.current.setValue(formattedOutput);
-      }
-    }).catch((error) => {
-      console.warn("Failed to format the output", error)
-      if (consoleEditorRef.current) {
-        consoleEditorRef.current.setValue(output);
-      }
-    });
+    prettier
+      .format(output, { parser: "json", plugins: [prettierPluginBabel, prettierPluginEsTree] })
+      .then((formattedOutput) => {
+        if (consoleEditorRef.current) {
+          consoleEditorRef.current.setValue(formattedOutput);
+        }
+      })
+      .catch((error) => {
+        console.warn("Failed to format the output", error);
+        if (consoleEditorRef.current) {
+          consoleEditorRef.current.setValue(output);
+        }
+      });
   };
 
   async function callMethod() {
@@ -60,22 +63,29 @@ export function Content({ project, method }: ContentProps) {
     }
 
     if (codeEditorRef.current) {
-      const func = new Function(codeEditorRef.current.getValue());
+      let code = codeEditorRef.current.getValue();
+      let lines = code.split("\n"); // split the code into lines
+      lines.shift(); // remove the first line
+      code = lines.join("\n");
+      const func = new Function(code);
       func();
     }
   }
 
   useEffect(() => {
-    prettier.format(method.editorCode, { parser: "typescript", plugins: [prettierPluginTypescript, prettierPluginEsTree] }).then((formattedEditorCode) => {
-      if (codeEditorRef.current) {
-        codeEditorRef.current.setValue(formattedEditorCode);
-      }
-    }).catch((error) => {
-      console.error("Failed to format the method code", error)
-      if (codeEditorRef.current) {
-        codeEditorRef.current.setValue(method.editorCode);
-      }
-    });
+    prettier
+      .format(method.editorCode, { parser: "typescript", plugins: [prettierPluginTypescript, prettierPluginEsTree] })
+      .then((formattedEditorCode) => {
+        if (codeEditorRef.current) {
+          codeEditorRef.current.setValue(formattedEditorCode);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to format the method code", error);
+        if (codeEditorRef.current) {
+          codeEditorRef.current.setValue(method.editorCode);
+        }
+      });
 
     if (consoleEditorRef.current) {
       consoleEditorRef.current.setValue("");
