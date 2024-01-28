@@ -21,7 +21,12 @@ export function Sidebar({ project, onSelect, currentMethod }: SidebarProps) {
                   <TreeView.SubTree>
                     {service.methods.map((method) => {
                       return (
-                        <TreeView.Item id={methodId(service, method)} key={methodId(service, method)} onSelect={() => onSelect(service, method)} current={currentMethod === method}>
+                        <TreeView.Item
+                          id={methodId(service, method)}
+                          key={methodId(service, method)}
+                          onSelect={() => onSelect(service, method)}
+                          current={currentMethod === method}
+                        >
                           {method.name}
                         </TreeView.Item>
                       );
@@ -42,6 +47,7 @@ export function Sidebar({ project, onSelect, currentMethod }: SidebarProps) {
           paddingX: 2,
           borderTopStyle: "solid",
           borderTopColor: "border.default",
+          display: "none",
         }}
       >
         <Link href="https://github.com/wham/kaja-twirp" sx={{ color: "btn.primary.text", fontSize: "12px" }} target="_blank">
