@@ -18,7 +18,7 @@ export function Workspace({ project, defaultEndpoint }: WorkspaceProps) {
 
   return (
     <>
-      <Box sx={{ width: 300, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", flexShrink: 0 }}>
+      <Box sx={{ width: 300, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", flexShrink: 0, overflow: "scroll" }}>
         <Sidebar project={project} onSelect={onSelect} currentMethod={selectedEndpoint.method} />
       </Box>
       <Box sx={{ flexGrow: 1 }}>
