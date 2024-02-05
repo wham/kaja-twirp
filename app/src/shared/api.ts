@@ -2,12 +2,12 @@
 // @generated from protobuf file "api.proto" (syntax proto3)
 // tslint:disable
 import { ServiceType } from "@protobuf-ts/runtime-rpc";
-import { WireType } from "@protobuf-ts/runtime";
 import type { BinaryWriteOptions } from "@protobuf-ts/runtime";
 import type { IBinaryWriter } from "@protobuf-ts/runtime";
-import { UnknownFieldHandler } from "@protobuf-ts/runtime";
+import { WireType } from "@protobuf-ts/runtime";
 import type { BinaryReadOptions } from "@protobuf-ts/runtime";
 import type { IBinaryReader } from "@protobuf-ts/runtime";
+import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
@@ -16,15 +16,36 @@ import { MessageType } from "@protobuf-ts/runtime";
  * @generated from protobuf message BoostrapRequest
  */
 export interface BoostrapRequest {
+    /**
+     * @generated from protobuf field: int32 log_offset = 1;
+     */
+    logOffset: number;
 }
 /**
  * @generated from protobuf message BootstrapResponse
  */
 export interface BootstrapResponse {
     /**
-     * @generated from protobuf field: string id = 1;
+     * @generated from protobuf field: repeated Log logs = 1;
      */
-    id: string;
+    logs: Log[];
+}
+/**
+ * @generated from protobuf message Log
+ */
+export interface Log {
+    /**
+     * @generated from protobuf field: string message = 1;
+     */
+    message: string;
+    /**
+     * @generated from protobuf field: int32 index = 2;
+     */
+    index: number;
+    /**
+     * @generated from protobuf field: LogLevel level = 3;
+     */
+    level: LogLevel;
 }
 /**
  * @generated from protobuf message BootstrapProgressRequest
@@ -44,22 +65,64 @@ export interface BootstrapProgressResponse {
      */
     progress: number;
 }
+/**
+ * @generated from protobuf enum LogLevel
+ */
+export enum LogLevel {
+    /**
+     * @generated from protobuf enum value: DEBUG = 0;
+     */
+    DEBUG = 0,
+    /**
+     * @generated from protobuf enum value: INFO = 1;
+     */
+    INFO = 1,
+    /**
+     * @generated from protobuf enum value: WARN = 2;
+     */
+    WARN = 2,
+    /**
+     * @generated from protobuf enum value: ERROR = 3;
+     */
+    ERROR = 3
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class BoostrapRequest$Type extends MessageType<BoostrapRequest> {
     constructor() {
-        super("BoostrapRequest", []);
+        super("BoostrapRequest", [
+            { no: 1, name: "log_offset", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
     }
     create(value?: PartialMessage<BoostrapRequest>): BoostrapRequest {
-        const message = {};
+        const message = { logOffset: 0 };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<BoostrapRequest>(this, message, value);
         return message;
     }
     internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: BoostrapRequest): BoostrapRequest {
-        return target ?? this.create();
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 log_offset */ 1:
+                    message.logOffset = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
     }
     internalBinaryWrite(message: BoostrapRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 log_offset = 1; */
+        if (message.logOffset !== 0)
+            writer.tag(1, WireType.Varint).int32(message.logOffset);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -74,11 +137,11 @@ export const BoostrapRequest = new BoostrapRequest$Type();
 class BootstrapResponse$Type extends MessageType<BootstrapResponse> {
     constructor() {
         super("BootstrapResponse", [
-            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "logs", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Log }
         ]);
     }
     create(value?: PartialMessage<BootstrapResponse>): BootstrapResponse {
-        const message = { id: "" };
+        const message = { logs: [] };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<BootstrapResponse>(this, message, value);
@@ -89,8 +152,8 @@ class BootstrapResponse$Type extends MessageType<BootstrapResponse> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
+                case /* repeated Log logs */ 1:
+                    message.logs.push(Log.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -104,9 +167,9 @@ class BootstrapResponse$Type extends MessageType<BootstrapResponse> {
         return message;
     }
     internalBinaryWrite(message: BootstrapResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* repeated Log logs = 1; */
+        for (let i = 0; i < message.logs.length; i++)
+            Log.internalBinaryWrite(message.logs[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -117,6 +180,67 @@ class BootstrapResponse$Type extends MessageType<BootstrapResponse> {
  * @generated MessageType for protobuf message BootstrapResponse
  */
 export const BootstrapResponse = new BootstrapResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class Log$Type extends MessageType<Log> {
+    constructor() {
+        super("Log", [
+            { no: 1, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "index", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 3, name: "level", kind: "enum", T: () => ["LogLevel", LogLevel] }
+        ]);
+    }
+    create(value?: PartialMessage<Log>): Log {
+        const message = { message: "", index: 0, level: 0 };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<Log>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Log): Log {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string message */ 1:
+                    message.message = reader.string();
+                    break;
+                case /* int32 index */ 2:
+                    message.index = reader.int32();
+                    break;
+                case /* LogLevel level */ 3:
+                    message.level = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: Log, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string message = 1; */
+        if (message.message !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.message);
+        /* int32 index = 2; */
+        if (message.index !== 0)
+            writer.tag(2, WireType.Varint).int32(message.index);
+        /* LogLevel level = 3; */
+        if (message.level !== 0)
+            writer.tag(3, WireType.Varint).int32(message.level);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message Log
+ */
+export const Log = new Log$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class BootstrapProgressRequest$Type extends MessageType<BootstrapProgressRequest> {
     constructor() {
