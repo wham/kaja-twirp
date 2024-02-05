@@ -6,10 +6,24 @@ service Api {
 }
 
 message BoostrapRequest {
+  int32 log_offset = 1;
 }
 
 message BootstrapResponse {
-  string id = 1;
+  repeated Log logs = 1;
+}
+
+message Log {
+  string message = 1;
+  int32 index = 2;
+  LogLevel level = 3;
+}
+
+enum LogLevel {
+  DEBUG = 0;
+  INFO = 1;
+  WARN = 2;
+  ERROR = 3;
 }
 
 message BootstrapProgressRequest {

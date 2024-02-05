@@ -12,7 +12,7 @@ const app = express();
 
 const server = createApiServer({
   async Bootstrap(ctx, request) {
-    return Promise.resolve({ id: "foo" });
+    return Promise.resolve({ logs: [] });
   },
   async BootstrapProgress(ctx, request) {
     return Promise.resolve({ progress: 100 });
