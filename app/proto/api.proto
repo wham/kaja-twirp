@@ -1,16 +1,22 @@
 syntax = "proto3";
 
 service Api {
-  rpc Bootstrap(BoostrapRequest) returns (BootstrapResponse);
-  rpc BootstrapProgress(BootstrapProgressRequest) returns (BootstrapProgressResponse);
+  rpc Bootstrap(BootstrapRequest) returns (BootstrapResponse);
 }
 
-message BoostrapRequest {
+message BootstrapRequest {
   int32 log_offset = 1;
 }
 
 message BootstrapResponse {
-  repeated Log logs = 1;
+  BootstrapStatus status = 1;
+  repeated Log logs = 2;
+}
+
+enum BootstrapStatus {
+  STATUS_READY = 0;
+  STATUS_ERROR = 1;
+  STATUS_RUNNING = 2;
 }
 
 message Log {
@@ -20,16 +26,8 @@ message Log {
 }
 
 enum LogLevel {
-  DEBUG = 0;
-  INFO = 1;
-  WARN = 2;
-  ERROR = 3;
-}
-
-message BootstrapProgressRequest {
-  string id = 1;
-}
-
-message BootstrapProgressResponse {
-  int32 progress = 1;
+  LEVEL_DEBUG = 0;
+  LEVEL_INFO = 1;
+  LEVEL_WARN = 2;
+  LEVEL_ERROR = 3;
 }

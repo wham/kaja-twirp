@@ -6,17 +6,16 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
 import ViteExpress from "vite-express";
 import { createApiServer } from "../shared/api.twirp";
+import { Bootstrapper } from "./bootstrapper";
 dotenv.config({ path: process.cwd() + "/../.env" });
 
 const app = express();
+const bootstrapper = new Bootstrapper();
 
 const server = createApiServer({
   async Bootstrap(ctx, request) {
-    return Promise.resolve({ logs: [] });
-  },
-  async BootstrapProgress(ctx, request) {
-    return Promise.resolve({ progress: 100 });
-  },
+    return bootstrapper.bootstrap(request);
+  }
 });
 
 server.withPrefix("/api");
