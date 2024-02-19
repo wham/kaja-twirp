@@ -14,9 +14,10 @@ message BootstrapResponse {
 }
 
 enum BootstrapStatus {
-  STATUS_READY = 0;
-  STATUS_ERROR = 1;
-  STATUS_RUNNING = 2;
+  STATUS_UNKNOWN = 0;
+  STATUS_READY = 1;
+  STATUS_ERROR = 2;
+  STATUS_RUNNING = 3;
 }
 
 message Log {

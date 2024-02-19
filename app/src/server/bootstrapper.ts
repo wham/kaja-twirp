@@ -14,7 +14,7 @@ export class Bootstrapper {
 
   async bootstrap(request: BootstrapRequest): Promise<BootstrapResponse> {
     console.log("bootstrap()", this.status, request.logOffset);
-    if (this.status !== BootstrapStatus.STATUS_RUNNING || request.logOffset === 0) {
+    if (this.status !== BootstrapStatus.STATUS_RUNNING && request.logOffset === 0) {
       this.status = BootstrapStatus.STATUS_RUNNING;
       this.logs = [];
       this.info("Bootstrap started");
