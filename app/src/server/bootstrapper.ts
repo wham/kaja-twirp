@@ -13,6 +13,7 @@ export class Bootstrapper {
   }
 
   async bootstrap(request: BootstrapRequest): Promise<BootstrapResponse> {
+    console.log("bootstrap()", this.status, request.logOffset);
     if (this.status !== BootstrapStatus.STATUS_RUNNING || request.logOffset === 0) {
       this.status = BootstrapStatus.STATUS_RUNNING;
       this.logs = [];
@@ -40,7 +41,13 @@ export class Bootstrapper {
             return;
           }
 
-          exec(`npm run build`, (error, stdout, stderr) => {
+          this.debug(stdout);
+          for (let line in stdout.split("\n")) {
+            this.debug(line);
+          }
+          this.status = BootstrapStatus.STATUS_READY;
+
+          /*exec(`npm run build`, (error, stdout, stderr) => {
             if (error) {
               this.error("Failed to run npm build", error);
               return;
@@ -50,7 +57,7 @@ export class Bootstrapper {
               this.debug(line);
             }
             this.status = BootstrapStatus.STATUS_READY;
-          });
+          });*/
         });
       }
     });
