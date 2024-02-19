@@ -56,17 +56,21 @@ export interface Log {
  */
 export enum BootstrapStatus {
     /**
-     * @generated from protobuf enum value: STATUS_READY = 0;
+     * @generated from protobuf enum value: STATUS_UNKNOWN = 0;
      */
-    STATUS_READY = 0,
+    STATUS_UNKNOWN = 0,
     /**
-     * @generated from protobuf enum value: STATUS_ERROR = 1;
+     * @generated from protobuf enum value: STATUS_READY = 1;
      */
-    STATUS_ERROR = 1,
+    STATUS_READY = 1,
     /**
-     * @generated from protobuf enum value: STATUS_RUNNING = 2;
+     * @generated from protobuf enum value: STATUS_ERROR = 2;
      */
-    STATUS_RUNNING = 2
+    STATUS_ERROR = 2,
+    /**
+     * @generated from protobuf enum value: STATUS_RUNNING = 3;
+     */
+    STATUS_RUNNING = 3
 }
 /**
  * @generated from protobuf enum LogLevel
