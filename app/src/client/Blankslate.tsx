@@ -5,8 +5,11 @@ import { FetchRPC } from "twirp-ts";
 import { BootstrapStatus, Log } from "../shared/api";
 import { ApiClientJSON } from "../shared/api.twirp";
 
+interface IgnoreToken {
+  ignore: boolean;
+}
+
 export function Blankslate() {
-  let [logOffset, setLogOffset] = useState(0);
   let [logs, setLogs] = useState<Log[]>([]);
   const client = new ApiClientJSON(
     FetchRPC({
@@ -14,18 +17,29 @@ export function Blankslate() {
     }),
   );
 
-  const bootstrap = () => {
+  const bootstrap = (ignoreToken: IgnoreToken) => {
+    console.log(logs);
     client.Bootstrap({ logOffset: logs.length }).then((response) => {
+      if (ignoreToken.ignore) {
+        return;
+      }
+      
       setLogs([...logs, ...response.logs]);
 
       if (response.status === BootstrapStatus.STATUS_RUNNING) {
-        setTimeout(bootstrap, 10000);
+        setTimeout(() => {bootstrap(ignoreToken)}, 10000);
       }
     });    
   }
 
   useEffect(() => {
-    bootstrap();
+    const ignoreToken: IgnoreToken = { ignore: false };
+    console.log("useEffect");
+    bootstrap(ignoreToken);
+
+    return () => {
+      ignoreToken.ignore = true;
+    }
   }, []);
 
   return (
