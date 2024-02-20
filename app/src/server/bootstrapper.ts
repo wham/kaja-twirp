@@ -1,5 +1,6 @@
 import { exec } from "child_process";
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { BootstrapRequest, BootstrapResponse, BootstrapStatus, Log, LogLevel } from "../shared/api";
 
@@ -28,14 +29,17 @@ export class Bootstrapper {
     this.debug(process.cwd());
     const protoPath = path.resolve(process.cwd(), "../demo/proto");
     const outPath = path.resolve(process.cwd(), "../app/src/client/protoc");
+    const tempDir = path.join(os.tmpdir(), 'temp-protoc');
     this.debug("protoPath: " + protoPath);
+    this.debug("outPath: " + outPath);
+    this.debug("tempDir: " + tempDir);
 
-    fs.mkdir(outPath, { recursive: true }, (error) => {
+    fs.mkdir(tempDir, { recursive: true }, (error) => {
       if (error) {
-        this.error("Failed to create output directory", error);
+        this.error("Failed to create temp output directory", error);
       } else {
-        this.debug("Output directory created or already exists");
-        exec(`protoc --ts_out ${outPath} --ts_opt long_type_bigint -I${protoPath} $(find ${protoPath} -iname "*.proto")`, (error, stdout, stderr) => {
+        this.debug("Temp output directory created or already exists");
+        exec(`protoc --ts_out ${tempDir} --ts_opt long_type_bigint -I${protoPath} $(find ${protoPath} -iname "*.proto")`, (error, stdout, stderr) => {
           if (error) {
             this.error("Failed to run protoc", error);
             return;
@@ -45,6 +49,12 @@ export class Bootstrapper {
           for (let line in stdout.split("\n")) {
             this.debug(line);
           }
+          this.info("Protoc ran successfully");
+          if (fs.existsSync(outPath)) {
+            fs.rmdirSync(outPath, { recursive: true, });
+          }
+          fs.renameSync(tempDir, outPath);
+          this.debug("Protoc output moved to client/protoc");
           this.status = BootstrapStatus.STATUS_READY;
 
           /*exec(`npm run build`, (error, stdout, stderr) => {
