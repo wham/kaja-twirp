@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "nodemon src/server/main.ts -w src/server",
+    "dev": "NODE_ENV=development nodemon src/server/main.ts -w src/server",
     "start": "NODE_ENV=production ts-node src/server/main.ts",
     "build": "vite build",
     "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\"",
