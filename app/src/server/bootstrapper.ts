@@ -29,7 +29,7 @@ export class Bootstrapper {
     this.debug(process.cwd());
     const protoPath = path.resolve(process.cwd(), "../demo/proto");
     const outPath = path.resolve(process.cwd(), "../app/src/client/protoc");
-    const tempDir = path.join(os.tmpdir(), 'temp-protoc');
+    const tempDir = path.join(os.tmpdir(), "temp-protoc");
     this.debug("protoPath: " + protoPath);
     this.debug("outPath: " + outPath);
     this.debug("tempDir: " + tempDir);
@@ -51,23 +51,27 @@ export class Bootstrapper {
           }
           this.info("Protoc ran successfully");
           if (fs.existsSync(outPath)) {
-            fs.rmdirSync(outPath, { recursive: true, });
+            fs.rmdirSync(outPath, { recursive: true });
           }
           fs.renameSync(tempDir, outPath);
           this.debug("Protoc output moved to client/protoc");
-          this.status = BootstrapStatus.STATUS_READY;
+          if (process.env.NODE_ENV === "production") {
+            this.info("Building client");
+            exec(`npm run build`, (error, stdout, stderr) => {
+              if (error) {
+                this.error("Failed to run npm build", error);
+                return;
+              }
 
-          /*exec(`npm run build`, (error, stdout, stderr) => {
-            if (error) {
-              this.error("Failed to run npm build", error);
-              return;
-            }
-
-            for (let line in stdout.split("\n")) {
-              this.debug(line);
-            }
+              for (let line in stdout.split("\n")) {
+                this.debug(line);
+              }
+              this.info("Client built successfully");
+              this.status = BootstrapStatus.STATUS_READY;
+            });
+          } else {
             this.status = BootstrapStatus.STATUS_READY;
-          });*/
+          }
         });
       }
     });
