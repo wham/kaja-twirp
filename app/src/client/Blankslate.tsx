@@ -1,9 +1,8 @@
 import { Box } from "@primer/react";
 import { Blankslate as PrimerBlankslate } from "@primer/react/drafts";
 import { useEffect, useRef, useState } from "react";
-import { FetchRPC } from "twirp-ts";
 import { BootstrapStatus, Log } from "../shared/api";
-import { ApiClientJSON } from "../shared/api.twirp";
+import { getApiClient } from "./api";
 
 interface IgnoreToken {
   ignore: boolean;
@@ -12,11 +11,7 @@ interface IgnoreToken {
 export function Blankslate() {
   const [logs, setLogs] = useState<Log[]>([]);
   const logsRef = useRef(logs);
-  const client = new ApiClientJSON(
-    FetchRPC({
-      baseUrl: "http://localhost:3000/api",
-    }),
-  );
+  const client = getApiClient();
 
   const bootstrap = (ignoreToken: IgnoreToken) => {
     console.log("Current logs", logsRef.current);
