@@ -213,6 +213,9 @@ function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importMod
       ), // importClause
       ts.factory.createStringLiteral(importModuleName) // moduleSpecifier
     ),
+    // blank line after import
+    // https://stackoverflow.com/questions/55246585/how-to-generate-extra-newlines-between-nodes-with-the-typescript-compiler-api-pr
+    ts.factory.createIdentifier("\n") as unknown as ts.Statement,
     ts.factory.createExpressionStatement(
       ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(serviceName), ts.factory.createIdentifier(methodInfo.name)),
