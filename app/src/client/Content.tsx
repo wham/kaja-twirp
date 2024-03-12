@@ -7,7 +7,6 @@ import prettierPluginBabel from "prettier/plugins/babel";
 import prettierPluginEsTree from "prettier/plugins/estree";
 import prettierPluginTypescript from "prettier/plugins/typescript";
 import React, { useEffect } from "react";
-import "./assets/style.css";
 import { Method, Project, Service } from "./project";
 
 type ContentProps = {
@@ -24,35 +23,10 @@ export function Content({ project, method }: ContentProps) {
     codeEditorRef.current = editor;
     editor.focus();
 
-    // https://github.com/microsoft/monaco-editor/issues/45
-    //(editor as any).setHiddenAreas([new monaco.Range(1, 0, 1, 0)]);
-    const lockedLineNumbers = [1];
-    editor.onDidChangeCursorSelection((_) => {
-      const selectionInLockedRange = editor.getSelections()?.some((selection) => {
-        return lockedLineNumbers.some((lockedLineNumber) => {
-          return selection.intersectRanges(new monaco.Range(lockedLineNumber, 0, lockedLineNumber + 1, 0));
-        });
-      });
-      editor.updateOptions({ readOnly: selectionInLockedRange, readOnlyMessage: { value: "Cannot edit locked lines." } });
-    });
-
     project.extraLibs.forEach((extraLib) => {
       monaco.languages.typescript.typescriptDefaults.addExtraLib(extraLib.content);
       monaco.editor.createModel(extraLib.content, "typescript", monaco.Uri.parse("ts:filename/" + extraLib.filePath.replace(".ts", ".d.ts")));
     });
-
-    editor.deltaDecorations(
-      [],
-      [
-        {
-          range: new monaco.Range(1, 1, 2, 5),
-          options: {
-            isWholeLine: true,
-            className: "myCustomClass",
-          },
-        },
-      ],
-    );
   }
 
   function handleConsoleEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) {
