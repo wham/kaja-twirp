@@ -25,7 +25,7 @@ cd ".."
 docker build . -t kaja-twirp-dev:latest
 
 docker run --name kaja-twirp-dev -d -p 3000:3000 \
-    -v $PWD/demo/proto:/app/demo/proto \
+    -v $PWD/demo/proto:/demo/proto \
     -e BASE_URL="http://host.docker.internal:41521" --add-host=host.docker.internal:host-gateway kaja-twirp-dev:latest
 
 # Open kaja-twirp in a default web browser

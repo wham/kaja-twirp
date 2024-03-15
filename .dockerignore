@@ -1,5 +1,5 @@
+/app/dist
+/app/node_modules
 /app/src/client/protoc
 /app/src/test/protoc
 /demo/bin
-dist
-node_modules
