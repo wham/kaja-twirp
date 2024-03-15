@@ -17,4 +17,4 @@ go build -o /tmp/demo-app ./cmd/demo-app
 cd "../app"
 rm -rf ./src/client/protoc
 npm i
-npm run dev
+npm start
