@@ -39,7 +39,7 @@ export class Bootstrapper {
         this.error("Failed to create temp output directory", error);
       } else {
         this.debug("Temp output directory created or already exists");
-        exec(`protoc --ts_out ${tempDir} --ts_opt long_type_bigint -I${protoPath} $(find ${protoPath} -iname "*.proto")`, (error, stdout, stderr) => {
+        exec(`npx protoc --ts_out ${tempDir} --ts_opt long_type_bigint -I${protoPath} $(find ${protoPath} -iname "*.proto")`, (error, stdout, stderr) => {
           if (error) {
             this.error("Failed to run protoc", error);
             return;
