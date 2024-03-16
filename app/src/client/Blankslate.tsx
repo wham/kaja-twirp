@@ -15,7 +15,7 @@ export function Blankslate() {
 
   const bootstrap = (ignoreToken: IgnoreToken) => {
     console.log("Current logs", logsRef.current);
-    client.Bootstrap({ logOffset: logsRef.current.length }).then((response) => {
+    client.bootstrap({ logOffset: logsRef.current.length }).then(({ response }) => {
       if (ignoreToken.ignore) {
         return;
       }

@@ -7,7 +7,7 @@
     "start": "NODE_ENV=development nodemon src/server/main.ts -w src/server",
     "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "test": "vitest",
-    "protoc": "npx protoc --ts_opt=client_none --ts_opt=generate_dependencies --ts_out ./src/shared --twirp_ts_out ./src/shared --proto_path proto proto/api.proto"
+    "protoc": "npx protoc --ts_opt=generate_dependencies --ts_out ./src/shared --twirp_ts_out ./src/shared --proto_path proto proto/api.proto"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.5.0",
