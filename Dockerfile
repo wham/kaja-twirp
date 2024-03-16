@@ -2,11 +2,10 @@
 
 FROM alpine:latest
 COPY app app
-COPY script script
 RUN apk add --update nodejs npm
 WORKDIR /app
 RUN npm ci --omit=dev
-RUN /script/tidy_node_modules
+RUN npm run clean-modules
 
 EXPOSE 3000
 
