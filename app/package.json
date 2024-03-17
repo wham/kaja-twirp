@@ -8,7 +8,7 @@
     "protoc": "npx protoc --ts_opt=generate_dependencies --ts_out ./src/shared --twirp_ts_out ./src/shared --proto_path proto proto/api.proto",
     "start": "NODE_ENV=development nodemon src/server/main.ts -w src/server",
     "test": "vitest",
-    "tsc": "tsc"
+    "tsc": "tsc --project src/client/tsconfig.json"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.5.0",

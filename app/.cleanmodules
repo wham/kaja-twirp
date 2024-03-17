@@ -1,3 +1,5 @@
+@protobuf-ts/plugin-framework/node_modules/typescript/*
+
 # Empty folder used to install protoc. If removed, the installation fails.
 !@protobuf-ts/protoc/installed/
 
