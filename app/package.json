@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "scripts": {
     "clean-modules": "clean-modules clean --yes",
-    "start": "NODE_ENV=development nodemon src/server/main.ts -w src/server",
     "prettier": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "protoc": "npx protoc --ts_opt=generate_dependencies --ts_out ./src/shared --twirp_ts_out ./src/shared --proto_path proto proto/api.proto",
+    "start": "NODE_ENV=development nodemon src/server/main.ts -w src/server",
     "test": "vitest",
-    "protoc": "npx protoc --ts_opt=generate_dependencies --ts_out ./src/shared --twirp_ts_out ./src/shared --proto_path proto proto/api.proto"
+    "tsc": "tsc"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.5.0",
