@@ -77,3 +77,5 @@ npx protoc \
   --proto_path ../proto \
   ../proto/quirks.proto
 ```
+
+du -h -d 2 | sort -hr | head -n 20
