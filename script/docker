@@ -24,13 +24,24 @@ cd ".."
 
 docker build . -t kaja-twirp-dev:latest
 
-docker run --name kaja-twirp-dev -d -p 3000:3000 \
+mkfifo pipe
+
+docker run --name kaja-twirp-dev -a STDOUT -p 3000:3000 \
     -v $PWD/demo/proto:/demo/proto \
-    -e BASE_URL="http://host.docker.internal:41521" --add-host=host.docker.internal:host-gateway kaja-twirp-dev:latest
+    -e BASE_URL="http://host.docker.internal:41521" --add-host=host.docker.internal:host-gateway kaja-twirp-dev:latest > pipe &
+
+while IFS= read -r line
+do
+  echo "$line"
+  if [[ "$line" == *"Server is listening on port"* ]]; then
+    break
+  fi
+done < pipe
+
+rm pipe
 
 # Open kaja-twirp in a default web browser
 echo -e "${GREEN}Opening kaja-twirp URL http://localhost:3000/ in your default web browser${NC}"
 python3 -m webbrowser http://localhost:3000/
-
 
 cat
