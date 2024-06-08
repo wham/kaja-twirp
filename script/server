@@ -1,6 +1,38 @@
 #!/bin/bash
 set -e
 
+# Check if Go is installed, if not ask for user confirmation to install it using Homebrew
+if ! command -v go &> /dev/null
+then
+    echo "Go is not installed."
+    read -p "Would you like to install Go using Homebrew? (y/n) " -n 1 -r
+    echo    # Move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Installing Go using Homebrew..."
+        brew install go
+    else
+        echo "Go installation skipped. Exiting script."
+        exit 1
+    fi
+fi
+
+# Check if Node.js is installed, if not ask for user confirmation to install it using Homebrew
+if ! command -v node &> /dev/null
+then
+    echo "Node.js is not installed."
+    read -p "Would you like to install Node.js using Homebrew? (y/n) " -n 1 -r
+    echo    # Move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Installing Node.js using Homebrew..."
+        brew install node
+    else
+        echo "Node.js installation skipped. Exiting script."
+        exit 1
+    fi
+fi
+
 cd "$(dirname "$0")/../demo"
 
 # Kill background demo-app when the script exits
