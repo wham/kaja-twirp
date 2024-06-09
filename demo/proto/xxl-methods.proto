@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-service ManyMethods {
+service XXLMethods {
   rpc Method1(Request) returns (Response) {}
   rpc Method2(Request) returns (Response) {}
   rpc Method3(Request) returns (Response) {}
