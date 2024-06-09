@@ -17,6 +17,7 @@ export async function loadProject(): Promise<Project> {
   sourceFiles.forEach((sourceFile) => {
     const interfaces = sourceFile.statements.filter(ts.isInterfaceDeclaration);
     const enums = sourceFile.statements.filter(ts.isEnumDeclaration);
+    const enumNames = enums.map((enumDeclaration) => enumDeclaration.name.text);
     const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
     const serviceNames = findServiceNames(sourceFile);
     const module = modules["./" + sourceFile.fileName];
@@ -52,7 +53,7 @@ export async function loadProject(): Promise<Project> {
 
           methods.push({
             name: methodName,
-            editorCode: methodEditorCode(methodInfo, serviceName, sourceFile.fileName.replace(".ts", "")),
+            editorCode: methodEditorCode(methodInfo, serviceName, sourceFile.fileName.replace(".ts", ""), enumNames),
             globalTrigger,
           });
         });
@@ -194,8 +195,8 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
   return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
-function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importModuleName: string): string {
-  const input = defaultMessage(methodInfo.I);
+function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importModuleName: string, enumNames: string[]): string {
+  const input = defaultMessage(methodInfo.I, enumNames);
 
   const statements = [
     ts.factory.createImportDeclaration(
@@ -209,7 +210,13 @@ function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importMod
             undefined,
             ts.factory.createIdentifier(serviceName)
           )
-        ]) // elements
+        ].concat(enumNames.map(enumName => {
+          return ts.factory.createImportSpecifier(
+            false, // propertyName
+            undefined,
+            ts.factory.createIdentifier(enumName)
+          );
+        }))) // elements
       ), // importClause
       ts.factory.createStringLiteral(importModuleName) // moduleSpecifier
     ),

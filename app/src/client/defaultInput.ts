@@ -1,11 +1,11 @@
 import { EnumInfo, FieldInfo, IMessageType, LongType, ScalarType } from "@protobuf-ts/runtime";
 import ts from "typescript";
 
-export function defaultMessage<T extends object>(message: IMessageType<T>): ts.ObjectLiteralExpression {
+export function defaultMessage<T extends object>(message: IMessageType<T>, enumNames: string[]): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
   message.fields.forEach((field) => {
-    const value = field.repeat ? ts.factory.createArrayLiteralExpression([defaultMessageField(field)]) : defaultMessageField(field);
+    const value = field.repeat ? ts.factory.createArrayLiteralExpression([defaultMessageField(field, enumNames)]) : defaultMessageField(field, enumNames);
 
     properties.push(ts.factory.createPropertyAssignment(field.localName, value));
   });
@@ -13,24 +13,24 @@ export function defaultMessage<T extends object>(message: IMessageType<T>): ts.O
   return ts.factory.createObjectLiteralExpression(properties);
 }
 
-function defaultMessageField(field: FieldInfo): ts.Expression {
+function defaultMessageField(field: FieldInfo, enumNames: string[]): ts.Expression {
   if (field.kind === "scalar") {
     return defaultScalar(field.T, field.L);
   }
 
   if (field.kind === "map") {
     const properties: ts.PropertyAssignment[] = [];
-    properties.push(ts.factory.createPropertyAssignment(defaultMapKey(field.K), defaultMapValue(field.V)));
+    properties.push(ts.factory.createPropertyAssignment(defaultMapKey(field.K), defaultMapValue(field.V, enumNames)));
 
     return ts.factory.createObjectLiteralExpression(properties);
   }
 
   if (field.kind === "enum") {
-    return defaultEnum(field.T());
+    return defaultEnum(field.T(), enumNames);
   }
 
   if (field.kind === "message") {
-    return defaultMessage(field.T());
+    return defaultMessage(field.T(), enumNames);
   }
 
   return ts.factory.createNull();
@@ -85,37 +85,41 @@ function defaultMapKey(key: mapKeyType): string {
 
 type mapValueType =
   | {
-      kind: "scalar";
-      T: ScalarType;
-      L?: LongType;
-    }
+    kind: "scalar";
+    T: ScalarType;
+    L?: LongType;
+  }
   | {
-      kind: "enum";
-      T: () => EnumInfo;
-    }
+    kind: "enum";
+    T: () => EnumInfo;
+  }
   | {
-      kind: "message";
-      T: () => IMessageType<any>;
-    };
+    kind: "message";
+    T: () => IMessageType<any>;
+  };
 
-function defaultMapValue(value: mapValueType): ts.Expression {
+function defaultMapValue(value: mapValueType, enumNames: string[]): ts.Expression {
   switch (value.kind) {
     case "scalar":
       return defaultScalar(value.T, value.L);
     case "enum":
-      return defaultEnum(value.T());
+      return defaultEnum(value.T(), enumNames);
     case "message":
-      return defaultMessage(value.T());
+      return defaultMessage(value.T(), enumNames);
   }
 }
 
-function defaultEnum(value: EnumInfo): ts.Expression {
+function defaultEnum(value: EnumInfo, enumNames: string[]): ts.Expression {
   let enumName = value[0];
   // Temp hack to quirks.v1.RepeatedRequest.Enum -> RepeatedRequest_Enum
   // Won't work with any real projects
-  const nameParts = enumName.split(".");
-  if (nameParts.length === 4) {
-    enumName = nameParts[2] + "_" + nameParts[3];
+  const nameParts = value[0].split(".");
+  while (nameParts.length > 0) {
+    enumName = nameParts.join("_");
+    if (enumNames.includes(enumName)) {
+      break;
+    }
+    nameParts.shift();
   }
 
   return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(enumName), ts.factory.createIdentifier(value[1][0]));
