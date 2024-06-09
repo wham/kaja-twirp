@@ -25,12 +25,12 @@ message MapRequest {
     map<string, RepeatedString> string_repeated_string = 4;
 }
 
-message RepeatedRequest {
-    enum Enum {
-        KEY_0 = 0;
-        KEY_1 = 1;
-    }
-    
+enum Enum {
+    KEY_0 = 0;
+    KEY_1 = 1;
+}
+
+message RepeatedRequest {    
     repeated string string = 1;
     repeated int32 int32 = 2;
     repeated Enum enum = 3;
@@ -38,8 +38,15 @@ message RepeatedRequest {
 }
 
 message TypesRequest {
+    enum NestedEnum {
+        KEY_0 = 0;
+        KEY_1 = 1;
+    }
+    
     google.protobuf.Timestamp timestamp = 1;
     bool bool = 2;
+    Enum enum = 3;
+    NestedEnum nested_enum = 4;
 }
 
 message Void {
