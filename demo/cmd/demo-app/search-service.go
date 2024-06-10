@@ -59,7 +59,7 @@ func (s *SearchServiceServer) Search(ctx context.Context, req *pb.SearchRequest)
 
 func (s *SearchServiceServer) Index(ctx context.Context, req *pb.IndexRequest) (*pb.IndexResponse, error) {
 	for i := uint64(0); i < 1 + req.AdditionalCopies; i++ {
-		if req.Position == pb.Position_POSITION_TOP {
+		if req.Position == pb.Position_TOP {
 			results = append([]*pb.Result{req.Result}, results...)
 		} else {
 			results = append(results, req.Result)

@@ -44,28 +44,5 @@ docker run -v /tmp/kaja-twirp.env:/app/.env ...
 
 # Development
 
-Run `script/server`.
-
-## Testing
-
-```
-go test ./...
-```
-
-Run `script/server` to regenerate project testdata.proto.
-
-## TS
-
-https://github.com/timostamm/protobuf-ts
-https://github.com/lukasbach/monaco-editor-auto-typings/
-https://www.npmjs.com/package/@monaco-editor/react
-
-```
-npx protoc \
-  --ts_out ./src \
-  --ts_opt long_type_string \
-  --proto_path ../proto \
-  ../proto/quirks.proto
-```
-
-du -h -d 2 | sort -hr | head -n 20
+Run: `script/server`
+Test: `(cd app && npm test)`

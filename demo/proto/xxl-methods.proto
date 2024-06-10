@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option go_package = "internal/demo-app";
+
 service XXLMethods {
   rpc Method1(Request) returns (Response) {}
   rpc Method2(Request) returns (Response) {}

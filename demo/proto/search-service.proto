@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "lib/position.proto";
 
 option go_package = "internal/demo-app";
 
@@ -26,13 +27,8 @@ message Result {
 
 message IndexRequest {
     Result result = 1;
-    Position position = 2;
+    lib.Position position = 2;
     uint64 additional_copies = 3;
-}
-
-enum Position {
-    POSITION_TOP = 0;
-    POSITION_BOTTOM = 1;
 }
 
 message IndexResponse {

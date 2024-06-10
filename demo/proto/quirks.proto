@@ -2,6 +2,7 @@ syntax = "proto3";
 package quirks.v1;
 import "google/protobuf/timestamp.proto";
 import "lib/message.proto";
+import "lib/position.proto";
 
 option go_package = "internal/demo-app";
 
@@ -47,6 +48,7 @@ message TypesRequest {
     bool bool = 2;
     Enum enum = 3;
     NestedEnum nested_enum = 4;
+    lib.Position position = 5;
 }
 
 message Void {
