@@ -1,5 +1,5 @@
 syntax = "proto3";
-import "lib/position.proto";
+import "lib/enum.proto";
 
 option go_package = "internal/demo-app";
 
