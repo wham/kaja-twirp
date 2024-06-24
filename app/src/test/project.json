@@ -134,12 +134,12 @@
       "content": "declare module \"protoc/google/protobuf/timestamp\" {\n    export interface Timestamp {\n        seconds: bigint;\n        nanos: number;\n    }\n}\n"
     },
     {
-      "filePath": "protoc/lib/message.ts",
-      "content": "declare module \"protoc/lib/message\" {\n    export interface Message {\n        name: string;\n    }\n}\n"
+      "filePath": "protoc/lib/enum.ts",
+      "content": "declare module \"protoc/lib/enum\" {\n    enum Position {\n        TOP = 0,\n        BOTTOM = 1\n    }\n}\n"
     },
     {
-      "filePath": "protoc/lib/position.ts",
-      "content": "declare module \"protoc/lib/position\" {\n    enum Position {\n        TOP = 0,\n        BOTTOM = 1\n    }\n}\n"
+      "filePath": "protoc/lib/message.ts",
+      "content": "declare module \"protoc/lib/message\" {\n    export interface Message {\n        name: string;\n    }\n}\n"
     },
     {
       "filePath": "protoc/quirks.client.ts",
