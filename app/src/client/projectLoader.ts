@@ -3,12 +3,12 @@ import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
 import { defaultMessage } from "./defaultInput";
 import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
+import { loadSources, Sources } from "./sources";
 
 export async function loadProject(): Promise<Project> {
-  const sourceFiles = await loadSourceFiles();
   const modules = await loadModules();
   const sources = await loadSources();
-  const interfaceMap = createInterfaceMap(sourceFiles);
+  const interfaceMap = createInterfaceMap(sources);
   const globalImports: ts.ImportDeclaration[] = [];
   const globalVars: ts.VariableStatement[] = [];
 
@@ -22,7 +22,7 @@ export async function loadProject(): Promise<Project> {
     const enumNames = enums.map((enumDeclaration) => enumDeclaration.name.text);
     const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
     const serviceNames = findServiceNames(sourceFile);
-    const module = modules["./" + sourceFile.fileName];
+    const module = source.module;
 
     serviceNames.forEach((serviceName) => {
       if (module && module[serviceName]) {
@@ -145,18 +145,6 @@ export function registerGlobalTriggers(services: Service[]): void {
   });
 }
 
-async function loadSourceFiles(): Promise<ts.SourceFile[]> {
-  const sourceFiles: ts.SourceFile[] = [];
-  const modules = import.meta.glob("./protoc/**/*.ts", { as: "raw", eager: false });
-  for (const path in modules) {
-    const content = await modules[path]();
-    const sourceFile = ts.createSourceFile(path, content, ts.ScriptTarget.Latest);
-    sourceFiles.push(sourceFile);
-  }
-
-  return sourceFiles;
-}
-
 async function loadModules(): Promise<Record<string, any>> {
   const imports = import.meta.glob("./protoc/**/*.ts");
   const modules: Record<string, any> = {};
@@ -169,41 +157,13 @@ async function loadModules(): Promise<Record<string, any>> {
   return modules;
 }
 
-interface Source {
-  path: string;
-  file: ts.SourceFile;
-  module: any;
-}
-
-async function loadSources(): Promise<Source[]> {
-  const sources: Source[] = [];
-  const rawFiles = import.meta.glob( "./protoc/**/*.ts", { as: "raw", eager: false });
-  const modules = import.meta.glob( "./protoc/**/*.ts");
-
-  for (const path in rawFiles) {
-    if (!modules[path]) {
-      continue;
-    }
-
-    const content = await rawFiles[path]();
-
-    sources.push({
-      path,
-      file: ts.createSourceFile(path, content, ts.ScriptTarget.Latest),
-      module: modules[path]
-    })
-  }
-
-  return sources;
-}
-
-function createInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
+function createInterfaceMap(sources: Sources): InterfaceMap {
   const interfaceMap: InterfaceMap = {};
 
-  sourceFiles.forEach((sourceFile) => {
-    sourceFile.statements.forEach((statement) => {
+  sources.forEach((source) => {
+    source.file.statements.forEach((statement) => {
       if (ts.isInterfaceDeclaration(statement)) {
-        interfaceMap[statement.name.text] = { interfaceDeclaration: statement, sourceFile };
+        interfaceMap[statement.name.text] = { interfaceDeclaration: statement, sourceFile: source.file };
       }
     });
   });
