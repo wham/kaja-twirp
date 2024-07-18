@@ -7,6 +7,7 @@ import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
 export async function loadProject(): Promise<Project> {
   const sourceFiles = await loadSourceFiles();
   const modules = await loadModules();
+  const sources = await loadSources();
   const interfaceMap = createInterfaceMap(sourceFiles);
   const globalImports: ts.ImportDeclaration[] = [];
   const globalVars: ts.VariableStatement[] = [];
@@ -14,7 +15,8 @@ export async function loadProject(): Promise<Project> {
   const services: Service[] = [];
   const extraLibs: ExtraLib[] = [];
 
-  sourceFiles.forEach((sourceFile) => {
+  sources.forEach((source) => {
+    const sourceFile = source.file;
     const interfaces = sourceFile.statements.filter(ts.isInterfaceDeclaration);
     const enums = sourceFile.statements.filter(ts.isEnumDeclaration);
     const enumNames = enums.map((enumDeclaration) => enumDeclaration.name.text);
@@ -165,6 +167,34 @@ async function loadModules(): Promise<Record<string, any>> {
   }
 
   return modules;
+}
+
+interface Source {
+  path: string;
+  file: ts.SourceFile;
+  module: any;
+}
+
+async function loadSources(): Promise<Source[]> {
+  const sources: Source[] = [];
+  const rawFiles = import.meta.glob( "./protoc/**/*.ts", { as: "raw", eager: false });
+  const modules = import.meta.glob( "./protoc/**/*.ts");
+
+  for (const path in rawFiles) {
+    if (!modules[path]) {
+      continue;
+    }
+
+    const content = await rawFiles[path]();
+
+    sources.push({
+      path,
+      file: ts.createSourceFile(path, content, ts.ScriptTarget.Latest),
+      module: modules[path]
+    })
+  }
+
+  return sources;
 }
 
 function createInterfaceMap(sourceFiles: ts.SourceFile[]): InterfaceMap {
