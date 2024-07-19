@@ -3,10 +3,9 @@ import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
 import { defaultMessage } from "./defaultInput";
 import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
-import { loadSources, Sources } from "./sources";
+import { findSourceForClass, loadSources, Sources } from "./sources";
 
 export async function loadProject(): Promise<Project> {
-  const modules = await loadModules();
   const sources = await loadSources();
   const interfaceMap = createInterfaceMap(sources);
   const globalImports: ts.ImportDeclaration[] = [];
@@ -38,7 +37,7 @@ export async function loadProject(): Promise<Project> {
               baseUrl: urlWithoutPath + "/twirp",
             });
 
-            let client = await createClient(serviceName, transport, interfaceMap, modules);
+            let client = await createClient(serviceName, transport, sources);
 
             try {
               let { response } = await (client as any)[lcfirst(methodName)](input);
@@ -63,33 +62,39 @@ export async function loadProject(): Promise<Project> {
           name: serviceName,
           methods,
         });
-        globalImports.push(ts.factory.createImportDeclaration(
-          undefined, // modifiers
-          ts.factory.createImportClause(
-            false, // isTypeOnly
-            undefined, // name
-            ts.factory.createNamedImports([
-              ts.factory.createImportSpecifier(
-                false, // propertyName
-                ts.factory.createIdentifier(serviceName),
-                ts.factory.createIdentifier(serviceName + "X")
-              )
-            ]) // elements
-          ), // importClause
-          ts.factory.createStringLiteral(sourceFile.fileName.replace(".ts", "")) // moduleSpecifier
-        ));
-        globalVars.push(ts.factory.createVariableStatement(
-          [], // modifiers
-          ts.factory.createVariableDeclarationList(
-            [ts.factory.createVariableDeclaration(
-              serviceName, // name
-              undefined, // type
-              undefined, // initializer
-              ts.factory.createIdentifier(serviceName + "X") // value
-            )], // declarations
-            ts.NodeFlags.Const // flags
-          )
-        ));
+        globalImports.push(
+          ts.factory.createImportDeclaration(
+            undefined, // modifiers
+            ts.factory.createImportClause(
+              false, // isTypeOnly
+              undefined, // name
+              ts.factory.createNamedImports([
+                ts.factory.createImportSpecifier(
+                  false, // propertyName
+                  ts.factory.createIdentifier(serviceName),
+                  ts.factory.createIdentifier(serviceName + "X"),
+                ),
+              ]), // elements
+            ), // importClause
+            ts.factory.createStringLiteral(sourceFile.fileName.replace(".ts", "")), // moduleSpecifier
+          ),
+        );
+        globalVars.push(
+          ts.factory.createVariableStatement(
+            [], // modifiers
+            ts.factory.createVariableDeclarationList(
+              [
+                ts.factory.createVariableDeclaration(
+                  serviceName, // name
+                  undefined, // type
+                  undefined, // initializer
+                  ts.factory.createIdentifier(serviceName + "X"), // value
+                ),
+              ], // declarations
+              ts.NodeFlags.Const, // flags
+            ),
+          ),
+        );
 
         if (interfaceMap["I" + serviceName + "Client"]) {
           const serviceInterfaceDefinition = createServiceInterfaceDefinition(
@@ -106,7 +111,7 @@ export async function loadProject(): Promise<Project> {
       const enumName = enumDeclaration.name.text;
       try {
         (window as any)[enumName] = module[enumName];
-      } catch (error) { }
+      } catch (error) {}
     });
 
     if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0 || enums.length > 0) {
@@ -145,18 +150,6 @@ export function registerGlobalTriggers(services: Service[]): void {
   });
 }
 
-async function loadModules(): Promise<Record<string, any>> {
-  const imports = import.meta.glob("./protoc/**/*.ts");
-  const modules: Record<string, any> = {};
-
-  for (const path in imports) {
-    const module = await imports[path]();
-    modules[path] = module;
-  }
-
-  return modules;
-}
-
 function createInterfaceMap(sources: Sources): InterfaceMap {
   const interfaceMap: InterfaceMap = {};
 
@@ -171,14 +164,13 @@ function createInterfaceMap(sources: Sources): InterfaceMap {
   return interfaceMap;
 }
 
-async function createClient(name: string, transport: RpcTransport, interfaceMap: InterfaceMap, modules: Record<string, any>): Promise<ServiceInfo | undefined> {
-  const { sourceFile } = interfaceMap["I" + name + "Client"];
-  if (!sourceFile) {
+async function createClient(name: string, transport: RpcTransport, sources: Sources): Promise<ServiceInfo | undefined> {
+  const className = name + "Client";
+  const source = findSourceForClass(sources, className);
+  if (!source) {
     return undefined;
   }
-  const module = modules["./" + sourceFile.fileName];
-  console.log("module", module);
-  return new module[name + "Client"](transport);
+  return new source.module[name + "Client"](transport);
 }
 
 function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile): ts.ParameterDeclaration | undefined {
@@ -194,21 +186,25 @@ function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importMod
       ts.factory.createImportClause(
         false, // isTypeOnly
         undefined, // name
-        ts.factory.createNamedImports([
-          ts.factory.createImportSpecifier(
-            false, // propertyName
-            undefined,
-            ts.factory.createIdentifier(serviceName)
-          )
-        ].concat(enumNames.map(enumName => {
-          return ts.factory.createImportSpecifier(
-            false, // propertyName
-            undefined,
-            ts.factory.createIdentifier(enumName)
-          );
-        }))) // elements
+        ts.factory.createNamedImports(
+          [
+            ts.factory.createImportSpecifier(
+              false, // propertyName
+              undefined,
+              ts.factory.createIdentifier(serviceName),
+            ),
+          ].concat(
+            enumNames.map((enumName) => {
+              return ts.factory.createImportSpecifier(
+                false, // propertyName
+                undefined,
+                ts.factory.createIdentifier(enumName),
+              );
+            }),
+          ),
+        ), // elements
       ), // importClause
-      ts.factory.createStringLiteral(importModuleName) // moduleSpecifier
+      ts.factory.createStringLiteral(importModuleName), // moduleSpecifier
     ),
     // blank line after import
     // https://stackoverflow.com/questions/55246585/how-to-generate-extra-newlines-between-nodes-with-the-typescript-compiler-api-pr
