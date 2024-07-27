@@ -23,7 +23,7 @@ export async function loadSources(): Promise<Sources> {
     sources.push({
       path,
       file: ts.createSourceFile(path, content, ts.ScriptTarget.Latest),
-      module: modules[path],
+      module: await modules[path](),
     });
   }
 
