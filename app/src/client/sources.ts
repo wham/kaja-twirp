@@ -33,7 +33,7 @@ export async function loadSources(): Promise<Sources> {
 export function findSourceForClass(sources: Sources, className: string): Source | undefined {
   return sources.find((source) => {
     return source.file.statements.find((statement) => {
-      ts.isClassDeclaration(statement) && statement.name?.text === className;
+      return ts.isClassDeclaration(statement) && statement.name?.escapedText === className;
     });
   });
 }
