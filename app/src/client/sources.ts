@@ -4,6 +4,7 @@ export interface Source {
   path: string;
   file: ts.SourceFile;
   module: any;
+  serviceNames: string[];
 }
 
 export type Sources = Source[];
@@ -18,13 +19,21 @@ export async function loadSources(): Promise<Sources> {
       continue;
     }
 
-    const content = await rawFiles[path]();
-
-    sources.push({
+    const source: Source = {
       path,
-      file: ts.createSourceFile(path, content, ts.ScriptTarget.Latest),
+      file: ts.createSourceFile(path, await rawFiles[path](), ts.ScriptTarget.Latest),
       module: await modules[path](),
+      serviceNames: [],
+    };
+
+    source.file.statements.forEach((statement) => {
+      const serviceName = getServiceName(statement, source.file);
+      if (serviceName) {
+        source.serviceNames.push(serviceName);
+      }
     });
+
+    sources.push(source);
   }
 
   return sources;
@@ -36,4 +45,20 @@ export function findSourceForClass(sources: Sources, className: string): Source 
       return ts.isClassDeclaration(statement) && statement.name?.escapedText === className;
     });
   });
+}
+
+function getServiceName(statement: ts.Statement, sourceFile: ts.SourceFile): string | undefined {
+  if (!ts.isVariableStatement(statement)) {
+    return;
+  }
+
+  for (const declaration of statement.declarationList.declarations) {
+    if (!ts.isIdentifier(declaration.name)) {
+      continue;
+    }
+
+    if (declaration.initializer && ts.isNewExpression(declaration.initializer) && declaration.initializer.expression.getText(sourceFile) === "ServiceType") {
+      return declaration.name.text;
+    }
+  }
 }

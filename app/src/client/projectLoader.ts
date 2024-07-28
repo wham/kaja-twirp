@@ -20,10 +20,9 @@ export async function loadProject(): Promise<Project> {
     const enums = sourceFile.statements.filter(ts.isEnumDeclaration);
     const enumNames = enums.map((enumDeclaration) => enumDeclaration.name.text);
     const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
-    const serviceNames = findServiceNames(sourceFile);
     const module = source.module;
 
-    serviceNames.forEach((serviceName) => {
+    source.serviceNames.forEach((serviceName) => {
       if (module && module[serviceName]) {
         const serviceInfo: ServiceInfo = module[serviceName];
         const methods: Method[] = [];
@@ -228,28 +227,6 @@ export function printStatements(statements: ts.Statement[]): string {
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
   return printer.printFile(sourceFile);
-}
-
-function findServiceNames(sourceFile: ts.SourceFile): string[] {
-  const serviceNames: string[] = [];
-
-  sourceFile.statements.forEach((statement) => {
-    if (!ts.isVariableStatement(statement)) {
-      return;
-    }
-
-    statement.declarationList.declarations.forEach((declaration) => {
-      if (!ts.isIdentifier(declaration.name)) {
-        return;
-      }
-
-      if (declaration.initializer && ts.isNewExpression(declaration.initializer) && declaration.initializer.expression.getText(sourceFile) === "ServiceType") {
-        serviceNames.push(declaration.name.text);
-      }
-    });
-  });
-
-  return serviceNames;
 }
 
 function createServiceInterfaceDefinition(serviceName: string, interfaceDeclaration: ts.InterfaceDeclaration, sourceFile: ts.SourceFile): ts.VariableStatement {
