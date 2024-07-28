@@ -15,7 +15,6 @@ export async function loadProject(): Promise<Project> {
 
   sources.forEach((source) => {
     const sourceFile = source.file;
-    const interfaces = sourceFile.statements.filter(ts.isInterfaceDeclaration);
     const enums = sourceFile.statements.filter(ts.isEnumDeclaration);
     const enumNames = enums.map((enumDeclaration) => enumDeclaration.name.text);
     const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
@@ -110,6 +109,7 @@ export async function loadProject(): Promise<Project> {
       } catch (error) {}
     });
 
+    const interfaces = Object.values(source.interfaces);
     if (serviceInterfaceDefinitions.length > 0 || interfaces.length > 0 || enums.length > 0) {
       const moduleDeclaration = ts.factory.createModuleDeclaration(
         [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)], // modifiers
