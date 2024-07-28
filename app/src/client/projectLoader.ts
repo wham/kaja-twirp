@@ -2,12 +2,11 @@ import { MethodInfo, RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc"
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
 import { defaultMessage } from "./defaultInput";
-import { ExtraLib, InterfaceMap, Method, Project, Service } from "./project";
-import { findSourceForClass, loadSources, Sources } from "./sources";
+import { ExtraLib, Method, Project, Service } from "./project";
+import { findInterface, findSourceForClass, loadSources, Sources } from "./sources";
 
 export async function loadProject(): Promise<Project> {
   const sources = await loadSources();
-  const interfaceMap = createInterfaceMap(sources);
   const globalImports: ts.ImportDeclaration[] = [];
   const globalVars: ts.VariableStatement[] = [];
 
@@ -95,12 +94,10 @@ export async function loadProject(): Promise<Project> {
           ),
         );
 
-        if (interfaceMap["I" + serviceName + "Client"]) {
-          const serviceInterfaceDefinition = createServiceInterfaceDefinition(
-            serviceName,
-            interfaceMap["I" + serviceName + "Client"].interfaceDeclaration,
-            interfaceMap["I" + serviceName + "Client"].sourceFile,
-          );
+        const result = findInterface(sources, "I" + serviceName + "Client");
+        if (result) {
+          const [interfaceDeclaration, source] = result;
+          const serviceInterfaceDefinition = createServiceInterfaceDefinition(serviceName, interfaceDeclaration, source.file);
           serviceInterfaceDefinitions.push(serviceInterfaceDefinition);
         }
       }
@@ -147,20 +144,6 @@ export function registerGlobalTriggers(services: Service[]): void {
       window[service.name as any][method.name as any] = method.globalTrigger as any;
     });
   });
-}
-
-function createInterfaceMap(sources: Sources): InterfaceMap {
-  const interfaceMap: InterfaceMap = {};
-
-  sources.forEach((source) => {
-    source.file.statements.forEach((statement) => {
-      if (ts.isInterfaceDeclaration(statement)) {
-        interfaceMap[statement.name.text] = { interfaceDeclaration: statement, sourceFile: source.file };
-      }
-    });
-  });
-
-  return interfaceMap;
 }
 
 async function createClient(name: string, transport: RpcTransport, sources: Sources): Promise<ServiceInfo | undefined> {

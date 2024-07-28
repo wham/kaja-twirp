@@ -5,6 +5,7 @@ export interface Source {
   file: ts.SourceFile;
   module: any;
   serviceNames: string[];
+  interfaces: { [key: string]: ts.InterfaceDeclaration };
 }
 
 export type Sources = Source[];
@@ -24,12 +25,15 @@ export async function loadSources(): Promise<Sources> {
       file: ts.createSourceFile(path, await rawFiles[path](), ts.ScriptTarget.Latest),
       module: await modules[path](),
       serviceNames: [],
+      interfaces: {},
     };
 
     source.file.statements.forEach((statement) => {
       const serviceName = getServiceName(statement, source.file);
       if (serviceName) {
         source.serviceNames.push(serviceName);
+      } else if (ts.isInterfaceDeclaration(statement)) {
+        source.interfaces[statement.name.text] = statement;
       }
     });
 
@@ -45,6 +49,15 @@ export function findSourceForClass(sources: Sources, className: string): Source 
       return ts.isClassDeclaration(statement) && statement.name?.escapedText === className;
     });
   });
+}
+
+export function findInterface(sources: Sources, interfaceName: string): [ts.InterfaceDeclaration, Source] | undefined {
+  for (const source of sources) {
+    const interfaceDeclaration = source.interfaces[interfaceName];
+    if (interfaceDeclaration) {
+      return [interfaceDeclaration, source];
+    }
+  }
 }
 
 function getServiceName(statement: ts.Statement, sourceFile: ts.SourceFile): string | undefined {
