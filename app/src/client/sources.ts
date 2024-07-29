@@ -6,6 +6,7 @@ export interface Source {
   module: any;
   serviceNames: string[];
   interfaces: { [key: string]: ts.InterfaceDeclaration };
+  enums: { [key: string]: { declaration: ts.EnumDeclaration; T: any } };
 }
 
 export type Sources = Source[];
@@ -26,6 +27,7 @@ export async function loadSources(): Promise<Sources> {
       module: await modules[path](),
       serviceNames: [],
       interfaces: {},
+      enums: {},
     };
 
     source.file.statements.forEach((statement) => {
@@ -34,6 +36,12 @@ export async function loadSources(): Promise<Sources> {
         source.serviceNames.push(serviceName);
       } else if (ts.isInterfaceDeclaration(statement)) {
         source.interfaces[statement.name.text] = statement;
+      } else if (ts.isEnumDeclaration(statement)) {
+        const enumName = statement.name.text;
+        const T = source.module[enumName];
+        if (T) {
+          source.enums[enumName] = { declaration: statement, T };
+        }
       }
     });
 
