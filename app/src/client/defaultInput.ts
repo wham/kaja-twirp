@@ -137,8 +137,7 @@ function defaultEnum(value: EnumInfo, sources: Sources, imports: Imports): ts.Ex
     throw new Error(`Enum not found: ${value[0]}`);
   }
 
-  const [enumDeclaration, source] = result;
-  const enumName = enumDeclaration.name.text;
+  const [enumName, source] = result;
   addImport(imports, enumName, source);
 
   return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(enumName), ts.factory.createIdentifier(value[1][0]));
