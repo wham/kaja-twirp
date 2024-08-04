@@ -16,7 +16,6 @@ export async function loadProject(): Promise<Project> {
   sources.forEach((source) => {
     const sourceFile = source.file;
     const enums = sourceFile.statements.filter(ts.isEnumDeclaration);
-    const enumNames = enums.map((enumDeclaration) => enumDeclaration.name.text);
     const serviceInterfaceDefinitions: ts.VariableStatement[] = [];
     const module = source.module;
 
@@ -51,7 +50,7 @@ export async function loadProject(): Promise<Project> {
 
           methods.push({
             name: methodName,
-            editorCode: methodEditorCode(methodInfo, serviceName, source, enumNames, sources),
+            editorCode: methodEditorCode(methodInfo, serviceName, source, sources),
             globalTrigger,
           });
         });
@@ -159,7 +158,7 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
   return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
-function methodEditorCode(methodInfo: MethodInfo, serviceName: string, source: Source, enumNames: string[], sources: Sources): string {
+function methodEditorCode(methodInfo: MethodInfo, serviceName: string, source: Source, sources: Sources): string {
   const imports = addImport({}, serviceName, source);
   const input = defaultMessage(methodInfo.I, sources, imports);
 
