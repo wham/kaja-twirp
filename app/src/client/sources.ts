@@ -2,6 +2,7 @@ import ts from "typescript";
 
 export interface Source {
   path: string;
+  importPath: string;
   file: ts.SourceFile;
   module: any;
   serviceNames: string[];
@@ -21,9 +22,12 @@ export async function loadSources(): Promise<Sources> {
       continue;
     }
 
+    const file = ts.createSourceFile(path, await rawFiles[path](), ts.ScriptTarget.Latest);
+
     const source: Source = {
       path,
-      file: ts.createSourceFile(path, await rawFiles[path](), ts.ScriptTarget.Latest),
+      importPath: file.fileName.replace(".ts", ""),
+      file,
       module: await modules[path](),
       serviceNames: [],
       interfaces: {},

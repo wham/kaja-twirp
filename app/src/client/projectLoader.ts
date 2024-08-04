@@ -1,9 +1,9 @@
 import { MethodInfo, RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
-import { defaultMessage } from "./defaultInput";
+import { addImport, defaultMessage } from "./defaultInput";
 import { ExtraLib, Method, Project, Service } from "./project";
-import { findInterface, findSourceForClass, loadSources, Sources } from "./sources";
+import { findInterface, findSourceForClass, loadSources, Source, Sources } from "./sources";
 
 export async function loadProject(): Promise<Project> {
   const sources = await loadSources();
@@ -51,7 +51,7 @@ export async function loadProject(): Promise<Project> {
 
           methods.push({
             name: methodName,
-            editorCode: methodEditorCode(methodInfo, serviceName, sourceFile.fileName.replace(".ts", ""), enumNames, sources),
+            editorCode: methodEditorCode(methodInfo, serviceName, source, enumNames, sources),
             globalTrigger,
           });
         });
@@ -159,35 +159,36 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
   return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
-function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importModuleName: string, enumNames: string[], sources: Sources): string {
-  const input = defaultMessage(methodInfo.I, enumNames, sources);
+function methodEditorCode(methodInfo: MethodInfo, serviceName: string, source: Source, enumNames: string[], sources: Sources): string {
+  const imports = addImport({}, serviceName, source);
+  const input = defaultMessage(methodInfo.I, sources, imports);
 
-  const statements = [
-    ts.factory.createImportDeclaration(
-      undefined, // modifiers
-      ts.factory.createImportClause(
-        false, // isTypeOnly
-        undefined, // name
-        ts.factory.createNamedImports(
-          [
-            ts.factory.createImportSpecifier(
-              false, // propertyName
-              undefined,
-              ts.factory.createIdentifier(serviceName),
-            ),
-          ].concat(
-            enumNames.map((enumName) => {
+  let statements: ts.Statement[] = [];
+
+  for (const path in imports) {
+    statements.push(
+      ts.factory.createImportDeclaration(
+        undefined, // modifiers
+        ts.factory.createImportClause(
+          false, // isTypeOnly
+          undefined, // name
+          ts.factory.createNamedImports(
+            [...imports[path]].map((enumName) => {
               return ts.factory.createImportSpecifier(
                 false, // propertyName
                 undefined,
                 ts.factory.createIdentifier(enumName),
               );
             }),
-          ),
-        ), // elements
-      ), // importClause
-      ts.factory.createStringLiteral(importModuleName), // moduleSpecifier
-    ),
+          ), // elements
+        ), // importClause
+        ts.factory.createStringLiteral(path), // moduleSpecifier
+      ),
+    );
+  }
+
+  statements = [
+    ...statements,
     // blank line after import
     // https://stackoverflow.com/questions/55246585/how-to-generate-extra-newlines-between-nodes-with-the-typescript-compiler-api-pr
     ts.factory.createIdentifier("\n") as unknown as ts.Statement,

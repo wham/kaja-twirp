@@ -1,14 +1,16 @@
 import { EnumInfo, FieldInfo, IMessageType, LongType, ScalarType } from "@protobuf-ts/runtime";
 import ts from "typescript";
-import { findEnum, Sources } from "./sources";
+import { findEnum, Source, Sources } from "./sources";
 
-export function defaultMessage<T extends object>(message: IMessageType<T>, enumNames: string[], sources: Sources): ts.ObjectLiteralExpression {
+export function defaultMessage<T extends object>(message: IMessageType<T>, sources: Sources, imports: Imports): ts.ObjectLiteralExpression {
   let properties: ts.PropertyAssignment[] = [];
 
   message.fields.forEach((field) => {
-    const value = field.repeat
-      ? ts.factory.createArrayLiteralExpression([defaultMessageField(field, enumNames, sources)])
-      : defaultMessageField(field, enumNames, sources);
+    let value = defaultMessageField(field, sources, imports);
+
+    if (field.repeat) {
+      value = ts.factory.createArrayLiteralExpression([value]);
+    }
 
     properties.push(ts.factory.createPropertyAssignment(field.localName, value));
   });
@@ -16,24 +18,40 @@ export function defaultMessage<T extends object>(message: IMessageType<T>, enumN
   return ts.factory.createObjectLiteralExpression(properties);
 }
 
-function defaultMessageField(field: FieldInfo, enumNames: string[], sources: Sources): ts.Expression {
+export interface Imports {
+  [key: string]: Set<string>;
+}
+
+export function addImport(imports: Imports, name: string, source: Source): Imports {
+  const path = source.importPath;
+
+  if (!imports[path]) {
+    imports[path] = new Set();
+  }
+
+  imports[path].add(name);
+
+  return imports;
+}
+
+function defaultMessageField(field: FieldInfo, sources: Sources, imports: Imports): ts.Expression {
   if (field.kind === "scalar") {
     return defaultScalar(field.T, field.L);
   }
 
   if (field.kind === "map") {
     const properties: ts.PropertyAssignment[] = [];
-    properties.push(ts.factory.createPropertyAssignment(defaultMapKey(field.K), defaultMapValue(field.V, enumNames, sources)));
+    properties.push(ts.factory.createPropertyAssignment(defaultMapKey(field.K), defaultMapValue(field.V, sources, imports)));
 
     return ts.factory.createObjectLiteralExpression(properties);
   }
 
   if (field.kind === "enum") {
-    return defaultEnum(field.T(), enumNames, sources);
+    return defaultEnum(field.T(), sources, imports);
   }
 
   if (field.kind === "message") {
-    return defaultMessage(field.T(), enumNames, sources);
+    return defaultMessage(field.T(), sources, imports);
   }
 
   return ts.factory.createNull();
@@ -101,37 +119,27 @@ type mapValueType =
       T: () => IMessageType<any>;
     };
 
-function defaultMapValue(value: mapValueType, enumNames: string[], sources: Sources): ts.Expression {
+function defaultMapValue(value: mapValueType, sources: Sources, imports: Imports): ts.Expression {
   switch (value.kind) {
     case "scalar":
       return defaultScalar(value.T, value.L);
     case "enum":
-      return defaultEnum(value.T(), enumNames, sources);
+      return defaultEnum(value.T(), sources, imports);
     case "message":
-      return defaultMessage(value.T(), enumNames, sources);
+      return defaultMessage(value.T(), sources, imports);
   }
 }
 
-function defaultEnum(value: EnumInfo, enumNames: string[], sources: Sources): ts.Expression {
-  let enumName = value[0];
-  // Temp hack to quirks.v1.RepeatedRequest.Enum -> RepeatedRequest_Enum
-  // Won't work with any real projects
-  /*const nameParts = value[0].split(".");
-  while (nameParts.length > 0) {
-    enumName = nameParts.join("_");
-    if (enumNames.includes(enumName)) {
-      break;
-    }
-    nameParts.shift();
-  }*/
+function defaultEnum(value: EnumInfo, sources: Sources, imports: Imports): ts.Expression {
   const result = findEnum(sources, value[1]);
 
   if (!result) {
     throw new Error(`Enum not found: ${value[0]}`);
-    // return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(enumName), ts.factory.createIdentifier(value[1][0]));
   }
 
   const [enumDeclaration, source] = result;
+  const enumName = enumDeclaration.name.text;
+  addImport(imports, enumName, source);
 
-  return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(enumDeclaration.name.text), ts.factory.createIdentifier(value[1][0]));
+  return ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier(enumName), ts.factory.createIdentifier(value[1][0]));
 }

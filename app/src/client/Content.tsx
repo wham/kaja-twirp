@@ -65,7 +65,10 @@ export function Content({ project, method }: ContentProps) {
     if (codeEditorRef.current) {
       let code = codeEditorRef.current.getValue();
       let lines = code.split("\n"); // split the code into lines
-      lines.shift(); // remove the first line
+      // remove import statements
+      while (lines.length > 0 && lines[0].startsWith("import ")) {
+        lines.shift();
+      }
       code = lines.join("\n");
       const func = new Function(code);
       func();
