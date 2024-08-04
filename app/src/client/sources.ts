@@ -6,7 +6,7 @@ export interface Source {
   module: any;
   serviceNames: string[];
   interfaces: { [key: string]: ts.InterfaceDeclaration };
-  enums: { [key: string]: { declaration: ts.EnumDeclaration; T: any } };
+  enums: { [key: string]: { declaration: ts.EnumDeclaration; object: any } };
 }
 
 export type Sources = Source[];
@@ -38,9 +38,9 @@ export async function loadSources(): Promise<Sources> {
         source.interfaces[statement.name.text] = statement;
       } else if (ts.isEnumDeclaration(statement)) {
         const enumName = statement.name.text;
-        const T = source.module[enumName];
-        if (T) {
-          source.enums[enumName] = { declaration: statement, T };
+        const object = source.module[enumName];
+        if (object) {
+          source.enums[enumName] = { declaration: statement, object };
         }
       }
     });
@@ -64,6 +64,16 @@ export function findInterface(sources: Sources, interfaceName: string): [ts.Inte
     const interfaceDeclaration = source.interfaces[interfaceName];
     if (interfaceDeclaration) {
       return [interfaceDeclaration, source];
+    }
+  }
+}
+
+export function findEnum(sources: Sources, object: any): [ts.EnumDeclaration, Source] | undefined {
+  for (const source of sources) {
+    for (const enumName in source.enums) {
+      if (source.enums[enumName].object === object) {
+        return [source.enums[enumName].declaration, source];
+      }
     }
   }
 }

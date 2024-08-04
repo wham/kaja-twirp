@@ -51,7 +51,7 @@ export async function loadProject(): Promise<Project> {
 
           methods.push({
             name: methodName,
-            editorCode: methodEditorCode(methodInfo, serviceName, sourceFile.fileName.replace(".ts", ""), enumNames),
+            editorCode: methodEditorCode(methodInfo, serviceName, sourceFile.fileName.replace(".ts", ""), enumNames, sources),
             globalTrigger,
           });
         });
@@ -159,8 +159,8 @@ function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile
   return method.parameters.find((parameter) => parameter.name.getText(sourceFile) == "input");
 }
 
-function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importModuleName: string, enumNames: string[]): string {
-  const input = defaultMessage(methodInfo.I, enumNames);
+function methodEditorCode(methodInfo: MethodInfo, serviceName: string, importModuleName: string, enumNames: string[], sources: Sources): string {
+  const input = defaultMessage(methodInfo.I, enumNames, sources);
 
   const statements = [
     ts.factory.createImportDeclaration(
