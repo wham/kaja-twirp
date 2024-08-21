@@ -21,8 +21,13 @@ app.post(server.matchingPath(), server.httpHandler());
 
 app.use("/twirp", createProxyMiddleware({ target: process.env.BASE_URL, changeOrigin: true }));
 
+let viteReady = false;
+
 app.get("/status", (_, res) => {
-  res.send("OK");
+  res.send(viteReady ? "OK" : "VITE NOT READY");
 });
 
-ViteExpress.listen(app, 3000, () => console.log("Server is listening on port 3000..."));
+ViteExpress.listen(app, 3000, () => {
+  console.log("Server is listening on port 3000...");
+  viteReady = true;
+});
