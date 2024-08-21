@@ -12,7 +12,7 @@ const bootstrapper = new Bootstrapper();
 const server = createApiServer({
   async Bootstrap(ctx, request) {
     return bootstrapper.bootstrap(request);
-  }
+  },
 });
 
 server.withPrefix("/api");
@@ -20,5 +20,9 @@ server.withPrefix("/api");
 app.post(server.matchingPath(), server.httpHandler());
 
 app.use("/twirp", createProxyMiddleware({ target: process.env.BASE_URL, changeOrigin: true }));
+
+app.get("/status", (_, res) => {
+  res.send("OK");
+});
 
 ViteExpress.listen(app, 3000, () => console.log("Server is listening on port 3000..."));
