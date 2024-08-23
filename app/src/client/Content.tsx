@@ -39,6 +39,20 @@ export function Content({ project, method }: ContentProps) {
       styles.setProperty("--vscode-editor-background", "#000000");
       styles.setProperty("--vscode-editorGutter-background", "#000000");
     }
+
+    prettier
+      .format(method.editorCode, { parser: "typescript", plugins: [prettierPluginTypescript, prettierPluginEsTree] })
+      .then((formattedEditorCode) => {
+        if (codeEditorRef.current) {
+          codeEditorRef.current.setValue(formattedEditorCode);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to format the method code", error);
+        if (codeEditorRef.current) {
+          codeEditorRef.current.setValue(method.editorCode);
+        }
+      });
   }
 
   window.setOutput = (output: string) => {
