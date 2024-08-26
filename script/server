@@ -46,7 +46,7 @@ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 cd "../app"
 rm -rf ./src/client/protoc
 npm i
-npx protoc --proto_path=../demo/proto --plugin=protoc-gen-go=../demo/bin/protoc-gen-go --go_out=../demo --plugin=protoc-gen-twirp=../demo/bin/protoc-gen-twirp --twirp_out=../demo -Iproto/ $(find ../demo/proto -iname "*.proto")
+npx protoc --proto_path=../demo --plugin=protoc-gen-go=../demo/bin/protoc-gen-go --go_out=../demo --plugin=protoc-gen-twirp=../demo/bin/protoc-gen-twirp --twirp_out=../demo -Iproto/ $(find ../demo -iname "*.proto")
 
 cd "../demo"
 go build -o /tmp/demo-app ./cmd/demo-app

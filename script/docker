@@ -27,7 +27,7 @@ docker build . -t kaja-twirp-dev:latest
 mkfifo pipe
 
 docker run --name kaja-twirp-dev -a STDOUT -p 41520:41520 \
-    -v $PWD/demo/proto:/demo/proto \
+    -v $PWD/demo:/workspace \
     -e BASE_URL="http://host.docker.internal:41521" --add-host=host.docker.internal:host-gateway kaja-twirp-dev:latest > pipe &
 
 while IFS= read -r line

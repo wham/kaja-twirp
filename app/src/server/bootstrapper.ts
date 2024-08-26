@@ -27,9 +27,9 @@ export class Bootstrapper {
 
   private async start(): Promise<void> {
     this.debug(process.cwd());
-    let protoPath = path.resolve(process.cwd(), "../workspace/proto");
+    let protoPath = path.resolve(process.cwd(), "../workspace");
     if (!fs.existsSync(protoPath)) {
-      protoPath = path.resolve(process.cwd(), "../demo/proto");
+      protoPath = path.resolve(process.cwd(), "../demo");
     }
     const outPath = path.resolve(process.cwd(), "../app/src/client/protoc");
     const tempDir = path.join(os.tmpdir(), "temp-protoc");
