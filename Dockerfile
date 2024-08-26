@@ -14,5 +14,5 @@ FROM alpine:latest as runner
 COPY --from=builder /app /app
 RUN apk add --update nodejs npm
 WORKDIR /app
-EXPOSE 3000
+EXPOSE 41520
 CMD ["npm", "start"]
