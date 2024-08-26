@@ -45,7 +45,7 @@ export function Blankslate() {
     <Box sx={{ flexGrow: 1 }}>
       <PrimerBlankslate>
         <pre>
-          <code>{logs.map((log) => log.message).join("\n")}</code>
+          <code style={{ whiteSpace: "pre-wrap" }}>{logs.map((log) => log.message).join("\n")}</code>
         </pre>
       </PrimerBlankslate>
     </Box>
