@@ -10,7 +10,7 @@ const app = express();
 const bootstrapper = new Bootstrapper();
 
 const server = createApiServer({
-  async Bootstrap(ctx, request) {
+  async Bootstrap(_, request) {
     return bootstrapper.bootstrap(request);
   },
 });
@@ -19,7 +19,24 @@ server.withPrefix("/api");
 
 app.post(server.matchingPath(), server.httpHandler());
 
-app.use("/twirp", createProxyMiddleware({ target: process.env.BASE_URL, changeOrigin: true }));
+app.use(
+  "/twirp",
+  createProxyMiddleware({
+    target: process.env.BASE_URL,
+    changeOrigin: true,
+    onProxyReq: (proxyReq, req) => {
+      for (let i = 1; i <= 5; ++i) {
+        const header = process.env[`HEADER_${i}`];
+        if (header) {
+          const parts = header.split(":");
+          const name = parts[0];
+          const value = parts[1];
+          proxyReq.setHeader(name, value);
+        }
+      }
+    },
+  }),
+);
 
 let viteReady = false;
 
