@@ -44,27 +44,22 @@ export class Bootstrapper {
         const protocCommand = `npx protoc --ts_out ${tempDir} --ts_opt long_type_bigint -I${workspaceDir} $(find ${workspaceDir} -iname "*.proto")`;
         this.debug("Running protoc");
         this.debug(protocCommand);
-        exec(protocCommand, (error, stdout, stderr) => {
+        exec(protocCommand, (error, stdout) => {
           if (error) {
             this.error("Failed to run protoc", error);
             return;
           }
 
-          this.debug(stdout);
-          for (let line in stdout.split("\n")) {
-            this.debug(line);
-          }
-          this.info("Protoc ran successfully");
+          this.info("Protoc completed successfully");
           if (fs.existsSync(outputDir)) {
+            this.debug(`Directory ${outputDir} already exists, removing it`);
             fs.rmdirSync(outputDir, { recursive: true });
           }
-          this.info("Yolo");
-          setTimeout(() => {
-            this.start();
-          }, 5000);
-          //fs.renameSync(tempDir, outPath);
-          //this.debug("Protoc output moved to client/protoc");
-          //this.status = BootstrapStatus.STATUS_READY;
+
+          fs.renameSync(tempDir, outputDir);
+          this.debug(`Protoc output moved from ${tempDir} to ${outputDir}`);
+          this.info("Bootstrap completed successfully");
+          this.status = BootstrapStatus.STATUS_READY;
         });
       }
     });
