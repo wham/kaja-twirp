@@ -1,5 +1,4 @@
-import { MarkGithubIcon } from "@primer/octicons-react";
-import { Box, Link, Text, TreeView } from "@primer/react";
+import { Box, TreeView } from "@primer/react";
 import { Method, Project, Service, methodId } from "./project";
 
 interface SidebarProps {
@@ -37,23 +36,6 @@ export function Sidebar({ project, onSelect, currentMethod }: SidebarProps) {
             })}
           </TreeView>
         </nav>
-      </Box>
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          width: 300,
-          borderTopWidth: 1,
-          paddingX: 2,
-          borderTopStyle: "solid",
-          borderTopColor: "border.default",
-          display: "none",
-        }}
-      >
-        <Link href="https://github.com/wham/kaja-twirp" sx={{ color: "btn.primary.text", fontSize: "12px" }} target="_blank">
-          <MarkGithubIcon />
-          <Text sx={{ paddingLeft: 1, verticalAlign: "1px" }}>kaja-twirp</Text>
-        </Link>
       </Box>
     </Box>
   );
