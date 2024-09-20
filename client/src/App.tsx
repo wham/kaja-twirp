@@ -10,7 +10,7 @@ import { loadProject, registerGlobalTriggers } from "./projectLoader";
   return this.toString();
 };
 
-function App() {
+export function App() {
   const [project, setProject] = useState<Project>();
   console.log("Rendering App", project);
 
@@ -54,5 +54,3 @@ function App() {
     </ThemeProvider>
   );
 }
-
-export default App;
