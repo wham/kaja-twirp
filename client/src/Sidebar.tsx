@@ -2,11 +2,11 @@ import { MarkGithubIcon } from "@primer/octicons-react";
 import { Box, Link, Text, TreeView } from "@primer/react";
 import { Method, Project, Service, methodId } from "./project";
 
-type SidebarProps = {
+interface SidebarProps {
   project: Project;
   onSelect: (service: Service, method: Method) => void;
   currentMethod?: Method;
-};
+}
 
 export function Sidebar({ project, onSelect, currentMethod }: SidebarProps) {
   return (

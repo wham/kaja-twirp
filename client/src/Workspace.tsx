@@ -4,10 +4,10 @@ import { Content } from "./Content";
 import { Sidebar } from "./Sidebar";
 import { Endpoint, Method, Project, Service } from "./project";
 
-type WorkspaceProps = {
+interface WorkspaceProps {
   project: Project;
   defaultEndpoint: Endpoint;
-};
+}
 
 export function Workspace({ project, defaultEndpoint }: WorkspaceProps) {
   const [selectedEndpoint, setSelectedEndpoint] = useState<Endpoint>(defaultEndpoint);
