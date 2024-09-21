@@ -7,7 +7,7 @@ interface SidebarProps {
   onSelect: (service: Service, method: Method) => void;
 }
 
-export function Sidebar({ project, currentMethod, onSelect }: SidebarProps): JSX.Element {
+export function Sidebar({ project, currentMethod, onSelect }: SidebarProps) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Box sx={{ paddingX: 2, flexGrow: 1 }}>
@@ -43,7 +43,7 @@ export function Sidebar({ project, currentMethod, onSelect }: SidebarProps): JSX
   );
 }
 
-function LoadingTreeViewItem(): JSX.Element {
+function LoadingTreeViewItem() {
   return (
     <TreeView.Item id="loading-tree-view-item" expanded={true}>
       Loading...
