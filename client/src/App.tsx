@@ -1,6 +1,6 @@
 import { BaseStyles, Box, ThemeProvider } from "@primer/react";
 import { useState } from "react";
-import { Blankslate } from "./Blankslate";
+import { Compiler } from "./Compiler";
 import { Content } from "./Content";
 import { Endpoint, Method, Project, Service, getDefaultEndpoint } from "./project";
 import { loadProject, registerGlobalTriggers } from "./projectLoader";
@@ -31,7 +31,7 @@ export function App() {
   let content: JSX.Element;
 
   if (!project || !selectedEndpoint) {
-    content = <Blankslate onCompile={onCompile} />;
+    content = <Compiler onCompile={onCompile} />;
   } else {
     content = <Content project={project} service={selectedEndpoint.service} method={selectedEndpoint.method} />;
   }
