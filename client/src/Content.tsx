@@ -130,7 +130,7 @@ export function Content({ project, method }: ContentProps) {
         </Box>
       </Box>
       <Box sx={{ color: "fg.default" }}>
-        <Console items={[]} />
+        <Console />
       </Box>
     </Box>
   );

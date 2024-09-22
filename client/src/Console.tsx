@@ -1,20 +1,23 @@
+import { Box } from "@primer/react";
 import { Log, LogLevel } from "./server/server";
 
 interface ConsoleProps {
-  items: ConsoleItem[];
+  children?: React.ReactNode;
 }
 
-type ConsoleItem = Log | ConsoleJson;
-
-interface ConsoleJson {
-  json: string;
+export function Console({ children }: ConsoleProps) {
+  return <Box>{children}</Box>;
 }
 
-export function Console({ items }: ConsoleProps) {
+interface LogsProps {
+  logs: Log[];
+}
+
+Console.Logs = function ({ logs }: LogsProps) {
   return (
     <pre>
       <code style={{ whiteSpace: "pre-wrap" }}>
-        {items.map((log, index) => (
+        {logs.map((log, index) => (
           <span key={index} style={{ color: colorForLogLevel(log.level) }}>
             {log.message}
             {"\n"}
@@ -23,7 +26,7 @@ export function Console({ items }: ConsoleProps) {
       </code>
     </pre>
   );
-}
+};
 
 function colorForLogLevel(level: LogLevel): string {
   switch (level) {
