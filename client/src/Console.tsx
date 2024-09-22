@@ -1,4 +1,6 @@
 import { Box } from "@primer/react";
+import { useEffect, useState } from "react";
+import { formatJson } from "./formatter";
 import { Log, LogLevel } from "./server/server";
 
 interface ConsoleProps {
@@ -24,6 +26,26 @@ Console.Logs = function ({ logs }: LogsProps) {
           </span>
         ))}
       </code>
+    </pre>
+  );
+};
+
+interface JsonProps {
+  json: string;
+}
+
+Console.Json = function ({ json }: JsonProps) {
+  const [formattedJson, setFormattedJson] = useState<string>(json);
+
+  useEffect(() => {
+    formatJson(json).then((formattedJson) => {
+      setFormattedJson(formattedJson);
+    });
+  }, [json]);
+
+  return (
+    <pre>
+      <code style={{ whiteSpace: "pre-wrap" }}>{formattedJson}</code>
     </pre>
   );
 };

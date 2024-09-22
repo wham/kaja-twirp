@@ -3,7 +3,6 @@ import { PlayIcon } from "@primer/octicons-react";
 import { Box, IconButton } from "@primer/react";
 import { editor } from "monaco-editor";
 import * as prettier from "prettier";
-import prettierPluginBabel from "prettier/plugins/babel";
 import prettierPluginEsTree from "prettier/plugins/estree";
 import prettierPluginTypescript from "prettier/plugins/typescript";
 import React, { useEffect } from "react";
@@ -18,7 +17,7 @@ interface ContentProps {
 
 export function Content({ project, method }: ContentProps) {
   const codeEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
-  const consoleEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
+  const [consoleChildren, setConsoleChildren] = React.useState<React.ReactElement[]>([]);
 
   function handleCodeEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) {
     codeEditorRef.current = editor;
@@ -30,53 +29,11 @@ export function Content({ project, method }: ContentProps) {
     });
   }
 
-  function handleConsoleEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) {
-    consoleEditorRef.current = editor;
-
-    const styles = editor.getDomNode()?.style;
-
-    if (styles) {
-      // https://github.com/microsoft/monaco-editor/issues/338#issuecomment-1763246584
-      styles.setProperty("--vscode-editor-background", "#000000");
-      styles.setProperty("--vscode-editorGutter-background", "#000000");
-    }
-
-    prettier
-      .format(method.editorCode, { parser: "typescript", plugins: [prettierPluginTypescript, prettierPluginEsTree] })
-      .then((formattedEditorCode) => {
-        if (codeEditorRef.current) {
-          codeEditorRef.current.setValue(formattedEditorCode);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to format the method code", error);
-        if (codeEditorRef.current) {
-          codeEditorRef.current.setValue(method.editorCode);
-        }
-      });
-  }
-
   window.setOutput = (output: string) => {
-    prettier
-      .format(output, { parser: "json", plugins: [prettierPluginBabel, prettierPluginEsTree] })
-      .then((formattedOutput) => {
-        if (consoleEditorRef.current) {
-          consoleEditorRef.current.setValue(formattedOutput);
-        }
-      })
-      .catch((error) => {
-        console.warn("Failed to format the output", error);
-        if (consoleEditorRef.current) {
-          consoleEditorRef.current.setValue(output);
-        }
-      });
+    setConsoleChildren((consoleChildren) => [...consoleChildren, <Console.Json key={consoleChildren.length} json={output} />]);
   };
 
   async function callMethod() {
-    if (consoleEditorRef.current) {
-      consoleEditorRef.current.setValue("");
-    }
-
     if (codeEditorRef.current) {
       let code = codeEditorRef.current.getValue();
       let lines = code.split("\n"); // split the code into lines
@@ -106,10 +63,6 @@ export function Content({ project, method }: ContentProps) {
           codeEditorRef.current.setValue(method.editorCode);
         }
       });
-
-    if (consoleEditorRef.current) {
-      consoleEditorRef.current.setValue("");
-    }
   });
 
   return (
@@ -130,7 +83,7 @@ export function Content({ project, method }: ContentProps) {
         </Box>
       </Box>
       <Box sx={{ color: "fg.default" }}>
-        <Console />
+        <Console>{consoleChildren}</Console>
       </Box>
     </Box>
   );
