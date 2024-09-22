@@ -2,11 +2,9 @@ import { Editor, Monaco } from "@monaco-editor/react";
 import { PlayIcon } from "@primer/octicons-react";
 import { Box, IconButton } from "@primer/react";
 import { editor } from "monaco-editor";
-import * as prettier from "prettier";
-import prettierPluginEsTree from "prettier/plugins/estree";
-import prettierPluginTypescript from "prettier/plugins/typescript";
 import React, { useEffect } from "react";
 import { Console } from "./Console";
+import { formatTypeScript } from "./formatter";
 import { Method, Project, Service } from "./project";
 
 interface ContentProps {
@@ -50,20 +48,12 @@ export function Content({ project, method }: ContentProps) {
   }
 
   useEffect(() => {
-    prettier
-      .format(method.editorCode, { parser: "typescript", plugins: [prettierPluginTypescript, prettierPluginEsTree] })
-      .then((formattedEditorCode) => {
-        if (codeEditorRef.current) {
-          codeEditorRef.current.setValue(formattedEditorCode);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to format the method code", error);
-        if (codeEditorRef.current) {
-          codeEditorRef.current.setValue(method.editorCode);
-        }
-      });
-  });
+    formatTypeScript(method.editorCode).then((formattedEditorCode) => {
+      if (codeEditorRef.current) {
+        codeEditorRef.current.setValue(formattedEditorCode);
+      }
+    });
+  }, [method.editorCode]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
