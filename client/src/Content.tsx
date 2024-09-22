@@ -7,6 +7,7 @@ import prettierPluginBabel from "prettier/plugins/babel";
 import prettierPluginEsTree from "prettier/plugins/estree";
 import prettierPluginTypescript from "prettier/plugins/typescript";
 import React, { useEffect } from "react";
+import { Console } from "./Console";
 import { Method, Project, Service } from "./project";
 
 interface ContentProps {
@@ -129,15 +130,7 @@ export function Content({ project, method }: ContentProps) {
         </Box>
       </Box>
       <Box sx={{ color: "fg.default" }}>
-        <Editor
-          height="50vh"
-          defaultLanguage="typescript"
-          onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-            handleConsoleEditorDidMount(editor, monaco, project);
-          }}
-          theme="vs-dark"
-          options={{ readOnly: true, minimap: { enabled: false }, renderLineHighlight: "none", lineNumbers: "off" }}
-        />
+        <Console items={[]} />
       </Box>
     </Box>
   );

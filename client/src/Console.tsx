@@ -1,14 +1,20 @@
 import { Log, LogLevel } from "./server/server";
 
 interface ConsoleProps {
-  logs: Log[];
+  items: ConsoleItem[];
 }
 
-export function Console({ logs }: ConsoleProps) {
+type ConsoleItem = Log | ConsoleJson;
+
+interface ConsoleJson {
+  json: string;
+}
+
+export function Console({ items }: ConsoleProps) {
   return (
     <pre>
       <code style={{ whiteSpace: "pre-wrap" }}>
-        {logs.map((log, index) => (
+        {items.map((log, index) => (
           <span key={index} style={{ color: colorForLogLevel(log.level) }}>
             {log.message}
             {"\n"}
