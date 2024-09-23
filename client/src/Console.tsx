@@ -1,4 +1,5 @@
 import { Box } from "@primer/react";
+import { useEffect, useRef } from "react";
 import { formatAndColorizeJson } from "./formatter";
 import { Log, LogLevel } from "./server/server";
 
@@ -7,7 +8,20 @@ interface ConsoleProps {
 }
 
 export function Console({ children }: ConsoleProps) {
-  return <Box>{children}</Box>;
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [children]);
+
+  return (
+    <Box>
+      {children}
+      <div ref={bottomRef} />
+    </Box>
+  );
 }
 
 interface LogsProps {

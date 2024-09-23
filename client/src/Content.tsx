@@ -56,8 +56,8 @@ export function Content({ project, method }: ContentProps) {
   }, [method.editorCode]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <Box sx={{ borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "border.default" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <Box sx={{ borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "border.default", flexGrow: 0 }}>
         <Editor
           height="50vh"
           defaultLanguage="typescript"
@@ -72,7 +72,7 @@ export function Content({ project, method }: ContentProps) {
           <IconButton icon={PlayIcon} aria-label="Call" variant="primary" size="large" onClick={callMethod} />
         </Box>
       </Box>
-      <Box sx={{ color: "fg.default" }}>
+      <Box sx={{ color: "fg.default", overflow: "scroll", flexGrow: 1 }}>
         <Console>{consoleChildren}</Console>
       </Box>
     </Box>
