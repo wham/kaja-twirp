@@ -17,7 +17,7 @@ export function Console({ children }: ConsoleProps) {
   }, [children]);
 
   return (
-    <Box>
+    <Box sx={{ fontSize: 12 }}>
       {children}
       <div ref={bottomRef} />
     </Box>

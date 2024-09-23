@@ -17,19 +17,19 @@ export function formatAndColorizeJson(json: string): string {
 
       if (keyMatch) {
         const key = keyMatch[1];
-        coloredLine = coloredLine.replace(`"${key}"`, `<span style="color: brown;">"${key}"</span>`);
+        coloredLine = coloredLine.replace(`"${key}"`, `<span style="color: #d4d4d4;">"${key}"</span>`);
       }
 
       if (valueMatch) {
         const value = valueMatch[1];
         if (/^".*"$/.test(value)) {
-          coloredLine = coloredLine.replace(value, `<span style="color: green;">${value}</span>`);
+          coloredLine = coloredLine.replace(value, `<span style="color: #ce9178;">${value}</span>`);
         } else if (/true|false/.test(value)) {
-          coloredLine = coloredLine.replace(value, `<span style="color: blue;">${value}</span>`);
+          coloredLine = coloredLine.replace(value, `<span style="color: #569cd6;">${value}</span>`);
         } else if (/null/.test(value)) {
           coloredLine = coloredLine.replace(value, `<span style="color: magenta;">${value}</span>`);
         } else if (!isNaN(Number(value))) {
-          coloredLine = coloredLine.replace(value, `<span style="color: red;">${value}</span>`);
+          coloredLine = coloredLine.replace(value, `<span style="color: #b5cea8;">${value}</span>`);
         }
       }
 
