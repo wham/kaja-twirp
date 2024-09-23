@@ -60,7 +60,7 @@ function colorForLogLevel(level: LogLevel): string {
     case LogLevel.LEVEL_DEBUG:
       return "rgb(99, 108, 118)";
     case LogLevel.LEVEL_INFO:
-      return "rgb(26, 127, 55)";
+      return "#3dc9b0";
     case LogLevel.LEVEL_WARN:
       return "rgb(154, 103, 0)";
     case LogLevel.LEVEL_ERROR:

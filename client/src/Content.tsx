@@ -6,6 +6,7 @@ import React, { useEffect } from "react";
 import { Console } from "./Console";
 import { formatTypeScript } from "./formatter";
 import { Method, Project, Service } from "./project";
+import { LogLevel } from "./server/server";
 
 interface ContentProps {
   project: Project;
@@ -27,8 +28,12 @@ export function Content({ project, method }: ContentProps) {
     });
   }
 
-  window.setOutput = (output: string) => {
-    setConsoleChildren((consoleChildren) => [...consoleChildren, <Console.Json key={consoleChildren.length} json={output} />]);
+  window.setOutput = (endpoint: string, output: string, isError: boolean) => {
+    setConsoleChildren((consoleChildren) => [
+      ...consoleChildren,
+      <Console.Logs key={consoleChildren.length * 2} logs={[{ index: 0, level: isError ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO, message: endpoint }]} />,
+      <Console.Json key={consoleChildren.length * 2 + 1} json={output} />,
+    ]);
   };
 
   async function callMethod() {
@@ -72,7 +77,7 @@ export function Content({ project, method }: ContentProps) {
           <IconButton icon={PlayIcon} aria-label="Call" variant="primary" size="large" onClick={callMethod} />
         </Box>
       </Box>
-      <Box sx={{ color: "fg.default", overflow: "scroll", flexGrow: 1 }}>
+      <Box sx={{ color: "fg.default", overflow: "scroll", flexGrow: 1, paddingX: 1 }}>
         <Console>{consoleChildren}</Console>
       </Box>
     </Box>

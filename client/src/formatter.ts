@@ -5,9 +5,14 @@ import prettierPluginTypescript from "prettier/plugins/typescript";
 export function formatAndColorizeJson(json: string): string {
   if (!json) return "";
 
-  const jsonString = JSON.stringify(JSON.parse(json), null, 2);
+  try {
+    json = JSON.stringify(JSON.parse(json), null, 2);
+  } catch (error) {
+    console.log("Failed to parse JSON", error);
+    return json;
+  }
 
-  return jsonString
+  return json
     .split("\n")
     .map((line, index) => {
       const keyMatch = line.match(/"([^"]+)":/);
