@@ -77,7 +77,7 @@ export function Content({ project, method }: ContentProps) {
           <IconButton icon={PlayIcon} aria-label="Call" variant="primary" size="large" onClick={callMethod} />
         </Box>
       </Box>
-      <Box sx={{ color: "fg.default", overflow: "scroll", paddingX: 1 }}>
+      <Box sx={{ color: "fg.default", overflowY: "scroll", paddingX: 1 }}>
         <Console>{consoleChildren}</Console>
       </Box>
     </Box>
