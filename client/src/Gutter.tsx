@@ -5,18 +5,30 @@ interface GutterProps {
 }
 
 export function Gutter({ onResize }: GutterProps) {
-  const onDrag = (event: React.MouseEvent) => {
-    const prevX = event.clientX;
-    const newX = prevX - event.clientX;
-    console.log("onDrag", prevX, newX);
-    onResize(newX);
-  };
-
   const onMouseDown = (event: React.MouseEvent) => {
-    console.log("onMouseDown");
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    const prevCursor = window.document.body.style.cursor;
+    window.document.body.style.cursor = "col-resize";
+
+    function onMouseMove(e: MouseEvent) {
+      onResize(e.movementX);
+      e.preventDefault();
+    }
+
+    function onMouseUp() {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+      window.document.body.style.cursor = prevCursor;
+    }
+
+    event.preventDefault();
   };
 
   return (
-    <Box sx={{ width: "100px", height: "100%", backgroundColor: "blue", cursor: "col-resize", draggable: true }} onDrag={onDrag} onMouseDown={onMouseDown} />
+    <Box
+      sx={{ width: "1px", height: "100%", backgroundColor: "blue", cursor: "col-resize", flexShrink: 0, ":hover": { backgroundColor: "red" } }}
+      onMouseDown={onMouseDown}
+    />
   );
 }
