@@ -26,9 +26,19 @@ export function Gutter({ onResize }: GutterProps) {
   };
 
   return (
-    <Box
-      sx={{ width: "1px", height: "100%", backgroundColor: "blue", cursor: "col-resize", flexShrink: 0, ":hover": { backgroundColor: "red" } }}
-      onMouseDown={onMouseDown}
-    />
+    <Box sx={{ width: "1px", height: "100%", flexShrink: 0, position: "relative" }}>
+      <Box
+        sx={{
+          width: "10px",
+          height: "100%",
+          position: "absolute",
+          left: "-5px",
+          backgroundColor: "blue",
+          cursor: "col-resize",
+          ":hover": { backgroundColor: "red" },
+        }}
+        onMouseDown={onMouseDown}
+      />
+    </Box>
   );
 }
