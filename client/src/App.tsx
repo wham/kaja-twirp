@@ -46,9 +46,7 @@ export function App() {
     <ThemeProvider colorMode="night">
       <BaseStyles>
         <Box sx={{ display: "flex", width: "100vw", height: "100vh", bg: "canvas.default" }}>
-          <Box
-            sx={{ width: sidebarWidth, borderRightWidth: 1, borderRightStyle: "solid", borderRightColor: "border.default", flexShrink: 0, overflow: "scroll" }}
-          >
+          <Box sx={{ width: sidebarWidth, flexShrink: 0, overflow: "scroll" }}>
             <Sidebar project={project} onSelect={onSelect} currentMethod={selectedEndpoint && selectedEndpoint.method} />
           </Box>
           <Gutter onResize={onSidebarResize} />
