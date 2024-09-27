@@ -19,7 +19,7 @@ export function Compiler({ onCompile }: CompilerProps) {
 
   const compile = (ignoreToken: IgnoreToken) => {
     console.log("Current logs", logsRef.current);
-    client.compile({ logOffset: logsRef.current.length }).then(({ response }) => {
+    client.compile({ logOffset: logsRef.current.length, force: true }).then(({ response }) => {
       if (ignoreToken.ignore) {
         return;
       }
