@@ -32,19 +32,23 @@ func (s *ApiService) Compile(ctx context.Context, req *CompileRequest) (*Compile
         s.status = CompileStatus_STATUS_RUNNING
         s.logs = []*Log{}
 				s.sources = []string{}
+				s.info("Starting compilation")
         go s.start(req.Force)
     }
 
+		logOffset := int(req.LogOffset)
+		if logOffset > len(s.logs) - 1 {
+			logOffset = len(s.logs) - 1
+		}
+
     return &CompileResponse{
         Status: s.status,
-        Logs:   s.logs[req.LogOffset:],
+        Logs:   s.logs[logOffset:],
 				Sources: s.sources,
     }, nil
 }
 
 func (s *ApiService) start(force bool) error {
-	s.info("Starting compilation")
-
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err

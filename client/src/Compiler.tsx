@@ -48,7 +48,7 @@ export function Compiler({ onCompile }: CompilerProps) {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1, padding: [1, 3] }}>
+    <Box sx={{ flexGrow: 1, padding: [1, 3], height: "100%", overflowY: "scroll" }}>
       <Console>
         <Console.Logs logs={logs} />
       </Console>
