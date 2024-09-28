@@ -1,10 +1,8 @@
-import { Editor, Monaco } from "@monaco-editor/react";
 import { Box } from "@primer/react";
-import { editor } from "monaco-editor";
-import React, { useEffect } from "react";
+import React from "react";
 import { Console } from "./Console";
 import { ControlBar } from "./ControlBar";
-import { formatTypeScript } from "./formatter";
+import { Editor } from "./Editor";
 import { Gutter } from "./Gutter";
 import { Method, Project, Service } from "./project";
 import { LogLevel } from "./server/api";
@@ -16,18 +14,12 @@ interface ContentProps {
 }
 
 export function Content({ project, method }: ContentProps) {
-  const codeEditorRef = React.useRef<editor.IStandaloneCodeEditor>();
   const [consoleChildren, setConsoleChildren] = React.useState<React.ReactElement[]>([]);
   const [editorHeight, setEditorHeight] = React.useState(400);
+  let editorCode: string | undefined;
 
-  function handleCodeEditorDidMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco, project: Project) {
-    codeEditorRef.current = editor;
-    editor.focus();
-
-    project.extraLibs.forEach((extraLib) => {
-      monaco.languages.typescript.typescriptDefaults.addExtraLib(extraLib.content);
-      monaco.editor.createModel(extraLib.content, "typescript", monaco.Uri.parse("ts:filename/" + extraLib.filePath.replace(".ts", ".d.ts")));
-    });
+  function onEditorChange(code: string | undefined) {
+    editorCode = code;
   }
 
   window.setOutput = (endpoint: string, output: string, isError: boolean) => {
@@ -39,28 +31,21 @@ export function Content({ project, method }: ContentProps) {
   };
 
   async function callMethod() {
-    if (codeEditorRef.current) {
-      let code = codeEditorRef.current.getValue();
-      let lines = code.split("\n"); // split the code into lines
-      let isInImport = false;
-      // remove import statements
-      while (lines.length > 0 && (lines[0].startsWith("import ") || isInImport)) {
-        isInImport = !lines[0].endsWith(";");
-        lines.shift();
-      }
-      code = lines.join("\n");
-      const func = new Function(code);
-      func();
+    if (!editorCode) {
+      return;
     }
-  }
 
-  useEffect(() => {
-    formatTypeScript(method.editorCode).then((formattedEditorCode) => {
-      if (codeEditorRef.current) {
-        codeEditorRef.current.setValue(formattedEditorCode);
-      }
-    });
-  }, [method.editorCode]);
+    let lines = editorCode.split("\n"); // split the code into lines
+    let isInImport = false;
+    // remove import statements
+    while (lines.length > 0 && (lines[0].startsWith("import ") || isInImport)) {
+      isInImport = !lines[0].endsWith(";");
+      lines.shift();
+    }
+
+    const func = new Function(lines.join("\n"));
+    func();
+  }
 
   const onEditorResize = (delta: number) => {
     setEditorHeight((height) => height + delta);
@@ -77,18 +62,7 @@ export function Content({ project, method }: ContentProps) {
           borderTopColor: "border.default",
         }}
       >
-        <Editor
-          width="100%"
-          height="100%"
-          defaultLanguage="typescript"
-          defaultValue={method.editorCode}
-          onMount={(editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-            handleCodeEditorDidMount(editor, monaco, project);
-          }}
-          theme="vs-dark"
-          // See index.html for additional .monaco-editor fix to enable automatic resizing
-          options={{ minimap: { enabled: false }, renderLineHighlight: "none" }}
-        />
+        <Editor code={method.editorCode} extraLibs={project.extraLibs} onChange={onEditorChange} />
       </Box>
       <Gutter orientation="horizontal" onResize={onEditorResize} />
       <Box sx={{ color: "fg.default", overflowY: "scroll", paddingX: 1 }}>
