@@ -25,13 +25,13 @@ export function App() {
   const [consoleChildren, setConsoleChildren] = useState<ReactElement[]>([]);
   const [sidebarWidth, setSidebarWidth] = useState(300);
   const [editorHeight, setEditorHeight] = useState(400);
+  let editorCodeRef = useRef("");
 
   console.log("Rendering App", project);
 
-  let editorCode: string | undefined;
-
   function onEditorChange(code: string | undefined) {
-    editorCode = code;
+    console.log("onEditorChange", code);
+    editorCodeRef.current = code || "";
   }
 
   const onEditorResize = (delta: number) => {
@@ -54,11 +54,9 @@ export function App() {
   };
 
   async function callMethod() {
-    if (!editorCode) {
-      return;
-    }
+    console.log("Calling method", editorCodeRef.current);
 
-    let lines = editorCode.split("\n"); // split the code into lines
+    let lines = editorCodeRef.current.split("\n"); // split the code into lines
     let isInImport = false;
     // remove import statements
     while (lines.length > 0 && (lines[0].startsWith("import ") || isInImport)) {
