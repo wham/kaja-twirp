@@ -3,9 +3,10 @@ import { Box, Button, IconButton } from "@primer/react";
 
 interface ControlBarProps {
   onRun: () => void;
+  onRecompile: () => void;
 }
 
-export function ControlBar({ onRun }: ControlBarProps) {
+export function ControlBar({ onRun, onRecompile }: ControlBarProps) {
   return (
     <Box sx={{ padding: 1, display: "flex" }}>
       <Box>
@@ -14,7 +15,7 @@ export function ControlBar({ onRun }: ControlBarProps) {
         </Button>
       </Box>
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "right" }}>
-        <IconButton icon={SyncIcon} aria-label="Recompile from .proto files" size="small" onClick={onRun} />
+        <IconButton icon={SyncIcon} aria-label="Recompile from .proto files" size="small" onClick={onRecompile} />
       </Box>
     </Box>
   );

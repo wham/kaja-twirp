@@ -131,6 +131,7 @@ export async function loadProject(paths: string[]): Promise<Project> {
   }
 
   return {
+    version: Date.now().toString(),
     services,
     extraLibs,
   };

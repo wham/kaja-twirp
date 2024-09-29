@@ -1,6 +1,7 @@
 import ts from "typescript";
 
 export type Project = {
+  version: string;
   services: Array<Service>;
   extraLibs: Array<ExtraLib>;
 };

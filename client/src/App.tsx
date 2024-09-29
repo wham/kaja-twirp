@@ -73,9 +73,9 @@ export function App() {
   const logsRef = useRef(logs);
   const client = getApiClient();
 
-  const compile = (ignoreToken: IgnoreToken) => {
+  const compile = (ignoreToken: IgnoreToken, force: boolean) => {
     console.log("Current logs", logsRef.current);
-    client.compile({ logOffset: logsRef.current.length, force: true }).then(({ response }) => {
+    client.compile({ logOffset: logsRef.current.length, force }).then(({ response }) => {
       if (ignoreToken.ignore) {
         return;
       }
@@ -85,12 +85,22 @@ export function App() {
 
       if (response.status === CompileStatus.STATUS_RUNNING) {
         setTimeout(() => {
-          compile(ignoreToken);
+          compile(ignoreToken, force);
         }, 1000);
       } else {
         onCompile(response.sources);
       }
     });
+  };
+
+  const recompile = () => {
+    setLogs([]);
+    setConsoleChildren([]);
+    setProject(undefined);
+    setSelectedEndpoint(undefined);
+    logsRef.current = [];
+    const ignoreToken: IgnoreToken = { ignore: false };
+    compile(ignoreToken, true);
   };
 
   window.setOutput = (endpoint: string, output: string, isError: boolean) => {
@@ -104,7 +114,7 @@ export function App() {
   useEffect(() => {
     const ignoreToken: IgnoreToken = { ignore: false };
     console.log("useEffect");
-    compile(ignoreToken);
+    compile(ignoreToken, false);
 
     return () => {
       ignoreToken.ignore = true;
@@ -121,7 +131,7 @@ export function App() {
           <Gutter orientation="vertical" onResize={onSidebarResize} />
           <Box sx={{ flexGrow: 1 }}>
             <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-              <ControlBar onRun={callMethod} />
+              <ControlBar onRun={callMethod} onRecompile={recompile} />
               <Box
                 sx={{
                   height: editorHeight,
@@ -130,7 +140,9 @@ export function App() {
                   borderTopColor: "border.default",
                 }}
               >
-                {project && selectedEndpoint && <Editor code={selectedEndpoint.method.editorCode} extraLibs={project.extraLibs} onChange={onEditorChange} />}
+                {project && selectedEndpoint && (
+                  <Editor code={selectedEndpoint.method.editorCode} extraLibs={project.extraLibs} onChange={onEditorChange} key={project.version} />
+                )}
               </Box>
               <Gutter orientation="horizontal" onResize={onEditorResize} />
               <Box sx={{ color: "fg.default", overflowY: "scroll", paddingX: 1 }}>
