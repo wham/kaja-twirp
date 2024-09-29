@@ -25,7 +25,7 @@ export function App() {
   const [consoleChildren, setConsoleChildren] = useState<ReactElement[]>([]);
   const [sidebarWidth, setSidebarWidth] = useState(300);
   const [editorHeight, setEditorHeight] = useState(400);
-  let editorCodeRef = useRef("");
+  const editorCodeRef = useRef("");
 
   console.log("Rendering App", project);
 
@@ -54,7 +54,8 @@ export function App() {
   };
 
   async function callMethod() {
-    console.log("Calling method", editorCodeRef.current);
+    setLogs([]);
+    logsRef.current = [];
 
     let lines = editorCodeRef.current.split("\n"); // split the code into lines
     let isInImport = false;

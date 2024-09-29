@@ -77,10 +77,12 @@ func (s *ApiService) start(force bool) error {
 		sources = s.getSources(sourcesDir)
 	}
 
-	s.info("Sources: " + strings.Join(sources, ", "))
+	s.debug("Sources: " + strings.Join(sources, ", "))
 	s.sources = sources
 
 	s.status = CompileStatus_STATUS_READY
+
+	s.info("Compilation completed successfully, kaja-twirp is ready to go")
 
 	return nil
 }
@@ -140,7 +142,7 @@ func (s *ApiService) protoc(cwd string, sourcesDir string) {
 		return
 	}
 
-	s.info("Protoc completed successfully")
+	s.debug("Protoc completed successfully")
 }
 
 func (s *ApiService) debug(message string) {
