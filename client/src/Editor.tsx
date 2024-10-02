@@ -1,7 +1,7 @@
 import { Monaco, Editor as MonacoEditor } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import React, { useEffect } from "react";
-import { formatTypeScript } from "./formatter";
+import { formatTypeScript } from "./formatter/typescript";
 import { ExtraLib } from "./project";
 
 interface EditorProps {

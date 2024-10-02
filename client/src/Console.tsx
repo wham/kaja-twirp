@@ -1,6 +1,6 @@
 import { Box } from "@primer/react";
 import { useEffect, useRef } from "react";
-import { formatAndColorizeJson } from "./formatter";
+import { formatAndColorizeJson } from "./formatter/json";
 import { Log, LogLevel } from "./server/api";
 
 interface ConsoleProps {
