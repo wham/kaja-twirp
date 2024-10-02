@@ -43,6 +43,8 @@ export function Editor({ code, extraLibs, onChange }: EditorProps) {
     }
   });
 
+  onChange(code);
+
   return (
     <MonacoEditor
       width="100%"
@@ -58,6 +60,7 @@ export function Editor({ code, extraLibs, onChange }: EditorProps) {
         renderLineHighlight: "none",
         formatOnPaste: true,
         formatOnType: true,
+        tabSize: 2,
       }}
     />
   );
