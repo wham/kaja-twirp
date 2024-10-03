@@ -93,12 +93,17 @@ export function App() {
     });
   };
 
-  window.setOutput = (endpoint: string, output: string, isError: boolean) => {
-    setConsoleChildren((consoleChildren) => [
-      ...consoleChildren,
-      <Console.Logs key={consoleChildren.length * 2} logs={[{ index: 0, level: isError ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO, message: endpoint }]} />,
-      <Console.Json key={consoleChildren.length * 2 + 1} json={output} />,
-    ]);
+  window.kaja = {
+    onMethodCall: (serviceName: string, methodName: string, input: any, output: any) => {
+      setConsoleChildren((consoleChildren) => [
+        ...consoleChildren,
+        <Console.Logs
+          key={consoleChildren.length * 2}
+          logs={[{ index: 0, level: output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO, message: serviceName + "." + methodName + "()" }]}
+        />,
+        <Console.Json key={consoleChildren.length * 2 + 1} json={output} />,
+      ]);
+    },
   };
 
   useEffect(() => {

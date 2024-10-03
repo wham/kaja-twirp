@@ -1,6 +1,6 @@
 import { Box } from "@primer/react";
 import { useEffect, useRef } from "react";
-import { formatAndColorizeJson } from "./formatter/json";
+import { stringifyAndColorize } from "./formatter/json";
 import { Log, LogLevel } from "./server/api";
 
 interface ConsoleProps {
@@ -50,7 +50,7 @@ interface JsonProps {
 Console.Json = function ({ json }: JsonProps) {
   return (
     <pre>
-      <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: formatAndColorizeJson(json) }} />
+      <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: stringifyAndColorize(json) }} />
     </pre>
   );
 };
