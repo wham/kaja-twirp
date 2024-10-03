@@ -36,10 +36,10 @@ export async function loadProject(paths: string[]): Promise<Project> {
             let client = await createClient(serviceName, transport, sources);
 
             try {
-              let { output } = await (client as any)[lcfirst(methodName)](input);
+              let { response } = await (client as any)[lcfirst(methodName)](input);
 
               if (window.kaja) {
-                window.kaja.onMethodCall(serviceName, methodName, input, output);
+                window.kaja.onMethodCall(serviceName, methodName, input, response);
               }
             } catch (error) {
               if (window.kaja) {

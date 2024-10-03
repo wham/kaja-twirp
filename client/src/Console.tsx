@@ -44,7 +44,7 @@ Console.Logs = function ({ logs }: LogsProps) {
 };
 
 interface JsonProps {
-  json: string;
+  json: any;
 }
 
 Console.Json = function ({ json }: JsonProps) {
