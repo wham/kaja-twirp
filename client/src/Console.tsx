@@ -1,6 +1,6 @@
+import { Monaco } from "@monaco-editor/react";
 import { Box } from "@primer/react";
-import { useEffect, useRef } from "react";
-import { stringifyAndColorize } from "./formatter/json";
+import { useEffect, useRef, useState } from "react";
 import { Log, LogLevel } from "./server/api";
 
 interface ConsoleProps {
@@ -45,12 +45,25 @@ Console.Logs = function ({ logs }: LogsProps) {
 
 interface JsonProps {
   json: any;
+  monaco?: Monaco;
 }
 
-Console.Json = function ({ json }: JsonProps) {
+Console.Json = function ({ json, monaco }: JsonProps) {
+  const [html, setHtml] = useState<string>("");
+
+  useEffect(() => {
+    if (monaco) {
+      monaco.editor.colorize(JSON.stringify(json), "typescript", { tabSize: 2 }).then((h) => {
+        console.log("COLORIZED");
+        console.log(h);
+        setHtml(h);
+      });
+    }
+  }, [json]);
+
   return (
     <pre>
-      <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: stringifyAndColorize(json) }} />
+      <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
     </pre>
   );
 };

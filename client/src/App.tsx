@@ -1,4 +1,6 @@
+import { Monaco } from "@monaco-editor/react";
 import { BaseStyles, Box, ThemeProvider } from "@primer/react";
+import { editor } from "monaco-editor";
 import { ReactElement, useEffect, useRef, useState } from "react";
 import { Console } from "./Console";
 import { ControlBar } from "./ControlBar";
@@ -25,13 +27,14 @@ export function App() {
   const [consoleChildren, setConsoleChildren] = useState<ReactElement[]>([]);
   const [sidebarWidth, setSidebarWidth] = useState(300);
   const [editorHeight, setEditorHeight] = useState(400);
-  const editorCodeRef = useRef("");
+  const editorRef = useRef<editor.IStandaloneCodeEditor>();
+  const monacoRef = useRef<Monaco>();
 
   console.log("Rendering App", project);
 
-  function onEditorChange(code: string | undefined) {
-    console.log("onEditorChange", code);
-    editorCodeRef.current = code || "";
+  function onEditorMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
+    editorRef.current = editor;
+    monacoRef.current = monaco;
   }
 
   const onEditorResize = (delta: number) => {
@@ -57,7 +60,11 @@ export function App() {
     setLogs([]);
     logsRef.current = [];
 
-    let lines = editorCodeRef.current.split("\n"); // split the code into lines
+    if (!editorRef.current) {
+      return;
+    }
+
+    let lines = editorRef.current.getValue().split("\n"); // split the code into lines
     let isInImport = false;
     // remove import statements
     while (lines.length > 0 && (lines[0].startsWith("import ") || isInImport)) {
@@ -101,7 +108,7 @@ export function App() {
           key={consoleChildren.length * 2}
           logs={[{ index: 0, level: output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO, message: serviceName + "." + methodName + "()" }]}
         />,
-        <Console.Json key={consoleChildren.length * 2 + 1} json={output} />,
+        <Console.Json key={consoleChildren.length * 2 + 1} json={output} monaco={monacoRef.current} />,
       ]);
     },
   };
@@ -135,7 +142,7 @@ export function App() {
                   borderTopColor: "border.default",
                 }}
               >
-                {project && selectedEndpoint && <Editor code={selectedEndpoint.method.editorCode} extraLibs={project.extraLibs} onChange={onEditorChange} />}
+                {project && selectedEndpoint && <Editor code={selectedEndpoint.method.editorCode} extraLibs={project.extraLibs} onMount={onEditorMount} />}
               </Box>
               <Gutter orientation="horizontal" onResize={onEditorResize} />
               <Box sx={{ color: "fg.default", overflowY: "scroll", paddingX: 1 }}>
