@@ -1,7 +1,7 @@
 import { Monaco } from "@monaco-editor/react";
 import { Box } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
-import { formatJson } from "./formatter/json";
+import { formatJson } from "./formatter";
 import { Log, LogLevel } from "./server/api";
 
 interface ConsoleProps {
