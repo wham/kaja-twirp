@@ -8,7 +8,7 @@ import { Editor } from "./Editor";
 import { Gutter } from "./Gutter";
 import { Endpoint, Method, Project, Service, getDefaultEndpoint } from "./project";
 import { loadProject, registerGlobalTriggers } from "./projectLoader";
-import { CompileStatus, Log } from "./server/api";
+import { CompileStatus } from "./server/api";
 import { getApiClient } from "./server/connection";
 import { Sidebar } from "./Sidebar";
 
@@ -29,6 +29,7 @@ export function App() {
   const [editorHeight, setEditorHeight] = useState(400);
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
   const monacoRef = useRef<Monaco>();
+  const logsOffsetRef = useRef(0);
 
   console.log("Rendering App", project);
 
@@ -57,7 +58,7 @@ export function App() {
   };
 
   async function callMethod() {
-    logsRef.current = [];
+    //logsRef.current = [];
 
     if (!editorRef.current) {
       return;
@@ -75,18 +76,16 @@ export function App() {
     func();
   }
 
-  const logsRef = useRef<Log[]>([]);
   const client = getApiClient();
 
   const compile = (ignoreToken: IgnoreToken) => {
-    console.log("Current logs", logsRef.current);
-    client.compile({ logOffset: logsRef.current.length, force: true }).then(({ response }) => {
+    client.compile({ logOffset: logsOffsetRef.current, force: true }).then(({ response }) => {
       if (ignoreToken.ignore) {
         return;
       }
 
+      logsOffsetRef.current += response.logs.length;
       setConsoleItems((consoleItems) => [...consoleItems, response.logs]);
-      logsRef.current = [...logsRef.current, ...response.logs];
 
       if (response.status === CompileStatus.STATUS_RUNNING) {
         setTimeout(() => {
@@ -114,7 +113,6 @@ export function App() {
 
   useEffect(() => {
     const ignoreToken: IgnoreToken = { ignore: false };
-    console.log("useEffect");
     compile(ignoreToken);
 
     return () => {
