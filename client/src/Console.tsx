@@ -1,7 +1,6 @@
 import { Monaco } from "@monaco-editor/react";
 import { Box } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
-import { formatJson } from "./formatter";
 import { Log, LogLevel } from "./server/api";
 
 interface MethodCall {
@@ -25,7 +24,7 @@ export function Console({ items, monaco }: ConsoleProps) {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [items, monaco]);
+  }, [items]);
 
   return (
     <Box sx={{ fontSize: 12 }}>
@@ -33,7 +32,7 @@ export function Console({ items, monaco }: ConsoleProps) {
         const key = "item." + index;
 
         if ("serviceName" in item) {
-          return Console.MethodCall({ key, methodCall: item, monaco });
+          //return Console.MethodCall({ key, methodCall: item, monaco });
         } else {
           return Console.Logs({ key, logs: item });
         }
@@ -72,7 +71,7 @@ interface MethodCallProps {
 Console.MethodCall = function ({ key, methodCall, monaco }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (monaco) {
       formatJson(JSON.stringify(methodCall.output)).then((h) => {
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
@@ -82,7 +81,7 @@ Console.MethodCall = function ({ key, methodCall, monaco }: MethodCallProps) {
         });
       });
     }
-  }, [methodCall, monaco]);
+  }, [methodCall]);*/
 
   return (
     <Box key={key}>
