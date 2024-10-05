@@ -25,15 +25,17 @@ export function Console({ items, monaco }: ConsoleProps) {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [items]);
+  }, [items, monaco]);
 
   return (
     <Box sx={{ fontSize: 12 }}>
       {items.map((item, index) => {
+        const key = "item." + index;
+
         if ("serviceName" in item) {
-          return Console.MethodCall({ methodCall: item, index, monaco });
+          return Console.MethodCall({ key, methodCall: item, monaco });
         } else {
-          return Console.Logs({ logs: item });
+          return Console.Logs({ key, logs: item });
         }
       })}
       <div ref={bottomRef} />
@@ -42,12 +44,13 @@ export function Console({ items, monaco }: ConsoleProps) {
 }
 
 interface LogsProps {
+  key?: string;
   logs: Log[];
 }
 
-Console.Logs = function ({ logs }: LogsProps) {
+Console.Logs = function ({ key, logs }: LogsProps) {
   return (
-    <pre>
+    <pre key={key}>
       <code style={{ whiteSpace: "pre-wrap" }}>
         {logs.map((log, index) => (
           <span key={index} style={{ color: colorForLogLevel(log.level) }}>
@@ -61,12 +64,12 @@ Console.Logs = function ({ logs }: LogsProps) {
 };
 
 interface MethodCallProps {
+  key: string;
   methodCall: MethodCall;
-  index: number;
   monaco?: Monaco;
 }
 
-Console.MethodCall = function ({ methodCall, index, monaco }: MethodCallProps) {
+Console.MethodCall = function ({ key, methodCall, monaco }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
 
   useEffect(() => {
@@ -79,12 +82,11 @@ Console.MethodCall = function ({ methodCall, index, monaco }: MethodCallProps) {
         });
       });
     }
-  }, [methodCall.output]);
+  }, [methodCall, monaco]);
 
   return (
-    <Box>
+    <Box key={key}>
       <Console.Logs
-        key={index * 2}
         logs={[
           {
             index: 0,
