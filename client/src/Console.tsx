@@ -4,22 +4,38 @@ import { useEffect, useRef, useState } from "react";
 import { formatJson } from "./formatter";
 import { Log, LogLevel } from "./server/api";
 
-interface ConsoleProps {
-  children?: React.ReactNode;
+interface MethodCall {
+  serviceName: string;
+  methodName: string;
+  input: any;
+  output: any;
 }
 
-export function Console({ children }: ConsoleProps) {
+export type ConsoleItem = Log[] | MethodCall;
+
+interface ConsoleProps {
+  items: ConsoleItem[];
+  monaco?: Monaco;
+}
+
+export function Console({ items, monaco }: ConsoleProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [children]);
+  }, [items]);
 
   return (
     <Box sx={{ fontSize: 12 }}>
-      {children}
+      {items.map((item, index) => {
+        if ("serviceName" in item) {
+          return Console.MethodCall({ methodCall: item, index, monaco });
+        } else {
+          return Console.Logs({ logs: item });
+        }
+      })}
       <div ref={bottomRef} />
     </Box>
   );
@@ -44,17 +60,18 @@ Console.Logs = function ({ logs }: LogsProps) {
   );
 };
 
-interface JsonProps {
-  json: any;
+interface MethodCallProps {
+  methodCall: MethodCall;
+  index: number;
   monaco?: Monaco;
 }
 
-Console.Json = function ({ json, monaco }: JsonProps) {
+Console.MethodCall = function ({ methodCall, index, monaco }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
 
   useEffect(() => {
     if (monaco) {
-      formatJson(JSON.stringify(json)).then((h) => {
+      formatJson(JSON.stringify(methodCall.output)).then((h) => {
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
           console.log("COLORIZED");
           console.log(h);
@@ -62,12 +79,24 @@ Console.Json = function ({ json, monaco }: JsonProps) {
         });
       });
     }
-  }, [json]);
+  }, [methodCall.output]);
 
   return (
-    <pre>
-      <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
-    </pre>
+    <Box>
+      <Console.Logs
+        key={index * 2}
+        logs={[
+          {
+            index: 0,
+            level: methodCall.output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO,
+            message: methodCall.serviceName + "." + methodCall.methodName + "()",
+          },
+        ]}
+      />
+      <pre>
+        <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
+      </pre>
+    </Box>
   );
 };
 

@@ -1,14 +1,14 @@
 import { Monaco } from "@monaco-editor/react";
 import { BaseStyles, Box, ThemeProvider } from "@primer/react";
 import { editor } from "monaco-editor";
-import { ReactElement, useEffect, useRef, useState } from "react";
-import { Console } from "./Console";
+import { useEffect, useRef, useState } from "react";
+import { Console, ConsoleItem } from "./Console";
 import { ControlBar } from "./ControlBar";
 import { Editor } from "./Editor";
 import { Gutter } from "./Gutter";
 import { Endpoint, Method, Project, Service, getDefaultEndpoint } from "./project";
 import { loadProject, registerGlobalTriggers } from "./projectLoader";
-import { CompileStatus, Log, LogLevel } from "./server/api";
+import { CompileStatus, Log } from "./server/api";
 import { getApiClient } from "./server/connection";
 import { Sidebar } from "./Sidebar";
 
@@ -24,7 +24,7 @@ interface IgnoreToken {
 export function App() {
   const [project, setProject] = useState<Project>();
   const [selectedEndpoint, setSelectedEndpoint] = useState<Endpoint>();
-  const [consoleChildren, setConsoleChildren] = useState<ReactElement[]>([]);
+  const [consoleItems, setConsoleItems] = useState<ConsoleItem[]>([]);
   const [sidebarWidth, setSidebarWidth] = useState(300);
   const [editorHeight, setEditorHeight] = useState(400);
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
@@ -57,7 +57,6 @@ export function App() {
   };
 
   async function callMethod() {
-    setLogs([]);
     logsRef.current = [];
 
     if (!editorRef.current) {
@@ -76,8 +75,7 @@ export function App() {
     func();
   }
 
-  const [logs, setLogs] = useState<Log[]>([]);
-  const logsRef = useRef(logs);
+  const logsRef = useRef<Log[]>([]);
   const client = getApiClient();
 
   const compile = (ignoreToken: IgnoreToken) => {
@@ -87,7 +85,7 @@ export function App() {
         return;
       }
 
-      setLogs([...logsRef.current, ...response.logs]);
+      setConsoleItems([...consoleItems, [...response.logs]]);
       logsRef.current = [...logsRef.current, ...response.logs];
 
       if (response.status === CompileStatus.STATUS_RUNNING) {
@@ -102,13 +100,14 @@ export function App() {
 
   window.kaja = {
     onMethodCall: (serviceName: string, methodName: string, input: any, output: any) => {
-      setConsoleChildren((consoleChildren) => [
-        ...consoleChildren,
-        <Console.Logs
-          key={consoleChildren.length * 2}
-          logs={[{ index: 0, level: output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO, message: serviceName + "." + methodName + "()" }]}
-        />,
-        <Console.Json key={consoleChildren.length * 2 + 1} json={output} monaco={monacoRef.current} />,
+      setConsoleItems((consoleItems) => [
+        ...consoleItems,
+        {
+          serviceName,
+          methodName,
+          input,
+          output,
+        },
       ]);
     },
   };
@@ -146,9 +145,7 @@ export function App() {
               </Box>
               <Gutter orientation="horizontal" onResize={onEditorResize} />
               <Box sx={{ color: "fg.default", overflowY: "scroll", paddingX: 1 }}>
-                <Console>
-                  <Console.Logs logs={logs} /> {consoleChildren}
-                </Console>
+                <Console items={consoleItems} monaco={monacoRef.current} />
               </Box>
             </Box>
           </Box>
