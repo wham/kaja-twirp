@@ -58,7 +58,10 @@ export function App() {
   };
 
   async function callMethod() {
-    //logsRef.current = [];
+    if (logsOffsetRef.current > 0) {
+      logsOffsetRef.current = 0;
+      setConsoleItems([]);
+    }
 
     if (!editorRef.current) {
       return;
