@@ -1,6 +1,6 @@
 import { Monaco } from "@monaco-editor/react";
 import { Box } from "@primer/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Log, LogLevel } from "./server/api";
 
 interface MethodCall {
@@ -29,13 +29,14 @@ export function Console({ items, monaco }: ConsoleProps) {
   return (
     <Box sx={{ fontSize: 12 }}>
       {items.map((item, index) => {
-        const key = "item." + index;
-
-        if ("serviceName" in item) {
-          //return Console.MethodCall({ key, methodCall: item, monaco });
-        } else {
-          return Console.Logs({ key, logs: item });
+        let itemElement;
+        if (Array.isArray(item)) {
+          itemElement = <Console.Logs logs={item} />;
+        } else if ("serviceName" in item) {
+          itemElement = Console.MethodCall({ methodCall: item, monaco });
         }
+
+        return <Box key={index}>{itemElement}</Box>;
       })}
       <div ref={bottomRef} />
     </Box>
@@ -43,13 +44,12 @@ export function Console({ items, monaco }: ConsoleProps) {
 }
 
 interface LogsProps {
-  key?: string;
   logs: Log[];
 }
 
-Console.Logs = function ({ key, logs }: LogsProps) {
+Console.Logs = function ({ logs }: LogsProps) {
   return (
-    <pre key={key}>
+    <pre>
       <code style={{ whiteSpace: "pre-wrap" }}>
         {logs.map((log, index) => (
           <span key={index} style={{ color: colorForLogLevel(log.level) }}>
@@ -63,13 +63,12 @@ Console.Logs = function ({ key, logs }: LogsProps) {
 };
 
 interface MethodCallProps {
-  key: string;
   methodCall: MethodCall;
   monaco?: Monaco;
 }
 
-Console.MethodCall = function ({ key, methodCall, monaco }: MethodCallProps) {
-  const [html, setHtml] = useState<string>("");
+Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
+  //const [html, setHtml] = useState<string>("");
 
   /*useEffect(() => {
     if (monaco) {
@@ -84,7 +83,7 @@ Console.MethodCall = function ({ key, methodCall, monaco }: MethodCallProps) {
   }, [methodCall]);*/
 
   return (
-    <Box key={key}>
+    <>
       <Console.Logs
         logs={[
           {
@@ -94,10 +93,10 @@ Console.MethodCall = function ({ key, methodCall, monaco }: MethodCallProps) {
           },
         ]}
       />
-      <pre>
+      {/*<pre>
         <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
-      </pre>
-    </Box>
+      </pre>*/}
+    </>
   );
 };
 

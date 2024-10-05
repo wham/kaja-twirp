@@ -100,7 +100,7 @@ export function App() {
 
   window.kaja = {
     onMethodCall: (serviceName: string, methodName: string, input: any, output: any) => {
-      setConsoleItems((consoleItems) => [
+      setConsoleItems([
         ...consoleItems,
         {
           serviceName,
