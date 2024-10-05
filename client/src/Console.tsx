@@ -27,7 +27,7 @@ export function Console({ items, monaco }: ConsoleProps) {
   }, [items]);
 
   return (
-    <Box sx={{ fontSize: 12 }}>
+    <Box sx={{ fontSize: 12, padding: 1 }}>
       {items.map((item, index) => {
         let itemElement;
         if (Array.isArray(item)) {
@@ -49,7 +49,7 @@ interface LogsProps {
 
 Console.Logs = function ({ logs }: LogsProps) {
   return (
-    <pre>
+    <pre style={{ margin: 0 }}>
       <code style={{ whiteSpace: "pre-wrap" }}>
         {logs.map((log, index) => (
           <span key={index} style={{ color: colorForLogLevel(log.level) }}>

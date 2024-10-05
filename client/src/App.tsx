@@ -85,7 +85,7 @@ export function App() {
         return;
       }
 
-      setConsoleItems([...consoleItems, [...response.logs]]);
+      setConsoleItems((consoleItems) => [...consoleItems, response.logs]);
       logsRef.current = [...logsRef.current, ...response.logs];
 
       if (response.status === CompileStatus.STATUS_RUNNING) {
