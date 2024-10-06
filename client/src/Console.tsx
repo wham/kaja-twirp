@@ -1,6 +1,7 @@
 import { Monaco } from "@monaco-editor/react";
 import { Box } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
+import { formatJson } from "./formatter";
 import { Log, LogLevel } from "./server/api";
 
 interface MethodCall {
@@ -24,7 +25,13 @@ export function Console({ items, monaco }: ConsoleProps) {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [items]);
+  });
+
+  const onColorized = () => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <Box sx={{ fontSize: 12, padding: 1 }}>
@@ -33,7 +40,7 @@ export function Console({ items, monaco }: ConsoleProps) {
         if (Array.isArray(item)) {
           itemElement = <Console.Logs logs={item} />;
         } else if ("serviceName" in item) {
-          itemElement = Console.MethodCall({ methodCall: item, monaco });
+          itemElement = <Console.MethodCall methodCall={item} monaco={monaco} onColorized={onColorized} />;
         }
 
         return <Box key={index}>{itemElement}</Box>;
@@ -65,22 +72,24 @@ Console.Logs = function ({ logs }: LogsProps) {
 interface MethodCallProps {
   methodCall: MethodCall;
   monaco?: Monaco;
+  onColorized: () => void;
 }
 
-Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
+Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (monaco) {
       formatJson(JSON.stringify(methodCall.output)).then((h) => {
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
-          console.log("COLORIZED");
-          console.log(h);
           setHtml(h);
+          setTimeout(() => {
+            onColorized();
+          }, 100);
         });
       });
     }
-  }, [methodCall]);*/
+  }, [methodCall, monaco]);
 
   return (
     <>
@@ -94,7 +103,7 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
         ]}
       />
       <pre>
-        <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: "foo" }} />
+        <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     </>
   );
