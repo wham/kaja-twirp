@@ -2,6 +2,7 @@ import { MethodInfo, RpcTransport, ServiceInfo } from "@protobuf-ts/runtime-rpc"
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
 import ts from "typescript";
 import { addImport, defaultMessage } from "./defaultInput";
+import { Kaja } from "./kaja";
 import { ExtraLib, Method, Project, Service } from "./project";
 import { findInterface, loadSources, loadStub, Source, Sources, Stub } from "./sources";
 
@@ -25,7 +26,7 @@ export async function loadProject(paths: string[]): Promise<Project> {
         const methods: Method[] = [];
         serviceInfo.methods.forEach((methodInfo) => {
           const methodName = methodInfo.name;
-          const globalTrigger = async (input: any) => {
+          const globalTrigger = async (input: any, kaja: Kaja) => {
             const url = new URL(window.location.href);
             const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}`;
 
@@ -34,6 +35,14 @@ export async function loadProject(paths: string[]): Promise<Project> {
             });
 
             let client = await createClient(serviceName, transport, stub);
+            const endpointCall = {
+              endpoint: {
+                service,
+                method: methodName,
+              },
+              input,
+            };
+            kaja._internal.endpointCallUpdate(endpointCall);
 
             try {
               let { response } = await (client as any)[lcfirst(methodName)](input);

@@ -1,17 +1,11 @@
 import { Monaco } from "@monaco-editor/react";
-import { Box } from "@primer/react";
+import { Box, Link, Spinner } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
 import { formatJson } from "./formatter";
+import { EndpointCall } from "./kaja";
 import { Log, LogLevel } from "./server/api";
 
-interface MethodCall {
-  serviceName: string;
-  methodName: string;
-  input: any;
-  output: any;
-}
-
-export type ConsoleItem = Log[] | MethodCall;
+export type ConsoleItem = Log[] | EndpointCall;
 
 interface ConsoleProps {
   items: ConsoleItem[];
@@ -39,8 +33,8 @@ export function Console({ items, monaco }: ConsoleProps) {
         let itemElement;
         if (Array.isArray(item)) {
           itemElement = <Console.Logs logs={item} />;
-        } else if ("serviceName" in item) {
-          itemElement = <Console.MethodCall methodCall={item} monaco={monaco} onColorized={onColorized} />;
+        } else if ("endpoint" in item) {
+          itemElement = <Console.EndpointCall endpointCall={item} monaco={monaco} onColorized={onColorized} />;
         }
 
         return <Box key={index}>{itemElement}</Box>;
@@ -69,18 +63,18 @@ Console.Logs = function ({ logs }: LogsProps) {
   );
 };
 
-interface MethodCallProps {
-  methodCall: MethodCall;
+interface EndpointCallProps {
+  endpointCall: EndpointCall;
   monaco?: Monaco;
   onColorized: () => void;
 }
 
-Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallProps) {
+Console.EndpointCall = function ({ endpointCall, monaco, onColorized }: EndpointCallProps) {
   const [html, setHtml] = useState<string>("");
 
   useEffect(() => {
     if (monaco) {
-      formatJson(JSON.stringify(methodCall.output)).then((h) => {
+      formatJson(JSON.stringify(endpointCall.output)).then((h) => {
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
           setHtml(h);
           setTimeout(() => {
@@ -89,19 +83,23 @@ Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallPr
         });
       });
     }
-  }, [methodCall, monaco]);
+  }, [endpointCall, monaco]);
 
   return (
     <>
-      <Console.Logs
-        logs={[
-          {
-            index: 0,
-            level: methodCall.output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO,
-            message: methodCall.serviceName + "." + methodCall.methodName + "()",
-          },
-        ]}
-      />
+      <Box sx={{ display: "flex" }}>
+        <code>
+          <span style={{ color: colorForLogLevel(endpointCall.output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO) }}>
+            {endpointCall.endpoint.service.name + "." + endpointCall.endpoint.method.name + "("}
+          </span>
+        </code>
+        <Link>input</Link>
+        <code>
+          <span>): </span>
+        </code>
+        <Link>output</Link>
+        <Spinner size="small" />
+      </Box>
       <pre>
         <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
       </pre>

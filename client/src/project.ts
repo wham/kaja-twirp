@@ -1,4 +1,5 @@
 import ts from "typescript";
+import { Kaja } from "./kaja";
 
 export type Project = {
   services: Array<Service>;
@@ -13,7 +14,7 @@ export type Service = {
 export type Method = {
   name: string;
   editorCode: string;
-  globalTrigger: (input: any) => {};
+  globalTrigger: (input: any, kaja: Kaja) => {};
 };
 
 export type ExtraLib = {

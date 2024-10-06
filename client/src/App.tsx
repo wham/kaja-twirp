@@ -6,8 +6,9 @@ import { Console, ConsoleItem } from "./Console";
 import { ControlBar } from "./ControlBar";
 import { Editor } from "./Editor";
 import { Gutter } from "./Gutter";
+import { EndpointCall, Kaja } from "./kaja";
 import { Method, Project, getDefaultMethod } from "./project";
-import { loadProject, registerGlobalTriggers } from "./projectLoader";
+import { loadProject } from "./projectLoader";
 import { CompileStatus } from "./server/api";
 import { getApiClient } from "./server/connection";
 import { Sidebar } from "./Sidebar";
@@ -30,8 +31,11 @@ export function App() {
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
   const monacoRef = useRef<Monaco>();
   const logsOffsetRef = useRef(0);
+  const kajaRef = useRef(new Kaja(onEndpointCallUpdate));
 
   console.log("Rendering App", project);
+
+  function onEndpointCallUpdate(endpointCall: EndpointCall) {}
 
   function onEditorMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
     editorRef.current = editor;
@@ -44,7 +48,7 @@ export function App() {
 
   const onCompile = async (sources: string[]) => {
     const project = await loadProject(sources);
-    registerGlobalTriggers(project.services);
+    //registerGlobalTriggers(project.services);
     setProject(project);
     setSelectedMethod(getDefaultMethod(project.services));
   };
@@ -63,7 +67,7 @@ export function App() {
       setConsoleItems([]);
     }
 
-    if (!editorRef.current) {
+    if (!editorRef.current || !project) {
       return;
     }
 
@@ -75,8 +79,18 @@ export function App() {
       lines.shift();
     }
 
-    const func = new Function(lines.join("\n"));
-    func();
+    const serviceNames = project.services.map((service) => service.name);
+    const serviceObjects = project.services.map((service) => {
+      const s = {} as any;
+      service.methods.forEach((method) => {
+        s[method.name as any] = method.globalTrigger as any;
+      });
+
+      return s;
+    });
+
+    const func = new Function(...serviceNames, "kaja", lines.join("\n"));
+    func(...serviceObjects, kajaRef.current);
   }
 
   const client = getApiClient();
@@ -98,20 +112,6 @@ export function App() {
         onCompile(response.sources);
       }
     });
-  };
-
-  window.kaja = {
-    onMethodCall: (serviceName: string, methodName: string, input: any, output: any) => {
-      setConsoleItems((consoleItems) => [
-        ...consoleItems,
-        {
-          serviceName,
-          methodName,
-          input,
-          output,
-        },
-      ]);
-    },
   };
 
   useEffect(() => {
