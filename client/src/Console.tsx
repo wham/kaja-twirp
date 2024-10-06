@@ -1,6 +1,6 @@
 import { Monaco } from "@monaco-editor/react";
 import { Box } from "@primer/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Log, LogLevel } from "./server/api";
 
 interface MethodCall {
@@ -68,7 +68,7 @@ interface MethodCallProps {
 }
 
 Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
-  //const [html, setHtml] = useState<string>("");
+  const [html, setHtml] = useState<string>("");
 
   /*useEffect(() => {
     if (monaco) {
@@ -93,9 +93,9 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
           },
         ]}
       />
-      {/*<pre>
-        <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
-      </pre>*/}
+      <pre>
+        <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: "foo" }} />
+      </pre>
     </>
   );
 };
