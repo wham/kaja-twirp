@@ -2,7 +2,6 @@ import { Monaco } from "@monaco-editor/react";
 import { Box, Link, Spinner } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
 import { formatJson } from "./formatter";
-import { EndpointCall } from "./kaja";
 import { Log, LogLevel } from "./server/api";
 
 export type ConsoleItem = Log[] | EndpointCall;
@@ -63,8 +62,8 @@ Console.Logs = function ({ logs }: LogsProps) {
   );
 };
 
-interface EndpointCallProps {
-  endpointCall: EndpointCall;
+interface MethodCallProps {
+  methodCall: MethodCall;
   monaco?: Monaco;
   onColorized: () => void;
 }

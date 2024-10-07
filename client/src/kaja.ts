@@ -1,38 +1,33 @@
-import { Endpoint } from "./project";
+import { Method, Service } from "./project";
 
 export class Kaja {
   readonly _internal: KajaInternal;
 
-  constructor(onEndpointCallUpdate: EndpointCallUpdate) {
-    this._internal = new KajaInternal(onEndpointCallUpdate);
+  constructor(onMethodCallUpdate: MethodCallUpdate) {
+    this._internal = new KajaInternal(onMethodCallUpdate);
   }
-
-  guid(): string {
-    return "xxx-yyy-zz";
-  }
-
-  info(message: string): void {}
 }
 
-export interface EndpointCall {
-  endpoint: Endpoint;
+export interface MethodCall {
+  service: Service;
+  method: Method;
   input: any;
   output?: any;
-  error?: Error;
+  error?: any;
 }
 
-export interface EndpointCallUpdate {
-  (endpointCall: EndpointCall): void;
+export interface MethodCallUpdate {
+  (methodCall: MethodCall): void;
 }
 
 class KajaInternal {
-  #onEndpointCallUpdate: EndpointCallUpdate;
+  #onMethodCallUpdate: MethodCallUpdate;
 
-  constructor(onEndpointCallUpdate: EndpointCallUpdate) {
-    this.#onEndpointCallUpdate = onEndpointCallUpdate;
+  constructor(onMethodCallUpdate: MethodCallUpdate) {
+    this.#onMethodCallUpdate = onMethodCallUpdate;
   }
 
-  endpointCallUpdate(endpointCall: EndpointCall) {
-    this.#onEndpointCallUpdate(endpointCall);
+  methodCallUpdate(methodCall: MethodCall) {
+    this.#onMethodCallUpdate(methodCall);
   }
 }

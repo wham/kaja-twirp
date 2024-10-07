@@ -1,28 +1,29 @@
-import ts from "typescript";
 import { Kaja } from "./kaja";
 
-export type Project = {
+export interface Project {
   services: Array<Service>;
+  clients: Array<Client>;
   extraLibs: Array<ExtraLib>;
-};
+}
 
-export type Service = {
+export interface Service {
   name: string;
   methods: Array<Method>;
-};
+}
 
-export type Method = {
+export interface Method {
   name: string;
   editorCode: string;
-  globalTrigger: (input: any, kaja: Kaja) => {};
-};
+}
 
-export type ExtraLib = {
+export interface Client {
+  [key: string]: (input: any, kaja: Kaja) => {};
+}
+
+export interface ExtraLib {
   filePath: string;
   content: string;
-};
-
-export type InterfaceMap = { [key: string]: { interfaceDeclaration: ts.InterfaceDeclaration; sourceFile: ts.SourceFile } };
+}
 
 export function methodId(service: Service, method: Method): string {
   return `${service.name}.${method.name}`;
