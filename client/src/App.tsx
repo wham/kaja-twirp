@@ -50,7 +50,6 @@ export function App() {
 
   const onCompile = async (sources: string[]) => {
     const project = await loadProject(sources);
-    //registerGlobalTriggers(project.services);
     setProject(project);
     setSelectedMethod(getDefaultMethod(project.services));
   };
@@ -81,8 +80,12 @@ export function App() {
       lines.shift();
     }
 
+    for (const client of Object.values(project.clients)) {
+      client.kaja = kajaRef.current;
+    }
+
     const func = new Function(...Object.keys(project.clients), "kaja", lines.join("\n"));
-    func(...Object.values(project.clients), kajaRef.current);
+    func(...Object.values(project.clients).map((client) => client.methods), kajaRef.current);
   }
 
   const client = getApiClient();

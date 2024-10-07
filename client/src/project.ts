@@ -21,8 +21,8 @@ export interface Clients {
 }
 
 export interface Client {
-  kaja: Kaja | undefined;
-  [key: string]: (input: any) => {} | Kaja | undefined;
+  kaja?: Kaja;
+  methods: { [key: string]: (input: any) => {} };
 }
 
 export interface ExtraLib {
