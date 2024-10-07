@@ -2,7 +2,7 @@ import { Kaja } from "./kaja";
 
 export interface Project {
   services: Array<Service>;
-  clients: Array<Client>;
+  clients: Clients;
   extraLibs: Array<ExtraLib>;
 }
 
@@ -16,8 +16,13 @@ export interface Method {
   editorCode: string;
 }
 
+export interface Clients {
+  [key: string]: Client;
+}
+
 export interface Client {
-  [key: string]: (input: any, kaja: Kaja) => {};
+  kaja: Kaja | undefined;
+  [key: string]: (input: any) => {} | Kaja | undefined;
 }
 
 export interface ExtraLib {

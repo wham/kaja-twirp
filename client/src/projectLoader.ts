@@ -2,7 +2,7 @@ import { MethodInfo, ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import ts from "typescript";
 import { createClient } from "./client";
 import { addImport, defaultMessage } from "./defaultInput";
-import { Client, ExtraLib, Method, Project, Service } from "./project";
+import { Clients, ExtraLib, Method, Project, Service } from "./project";
 import { findInterface, loadSources, loadStub, Source, Sources, Stub } from "./sources";
 
 export async function loadProject(paths: string[]): Promise<Project> {
@@ -116,10 +116,14 @@ export async function loadProject(paths: string[]): Promise<Project> {
   };
 }
 
-function createClients(services: Service[], stub: Stub): Client[] {
-  return services.map((service) => {
-    return createClient(service, stub);
-  });
+function createClients(services: Service[], stub: Stub): Clients {
+  const clients: Clients = {};
+
+  for (const service of services) {
+    clients[service.name] = createClient(service, stub);
+  }
+
+  return clients;
 }
 
 function getInputParameter(method: ts.MethodSignature, sourceFile: ts.SourceFile): ts.ParameterDeclaration | undefined {

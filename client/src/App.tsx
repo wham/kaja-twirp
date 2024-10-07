@@ -82,7 +82,7 @@ export function App() {
     }
 
     const func = new Function(...Object.keys(project.clients), "kaja", lines.join("\n"));
-    func(...project.clients, kajaRef.current);
+    func(...Object.values(project.clients), kajaRef.current);
   }
 
   const client = getApiClient();

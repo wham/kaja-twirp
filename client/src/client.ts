@@ -1,9 +1,9 @@
 import { TwirpFetchTransport } from "@protobuf-ts/twirp-transport";
-import { Kaja, MethodCall } from "./kaja";
-import { Client, Service } from "./project";
+import { MethodCall } from "./kaja";
+import { Client, Project, Service } from "./project";
 import { Stub } from "./sources";
 
-export function createClient(service: Service, stub: Stub): Client {
+export function createClient(project: Project, service: Service, stub: Stub): Client {
   const client: Client = {};
   const url = new URL(window.location.href);
   const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}`;
@@ -13,13 +13,13 @@ export function createClient(service: Service, stub: Stub): Client {
   const clientStub = stub[service.name + "Client"];
 
   for (const method of service.methods) {
-    client[method.name] = async (input: any, kaja: Kaja) => {
+    client[method.name] = async (input: any) => {
       const methodCall: MethodCall = {
         service,
         method,
         input,
       };
-      kaja._internal.methodCallUpdate(methodCall);
+      project.kaja?._internal.methodCallUpdate(methodCall);
 
       try {
         let { response } = await clientStub[lcfirst(method.name)](input);
@@ -28,7 +28,7 @@ export function createClient(service: Service, stub: Stub): Client {
         methodCall.error = error;
       }
 
-      kaja._internal.methodCallUpdate(methodCall);
+      project.kaja?._internal.methodCallUpdate(methodCall);
     };
   }
 
