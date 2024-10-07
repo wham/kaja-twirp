@@ -2,9 +2,11 @@ import { Monaco } from "@monaco-editor/react";
 import { Box, Link, Spinner } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
 import { formatJson } from "./formatter";
+import { MethodCall } from "./kaja";
+import { methodId } from "./project";
 import { Log, LogLevel } from "./server/api";
 
-export type ConsoleItem = Log[] | EndpointCall;
+export type ConsoleItem = Log[] | MethodCall;
 
 interface ConsoleProps {
   items: ConsoleItem[];
@@ -32,8 +34,8 @@ export function Console({ items, monaco }: ConsoleProps) {
         let itemElement;
         if (Array.isArray(item)) {
           itemElement = <Console.Logs logs={item} />;
-        } else if ("endpoint" in item) {
-          itemElement = <Console.EndpointCall endpointCall={item} monaco={monaco} onColorized={onColorized} />;
+        } else if ("method" in item) {
+          itemElement = <Console.MethodCall methodCall={item} monaco={monaco} onColorized={onColorized} />;
         }
 
         return <Box key={index}>{itemElement}</Box>;
@@ -68,12 +70,12 @@ interface MethodCallProps {
   onColorized: () => void;
 }
 
-Console.EndpointCall = function ({ endpointCall, monaco, onColorized }: EndpointCallProps) {
+Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
 
   useEffect(() => {
     if (monaco) {
-      formatJson(JSON.stringify(endpointCall.output)).then((h) => {
+      formatJson(JSON.stringify(methodCall.output)).then((h) => {
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
           setHtml(h);
           setTimeout(() => {
@@ -82,14 +84,14 @@ Console.EndpointCall = function ({ endpointCall, monaco, onColorized }: Endpoint
         });
       });
     }
-  }, [endpointCall, monaco]);
+  }, [methodCall, monaco]);
 
   return (
     <>
       <Box sx={{ display: "flex" }}>
         <code>
-          <span style={{ color: colorForLogLevel(endpointCall.output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO) }}>
-            {endpointCall.endpoint.service.name + "." + endpointCall.endpoint.method.name + "("}
+          <span style={{ color: colorForLogLevel(methodCall.output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO) }}>
+            {methodId(methodCall.service, methodCall.method) + "("}
           </span>
         </code>
         <Link>input</Link>
