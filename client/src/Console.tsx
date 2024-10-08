@@ -72,10 +72,53 @@ interface MethodCallProps {
 
 Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
+  const [showingOutput, setShowingOutput] = useState(true);
+
+  const onInputClick = () => {
+    if (monaco) {
+      formatJson(JSON.stringify(methodCall.input)).then((h) => {
+        monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
+          setHtml(h);
+          setShowingOutput(false);
+          setTimeout(() => {
+            onColorized();
+          }, 100);
+        });
+      });
+    }
+  };
+
+  const onOutputClick = () => {
+    if (monaco) {
+      formatJson(JSON.stringify(methodCall.output)).then((h) => {
+        monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
+          setHtml(h);
+          setShowingOutput(true);
+          setTimeout(() => {
+            onColorized();
+          }, 100);
+        });
+      });
+    }
+  };
+
+  const onErrorClick = () => {
+    if (monaco) {
+      formatJson(JSON.stringify(methodCall.error)).then((h) => {
+        monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
+          setHtml(h);
+          setShowingOutput(true);
+          setTimeout(() => {
+            onColorized();
+          }, 100);
+        });
+      });
+    }
+  };
 
   useEffect(() => {
     if (monaco) {
-      formatJson(JSON.stringify(methodCall.output)).then((h) => {
+      formatJson(JSON.stringify(methodCall.output || methodCall.error)).then((h) => {
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
           setHtml(h);
           setTimeout(() => {
@@ -90,19 +133,24 @@ Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallPr
     <>
       <Box sx={{ display: "flex" }}>
         <code>
-          <span style={{ color: colorForLogLevel(methodCall.output instanceof Error ? LogLevel.LEVEL_ERROR : LogLevel.LEVEL_INFO) }}>
-            {methodId(methodCall.service, methodCall.method) + "("}
-          </span>
+          <span style={{ color: colorForLogLevel(LogLevel.LEVEL_INFO) }}>{methodId(methodCall.service, methodCall.method) + "("}</span>
         </code>
-        <Link>
+        <Link muted={!showingOutput} onClick={onInputClick}>
           <code>input</code>
         </Link>
         <code>
-          <span>):</span>
+          <span style={{ color: colorForLogLevel(LogLevel.LEVEL_INFO) }}>):&nbsp;</span>
         </code>
-        <Link>
-          <code>output</code>
-        </Link>
+        {methodCall.output && (
+          <Link muted={showingOutput} onClick={onOutputClick}>
+            <code>output</code>
+          </Link>
+        )}
+        {methodCall.error && (
+          <Link muted={showingOutput} onClick={onErrorClick}>
+            <code style={{ color: colorForLogLevel(LogLevel.LEVEL_ERROR) }}>error</code>
+          </Link>
+        )}
         {!methodCall.output && !methodCall.error && <Spinner size="small" />}
       </Box>
       <pre>
