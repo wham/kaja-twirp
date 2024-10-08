@@ -94,12 +94,16 @@ Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallPr
             {methodId(methodCall.service, methodCall.method) + "("}
           </span>
         </code>
-        <Link>input</Link>
+        <Link>
+          <code>input</code>
+        </Link>
         <code>
-          <span>): </span>
+          <span>):</span>
         </code>
-        <Link>output</Link>
-        <Spinner size="small" />
+        <Link>
+          <code>output</code>
+        </Link>
+        {!methodCall.output && !methodCall.error && <Spinner size="small" />}
       </Box>
       <pre>
         <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
