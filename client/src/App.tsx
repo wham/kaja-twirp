@@ -36,7 +36,20 @@ export function App() {
   console.log("Rendering App", project);
 
   function onMethodCallUpdate(methodCall: MethodCall) {
-    setConsoleItems((consoleItems) => [...consoleItems, methodCall]);
+    setConsoleItems((consoleItems) => {
+      const index = consoleItems.findIndex((item) => item === methodCall);
+
+      if (index > -1) {
+        return consoleItems.map((item, i) => {
+          if (i === index) {
+            return { ...methodCall };
+          }
+          return item;
+        });
+      } else {
+        return [...consoleItems, methodCall];
+      }
+    });
   }
 
   function onEditorMount(editor: editor.IStandaloneCodeEditor, monaco: Monaco) {
