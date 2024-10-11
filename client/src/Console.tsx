@@ -1,5 +1,5 @@
 import { Monaco } from "@monaco-editor/react";
-import { Box, Button, Link, Spinner } from "@primer/react";
+import { Box, Button, Spinner } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
 import { formatJson } from "./formatter";
 import { MethodCall } from "./kaja";
@@ -129,7 +129,7 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
         <code>
           <span style={{ color: colorForLogLevel(LogLevel.LEVEL_INFO) }}>{methodId(methodCall.service, methodCall.method) + "("}</span>
         </code>
-        <Button size="small" variant="invisible" inactive={!showingOutput} onClick={onInputClick}>
+        <Button inactive={!showingOutput} size="small" variant="invisible" onClick={onInputClick}>
           input
         </Button>
         <code>
@@ -141,9 +141,9 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
           </Button>
         )}
         {methodCall.error && (
-          <Link muted={showingOutput} onClick={onErrorClick}>
-            <code style={{ color: colorForLogLevel(LogLevel.LEVEL_ERROR) }}>error</code>
-          </Link>
+          <Button inactive={showingOutput} size="small" variant="invisible" onClick={onErrorClick}>
+            error
+          </Button>
         )}
         {!methodCall.output && !methodCall.error && <Spinner size="small" />}
       </Box>
