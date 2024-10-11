@@ -14,33 +14,40 @@ interface ConsoleProps {
 }
 
 export function Console({ items, monaco }: ConsoleProps) {
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>();
+  const bottomRef = useRef<HTMLDivElement>();
 
-  useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  });
-
-  const onColorized = () => {
+  const scrollToBottom = () => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
+  useEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      scrollToBottom();
+    });
+
+    observer.observe(containerRef.current);
+  }, []);
+
   return (
-    <Box sx={{ fontSize: 12, padding: 1 }}>
+    <Box sx={{ fontSize: 12, padding: 1 }} ref={containerRef}>
       {items.map((item, index) => {
         let itemElement;
         if (Array.isArray(item)) {
           itemElement = <Console.Logs logs={item} />;
         } else if ("method" in item) {
-          itemElement = <Console.MethodCall methodCall={item} monaco={monaco} onColorized={onColorized} />;
+          itemElement = <Console.MethodCall methodCall={item} monaco={monaco} />;
         }
 
         return <Box key={index}>{itemElement}</Box>;
       })}
-      <div ref={bottomRef} />
+      <Box ref={bottomRef} />
     </Box>
   );
 }
@@ -67,10 +74,9 @@ Console.Logs = function ({ logs }: LogsProps) {
 interface MethodCallProps {
   methodCall: MethodCall;
   monaco?: Monaco;
-  onColorized: () => void;
 }
 
-Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallProps) {
+Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
   const [showingOutput, setShowingOutput] = useState(true);
 
@@ -80,9 +86,6 @@ Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallPr
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
           setHtml(h);
           setShowingOutput(false);
-          setTimeout(() => {
-            onColorized();
-          }, 100);
         });
       });
     }
@@ -94,9 +97,6 @@ Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallPr
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
           setHtml(h);
           setShowingOutput(true);
-          setTimeout(() => {
-            onColorized();
-          }, 100);
         });
       });
     }
@@ -108,9 +108,6 @@ Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallPr
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
           setHtml(h);
           setShowingOutput(true);
-          setTimeout(() => {
-            onColorized();
-          }, 100);
         });
       });
     }
@@ -121,9 +118,6 @@ Console.MethodCall = function ({ methodCall, monaco, onColorized }: MethodCallPr
       formatJson(JSON.stringify(methodCall.output || methodCall.error)).then((h) => {
         monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
           setHtml(h);
-          setTimeout(() => {
-            onColorized();
-          }, 100);
         });
       });
     }
