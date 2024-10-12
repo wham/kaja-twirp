@@ -33,8 +33,6 @@ export function App() {
   const logsOffsetRef = useRef(0);
   const kajaRef = useRef(new Kaja(onMethodCallUpdate));
 
-  console.log("Rendering App", project);
-
   function onMethodCallUpdate(methodCall: MethodCall) {
     setConsoleItems((consoleItems) => {
       const index = consoleItems.findIndex((item) => item === methodCall);
@@ -63,6 +61,7 @@ export function App() {
 
   const onCompile = async (sources: string[]) => {
     const project = await loadProject(sources);
+    console.log("Project loaded", project);
     setProject(project);
     setSelectedMethod(getDefaultMethod(project.services));
   };

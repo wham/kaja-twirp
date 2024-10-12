@@ -1,7 +1,7 @@
 import { Monaco } from "@monaco-editor/react";
-import { Box, Button, Spinner } from "@primer/react";
+import { Box, Button } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
-import { formatAndColorizeJson, formatJson } from "./formatter";
+import { formatAndColorizeJson } from "./formatter";
 import { MethodCall } from "./kaja";
 import { methodId } from "./project";
 import { Log, LogLevel } from "./server/api";
@@ -85,36 +85,21 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
     setShowingOutput(false);
   };
 
-  const onOutputClick = () => {
-    if (monaco) {
-      formatJson(JSON.stringify(methodCall.output)).then((h) => {
-        monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
-          setHtml(h);
-          setShowingOutput(true);
-        });
-      });
-    }
+  const onOutputClick = async () => {
+    setHtml(await formatAndColorizeJson(methodCall.output, monaco));
+    setShowingOutput(true);
   };
 
-  const onErrorClick = () => {
-    if (monaco) {
-      formatJson(JSON.stringify(methodCall.error)).then((h) => {
-        monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
-          setHtml(h);
-          setShowingOutput(true);
-        });
-      });
-    }
+  const onErrorClick = async () => {
+    setHtml(await formatAndColorizeJson(methodCall.error, monaco));
+    setShowingOutput(true);
   };
 
   useEffect(() => {
-    if (monaco) {
-      formatJson(JSON.stringify(methodCall.output || methodCall.error)).then((h) => {
-        monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
-          setHtml(h);
-        });
-      });
-    }
+    formatAndColorizeJson(methodCall.output || methodCall.error, monaco).then((html) => {
+      setHtml(html);
+      setShowingOutput(true);
+    });
   }, [methodCall, monaco]);
 
   return (
@@ -124,7 +109,7 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
           <span style={{ color: colorForLogLevel(LogLevel.LEVEL_INFO) }}>{methodId(methodCall.service, methodCall.method) + "("}</span>
         </code>
         <Button inactive={!showingOutput} size="small" variant="invisible" onClick={onInputClick}>
-          input
+          <code>input</code>
         </Button>
         <code>
           <span style={{ color: colorForLogLevel(LogLevel.LEVEL_INFO) }}>):&nbsp;</span>
@@ -136,10 +121,10 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
         )}
         {methodCall.error && (
           <Button inactive={showingOutput} size="small" variant="invisible" onClick={onErrorClick}>
-            error
+            <code style={{ color: colorForLogLevel(LogLevel.LEVEL_ERROR) }}>error</code>
           </Button>
         )}
-        {!methodCall.output && !methodCall.error && <Spinner size="small" />}
+        {!methodCall.output && !methodCall.error && <Button size="small" loading={true} />}
       </Box>
       <pre>
         <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />

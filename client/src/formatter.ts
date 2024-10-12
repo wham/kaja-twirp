@@ -10,6 +10,9 @@ export async function formatJson(code: string): Promise<string> {
 
 export async function formatAndColorizeJson(value: any, monaco?: Monaco): Promise<string> {
   let output = JSON.stringify(value);
+  if (output === undefined || output === null) {
+    output = "";
+  }
   output = await formatJson(output);
   if (monaco) {
     output = await monaco.editor.colorize(output, "typescript", { tabSize: 2 });
