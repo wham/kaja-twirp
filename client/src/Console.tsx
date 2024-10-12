@@ -1,7 +1,7 @@
 import { Monaco } from "@monaco-editor/react";
 import { Box, Button, Spinner } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
-import { formatJson } from "./formatter";
+import { formatAndColorizeJson, formatJson } from "./formatter";
 import { MethodCall } from "./kaja";
 import { methodId } from "./project";
 import { Log, LogLevel } from "./server/api";
@@ -80,15 +80,9 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
   const [showingOutput, setShowingOutput] = useState(true);
 
-  const onInputClick = () => {
-    if (monaco) {
-      formatJson(JSON.stringify(methodCall.input)).then((h) => {
-        monaco.editor.colorize(h, "typescript", { tabSize: 2 }).then((h) => {
-          setHtml(h);
-          setShowingOutput(false);
-        });
-      });
-    }
+  const onInputClick = async () => {
+    setHtml(await formatAndColorizeJson(methodCall.input, monaco));
+    setShowingOutput(false);
   };
 
   const onOutputClick = () => {
