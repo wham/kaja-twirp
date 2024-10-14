@@ -126,9 +126,7 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
         )}
         {!methodCall.output && !methodCall.error && <Button size="small" loading={true} />}
       </Box>
-      <pre style={{ whiteSpace: "pre-wrap" }}>
-        <code dangerouslySetInnerHTML={{ __html: html }} />
-      </pre>
+      <pre style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
     </>
   );
 };
