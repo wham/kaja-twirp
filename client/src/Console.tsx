@@ -36,7 +36,7 @@ export function Console({ items, monaco }: ConsoleProps) {
   }, []);
 
   return (
-    <Box sx={{ fontSize: 12, padding: 1 }} ref={containerRef}>
+    <Box sx={{ fontSize: 12, color: "fg.default", overflowY: "scroll", paddingX: 2, paddingY: 1 }} ref={containerRef}>
       {items.map((item, index) => {
         let itemElement;
         if (Array.isArray(item)) {

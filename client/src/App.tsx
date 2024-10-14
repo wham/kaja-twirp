@@ -152,9 +152,7 @@ export function App() {
                 {project && selectedMethod && <Editor code={selectedMethod.editorCode} extraLibs={project.extraLibs} onMount={onEditorMount} />}
               </Box>
               <Gutter orientation="horizontal" onResize={onEditorResize} />
-              <Box sx={{ color: "fg.default", overflowY: "scroll", paddingX: 1 }}>
-                <Console items={consoleItems} monaco={monacoRef.current} />
-              </Box>
+              <Console items={consoleItems} monaco={monacoRef.current} />
             </Box>
           </Box>
         </Box>
