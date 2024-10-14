@@ -58,8 +58,8 @@ interface LogsProps {
 
 Console.Logs = function ({ logs }: LogsProps) {
   return (
-    <pre style={{ margin: 0 }}>
-      <code style={{ whiteSpace: "pre-wrap" }}>
+    <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>
+      <code>
         {logs.map((log, index) => (
           <span key={index} style={{ color: colorForLogLevel(log.level) }}>
             {log.message}
@@ -126,8 +126,8 @@ Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
         )}
         {!methodCall.output && !methodCall.error && <Button size="small" loading={true} />}
       </Box>
-      <pre>
-        <code style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: html }} />
+      <pre style={{ whiteSpace: "pre-wrap" }}>
+        <code dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     </>
   );
