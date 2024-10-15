@@ -16,11 +16,16 @@ interface ConsoleProps {
 export function Console({ items, monaco }: ConsoleProps) {
   const containerRef = useRef<HTMLDivElement>();
   const bottomRef = useRef<HTMLDivElement>();
+  const autoScrollRef = useRef(true);
 
   const scrollToBottom = () => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
     }
+  };
+
+  const onMethodCallInteract = () => {
+    autoScrollRef.current = false;
   };
 
   useEffect(() => {
@@ -29,11 +34,17 @@ export function Console({ items, monaco }: ConsoleProps) {
     }
 
     const observer = new ResizeObserver(() => {
-      scrollToBottom();
+      if (autoScrollRef.current) {
+        scrollToBottom();
+      }
     });
 
     observer.observe(containerRef.current);
   }, []);
+
+  useEffect(() => {
+    autoScrollRef.current = true;
+  }, [items]);
 
   return (
     <Box sx={{ fontSize: 12, fontFamily: "monospace", color: "fg.default", overflowY: "scroll", paddingX: 2, paddingY: 1 }}>
@@ -43,7 +54,7 @@ export function Console({ items, monaco }: ConsoleProps) {
           if (Array.isArray(item)) {
             itemElement = <Console.Logs logs={item} />;
           } else if ("method" in item) {
-            itemElement = <Console.MethodCall methodCall={item} monaco={monaco} />;
+            itemElement = <Console.MethodCall methodCall={item} monaco={monaco} onInteract={onMethodCallInteract} />;
           }
 
           return <Box key={index}>{itemElement}</Box>;
@@ -74,23 +85,27 @@ Console.Logs = function ({ logs }: LogsProps) {
 interface MethodCallProps {
   methodCall: MethodCall;
   monaco?: Monaco;
+  onInteract: () => void;
 }
 
-Console.MethodCall = function ({ methodCall, monaco }: MethodCallProps) {
+Console.MethodCall = function ({ methodCall, monaco, onInteract }: MethodCallProps) {
   const [html, setHtml] = useState<string>("");
   const [showingOutput, setShowingOutput] = useState(true);
 
   const onInputClick = async () => {
+    onInteract();
     setHtml(await formatAndColorizeJson(methodCall.input, monaco));
     setShowingOutput(false);
   };
 
   const onOutputClick = async () => {
+    onInteract();
     setHtml(await formatAndColorizeJson(methodCall.output, monaco));
     setShowingOutput(true);
   };
 
   const onErrorClick = async () => {
+    onInteract();
     setHtml(await formatAndColorizeJson(methodCall.error, monaco));
     setShowingOutput(true);
   };
