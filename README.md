@@ -45,4 +45,4 @@ docker run -v /tmp/kaja-twirp.env:/app/.env ...
 # Development
 
 Run: `scripts/run`
-Test: `(cd client && npm test)`
+Test: `(cd ui && npm test)`
