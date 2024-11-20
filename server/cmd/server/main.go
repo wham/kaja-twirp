@@ -17,8 +17,8 @@ import (
 
 	"github.com/evanw/esbuild/pkg/api"
 	"github.com/joho/godotenv"
-	pb "github.com/wham/kaja-twirp/internal/api"
-	"github.com/wham/kaja-twirp/web"
+	"github.com/wham/kaja-twirp/v2/assets"
+	pb "github.com/wham/kaja-twirp/v2/internal/api"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -137,6 +137,12 @@ func main() {
 	http.Handle(twirpHandler.PathPrefix(), twirpHandler)
 
 	http.HandleFunc("/", handler)
+
+	http.HandleFunc("GET /static/{name...}", func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("Static file request", "method", r.Method, "path", r.RequestURI)
+		http.ServeFileFS(w, r, assets.StaticFS, "static/"+r.PathValue("name"))
+	})
+
 	http.HandleFunc("/favicon.svg", handlerFaviconSvg)
 	http.Handle("/sources/", http.StripPrefix("/sources/", http.FileServer(http.Dir("web/sources"))))
 	http.HandleFunc("/static/kaja-twirp.js", handlerStaticJs)
@@ -164,5 +170,7 @@ func main() {
 		proxy.ServeHTTP(w, r)
 	})
 
-	http.ListenAndServe(":41520", nil)
+	slog.Info("Server started", "URL", "http://localhost:41520")
+	slog.Error("Failed to start server", "error", http.ListenAndServe(":41520", nil))
+	os.Exit(1)
 }
