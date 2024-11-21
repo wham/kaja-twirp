@@ -69,7 +69,7 @@ go build -o /tmp/demo-app ./cmd/demo-app
 
 cd "../server"
 protoc --proto_path=. --plugin=protoc-gen-go=../bin/protoc-gen-go --go_out=. --plugin=protoc-gen-twirp=../bin/protoc-gen-twirp --twirp_out=. -Iproto/ $(find . -iname "*.proto")
-go build -o /tmp/kaja-twirp ./cmd/kaja-twirp
+go build -tags development -o /tmp/kaja-twirp ./cmd/server
 /tmp/kaja-twirp
 
 #cd "../app"

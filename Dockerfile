@@ -13,7 +13,7 @@ RUN npm ci --omit=dev
 COPY server /server
 WORKDIR /server
 RUN go run cmd/build-assets/build-assets.go
-RUN go build -o /bin/kaja-twirp ./cmd/kaja-twirp
+RUN go build -o /bin/kaja-twirp ./cmd/server
 
 FROM alpine:latest as runner
 COPY --from=builder /bin/kaja-twirp /app/

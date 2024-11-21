@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"log"
 	"log/slog"
 	"mime"
 	"net/http"
@@ -17,56 +16,9 @@ import (
 
 	"github.com/evanw/esbuild/pkg/api"
 	"github.com/joho/godotenv"
-	"github.com/wham/kaja-twirp/v2/assets"
+	assets "github.com/wham/kaja-twirp/v2"
 	pb "github.com/wham/kaja-twirp/v2/internal/api"
 )
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	t, err := template.New("index.html").Parse(web.IndexHtml)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	t.Execute(w, nil)
-}
-
-func handlerFaviconSvg(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "image/svg+xml")
-	w.Write(web.FaviconSvg)
-}
-
-func handlerStaticJs(w http.ResponseWriter, r *http.Request) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		http.Error(w, "Failed to get current working directory", http.StatusInternalServerError)
-		return
-	}
-	fmt.Printf("CWD: %s\n", cwd)
-
-	_, err = os.Stat("../ui/src/main.tsx")
-	if os.IsNotExist(err) {
-		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeContent(w, r, "kaja-twirp.js", time.Now(), bytes.NewReader(web.KajaTwirpJs))
-		return
-	}
-
-	result := api.Build(api.BuildOptions{
-		EntryPoints: []string{"../ui/src/main.tsx"},
-		Bundle:      true,
-		Format:      api.FormatESModule,
-		Sourcemap:   api.SourceMapInline,
-	})
-
-	if len(result.Errors) > 0 {
-		http.Error(w, "Build failed\n"+result.Errors[0].Text, http.StatusInternalServerError)
-		return
-	}
-
-	first := result.OutputFiles[0]
-
-	w.Header().Set("Content-Type", "application/javascript")
-	http.ServeContent(w, r, first.Path, time.Now(), bytes.NewReader(first.Contents))
-}
 
 func handlerStubJs(w http.ResponseWriter, r *http.Request) {
 	cwd, err := os.Getwd()
@@ -124,8 +76,6 @@ func handlerStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	slog.Info("Starting kaja-twirp server")
-
 	err := godotenv.Load("../.env")
 	if err != nil {
 		slog.Info(".env file not loaded", "error", err)
@@ -136,16 +86,37 @@ func main() {
 	twirpHandler := pb.NewApiServer(pb.NewApiService())
 	http.Handle(twirpHandler.PathPrefix(), twirpHandler)
 
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("HTML request", "method", r.Method, "path", r.RequestURI)
+
+		template, err := template.ParseFS(assets.TemplatesFS, "templates/**.html")
+		if err != nil {
+			slog.Error("Failed to parse HTML templates", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+
+		if err := template.ExecuteTemplate(w, "index.html", struct{}{}); err != nil {
+			slog.Error("Failed to execute template", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+	})
 
 	http.HandleFunc("GET /static/{name...}", func(w http.ResponseWriter, r *http.Request) {
 		slog.Info("Static file request", "method", r.Method, "path", r.RequestURI)
 		http.ServeFileFS(w, r, assets.StaticFS, "static/"+r.PathValue("name"))
 	})
 
-	http.HandleFunc("/favicon.svg", handlerFaviconSvg)
+	http.HandleFunc("GET /ui.js", func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("UI bundle request", "method", r.Method, "path", r.RequestURI)
+
+		w.Write(assets.ReadUI())
+	})
+
 	http.Handle("/sources/", http.StripPrefix("/sources/", http.FileServer(http.Dir("web/sources"))))
-	http.HandleFunc("/static/kaja-twirp.js", handlerStaticJs)
 	http.HandleFunc("/static/stub.js", handlerStubJs)
 	http.HandleFunc("/status", handlerStatus)
 
