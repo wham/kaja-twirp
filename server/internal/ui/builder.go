@@ -8,7 +8,7 @@ import (
 
 func BuildForDevelopment() []byte {
 	result := api.Build(api.BuildOptions{
-		EntryPoints: []string{"ui/main.tsx"},
+		EntryPoints: []string{"../ui/src/main.tsx"},
 		Bundle:      true,
 		Format:      api.FormatESModule,
 		Sourcemap:   api.SourceMapInline,
@@ -24,7 +24,7 @@ func BuildForDevelopment() []byte {
 
 func BuildForProduction() []byte {
 	result := api.Build(api.BuildOptions{
-		EntryPoints:       []string{"ui/main.tsx"},
+		EntryPoints:       []string{"../ui/src/main.tsx"},
 		Bundle:            true,
 		Format:            api.FormatESModule,
 		MinifyWhitespace:  true,

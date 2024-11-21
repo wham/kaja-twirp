@@ -81,6 +81,7 @@ func main() {
 		slog.Info(".env file not loaded", "error", err)
 	}
 
+	mime.AddExtensionType(".js", "text/javascript")
 	mime.AddExtensionType(".ts", "text/plain")
 
 	twirpHandler := pb.NewApiServer(pb.NewApiService())
@@ -113,12 +114,13 @@ func main() {
 	http.HandleFunc("GET /ui.js", func(w http.ResponseWriter, r *http.Request) {
 		slog.Info("UI bundle request", "method", r.Method, "path", r.RequestURI)
 
+		w.Header().Set("Content-Type", "application/javascript")
 		w.Write(assets.ReadUI())
 	})
 
-	http.Handle("/sources/", http.StripPrefix("/sources/", http.FileServer(http.Dir("web/sources"))))
-	http.HandleFunc("/static/stub.js", handlerStubJs)
-	http.HandleFunc("/status", handlerStatus)
+	http.Handle("GET /sources/", http.StripPrefix("/sources/", http.FileServer(http.Dir("web/sources"))))
+	http.HandleFunc("GET /static/stub.js", handlerStubJs)
+	http.HandleFunc("GET /status", handlerStatus)
 
 	baseURL := os.Getenv("BASE_URL")
 	if baseURL == "" {
