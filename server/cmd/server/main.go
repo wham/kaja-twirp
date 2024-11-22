@@ -142,6 +142,7 @@ func main() {
 		proxy.ServeHTTP(w, r)
 	})
 
+	fmt.Println("Server started at http://localhost:41520")
 	slog.Info("Server started", "URL", "http://localhost:41520")
 	slog.Error("Failed to start server", "error", http.ListenAndServe(":41520", nil))
 	os.Exit(1)

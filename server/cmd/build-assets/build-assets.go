@@ -19,7 +19,7 @@ func main() {
 		EntryPoints: []string{"../ui/src/main.tsx"},
 		Bundle:      true,
 		Format:      api.FormatESModule,
-		Outfile:     "web/assets/kaja-twirp.js",
+		Outfile:     "web/assets/ui.js",
 		Write:       true,
 	})
 
