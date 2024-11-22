@@ -118,7 +118,7 @@ func main() {
 	})
 
 	http.Handle("GET /sources/", http.StripPrefix("/sources/", http.FileServer(http.Dir("web/sources"))))
-	http.HandleFunc("GET /static/stub.js", handlerStubJs)
+	http.HandleFunc("GET /stub.js", handlerStubJs)
 	http.HandleFunc("GET /status", handlerStatus)
 
 	baseURL := os.Getenv("BASE_URL")
