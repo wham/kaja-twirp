@@ -38,7 +38,7 @@ func main() {
 		Bundle:      true,
 		Format:      api.FormatESModule,
 		Platform:    api.PlatformNode,
-		Outfile:     "../bin/protoc-gen-ts",
+		Outfile:     "../build/protoc-gen-ts",
 		Write:       true,
 	})
 
