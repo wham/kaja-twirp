@@ -81,7 +81,6 @@ func main() {
 		slog.Info(".env file not loaded", "error", err)
 	}
 
-	mime.AddExtensionType(".js", "text/javascript")
 	mime.AddExtensionType(".ts", "text/plain")
 
 	twirpHandler := pb.NewApiServer(pb.NewApiService())
