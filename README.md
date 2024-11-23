@@ -2,7 +2,11 @@
 
 # Introduction
 
-`kaja` is a code-based UI for exploring and calling [Twirp](https://github.com/twitchtv/twirp) APIs. Support for gRPC is coming later. It is designed to be embedded into your development workflow as a Docker container.
+`kaja` is a code-based UI for exploring and calling [Twirp](https://github.com/twitchtv/twirp) APIs. Support for gRPC is coming later.
+
+![](docs/screenshot.png)
+
+You can embedded `kaja` into your development workflow as a Docker container. Desktop version is coming later.
 
 ```
 docker run --pull always --name kaja -d -p 41520:41520 \
