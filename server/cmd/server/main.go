@@ -20,6 +20,8 @@ import (
 	pb "github.com/wham/kaja/v2/internal/api"
 )
 
+var pathPrefix = "/demo"
+
 func handlerStubJs(w http.ResponseWriter, r *http.Request) {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -82,11 +84,12 @@ func main() {
 	}
 
 	mime.AddExtensionType(".ts", "text/plain")
+	mux := http.NewServeMux()
 
 	twirpHandler := pb.NewApiServer(pb.NewApiService())
-	http.Handle(twirpHandler.PathPrefix(), twirpHandler)
+	mux.Handle(twirpHandler.PathPrefix(), twirpHandler)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		slog.Info("HTML request", "method", r.Method, "path", r.RequestURI)
 
 		template, err := template.ParseFS(assets.TemplatesFS, "templates/**.html")
@@ -97,7 +100,7 @@ func main() {
 			return
 		}
 
-		if err := template.ExecuteTemplate(w, "index.html", struct{}{}); err != nil {
+		if err := template.ExecuteTemplate(w, "index.html", struct{ PathPrefix string }{PathPrefix: pathPrefix}); err != nil {
 			slog.Error("Failed to execute template", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
@@ -105,21 +108,21 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("GET /static/{name...}", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /static/{name...}", func(w http.ResponseWriter, r *http.Request) {
 		slog.Info("Static file request", "method", r.Method, "path", r.RequestURI)
 		http.ServeFileFS(w, r, assets.StaticFS, "static/"+r.PathValue("name"))
 	})
 
-	http.HandleFunc("GET /ui.js", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /ui.js", func(w http.ResponseWriter, r *http.Request) {
 		slog.Info("UI bundle request", "method", r.Method, "path", r.RequestURI)
 
 		w.Header().Set("Content-Type", "application/javascript")
 		w.Write(assets.ReadUI())
 	})
 
-	http.Handle("GET /sources/", http.StripPrefix("/sources/", http.FileServer(http.Dir("web/sources"))))
-	http.HandleFunc("GET /stub.js", handlerStubJs)
-	http.HandleFunc("GET /status", handlerStatus)
+	mux.Handle("GET /sources/", http.StripPrefix("/sources/", http.FileServer(http.Dir("web/sources"))))
+	mux.HandleFunc("GET /stub.js", handlerStubJs)
+	mux.HandleFunc("GET /status", handlerStatus)
 
 	baseURL := os.Getenv("BASE_URL")
 	if baseURL == "" {
@@ -137,13 +140,16 @@ func main() {
 	proxy := httputil.NewSingleHostReverseProxy(target)
 
 	// Handle /twirp path
-	http.HandleFunc("/twirp/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/twirp/", func(w http.ResponseWriter, r *http.Request) {
 		//r.URL.Path = r.URL.Path[len("/twirp"):]
 		proxy.ServeHTTP(w, r)
 	})
 
+	root := http.NewServeMux()
+	root.Handle(pathPrefix+"/", http.StripPrefix(pathPrefix, mux))
+
 	fmt.Println("Server started at http://localhost:41520")
 	slog.Info("Server started", "URL", "http://localhost:41520")
-	slog.Error("Failed to start server", "error", http.ListenAndServe(":41520", nil))
+	slog.Error("Failed to start server", "error", http.ListenAndServe(":41520", root))
 	os.Exit(1)
 }
