@@ -146,7 +146,7 @@ func main() {
 
 	// Handle /twirp path
 	mux.HandleFunc("/twirp/", func(w http.ResponseWriter, r *http.Request) {
-		//r.URL.Path = r.URL.Path[len("/twirp"):]
+		//r.URL.Path = r.URL.Path[len(pathPrefix):]
 		proxy.ServeHTTP(w, r)
 	})
 
