@@ -5,10 +5,10 @@ import { Stub } from "./sources";
 
 export function createClient(service: Service, stub: Stub): Client {
   const client: Client = { methods: {} };
-  const url = new URL(window.location.href);
-  const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}`;
+  //const url = new URL(window.location.href);
+  //const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}${url.pathname}`;
   const transport = new TwirpFetchTransport({
-    baseUrl: urlWithoutPath + "/twirp",
+    baseUrl: window.location.href + "/twirp",
   });
   const clientStub = new stub[service.name + "Client"](transport);
 

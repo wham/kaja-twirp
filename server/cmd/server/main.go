@@ -92,6 +92,11 @@ func main() {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		slog.Info("HTML request", "method", r.Method, "path", r.RequestURI)
 
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+
 		template, err := template.ParseFS(assets.TemplatesFS, "templates/**.html")
 		if err != nil {
 			slog.Error("Failed to parse HTML templates", "error", err)
@@ -100,7 +105,7 @@ func main() {
 			return
 		}
 
-		if err := template.ExecuteTemplate(w, "index.html", struct{ PathPrefix string }{PathPrefix: pathPrefix}); err != nil {
+		if err := template.ExecuteTemplate(w, "index.html", struct{}{}); err != nil {
 			slog.Error("Failed to execute template", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))

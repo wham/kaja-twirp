@@ -11,5 +11,5 @@ export function getApiClient(): ApiClient {
 
 export function getBaseUrl(): string {
   const url = new URL(window.location.href);
-  return url.origin + "/twirp";
+  return window.location.href + "/twirp";
 }
