@@ -8,7 +8,7 @@ export function createClient(service: Service, stub: Stub): Client {
   //const url = new URL(window.location.href);
   //const urlWithoutPath = `${url.protocol}//${url.hostname}${url.port ? ":" + url.port : ""}${url.pathname}`;
   const transport = new TwirpFetchTransport({
-    baseUrl: window.location.href + "/twirp",
+    baseUrl: window.location.href + "twirp",
   });
   const clientStub = new stub[service.name + "Client"](transport);
 
