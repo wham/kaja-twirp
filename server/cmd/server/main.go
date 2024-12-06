@@ -20,8 +20,6 @@ import (
 	pb "github.com/wham/kaja/v2/internal/api"
 )
 
-var pathPrefix = "/demo"
-
 func handlerStubJs(w http.ResponseWriter, r *http.Request) {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -151,7 +149,11 @@ func main() {
 	})
 
 	root := http.NewServeMux()
-	root.Handle(pathPrefix+"/", http.StripPrefix(pathPrefix, mux))
+	// kaja can be deployed at a subpath - i.e. kaja.tools/demo
+	// The JS code is using relative paths and should be able to handle this without any changes.
+	// To test this, we can apply a prefix here and uncomment when done.
+	// root.Handle("/demo/", http.StripPrefix("/demo", mux))
+	root.Handle("/", http.StripPrefix("", mux))
 
 	fmt.Println("Server started at http://localhost:41520")
 	slog.Info("Server started", "URL", "http://localhost:41520")
