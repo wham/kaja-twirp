@@ -155,7 +155,10 @@ func main() {
 	// root.Handle("/demo/", http.StripPrefix("/demo", mux))
 	root.Handle("/", http.StripPrefix("", mux))
 
-	fmt.Println("Server started at http://localhost:41520")
+	// Used in kaja launch scripts to determine if the server has started.
+	// slog.Info is not visible with Docker's -a STDOUT flag - its output is buffered.
+	// Ideally rewrite the launch scripts to use the /status endpoint.
+	fmt.Println("Server started")
 	slog.Info("Server started", "URL", "http://localhost:41520")
 	slog.Error("Failed to start server", "error", http.ListenAndServe(":41520", root))
 	os.Exit(1)
